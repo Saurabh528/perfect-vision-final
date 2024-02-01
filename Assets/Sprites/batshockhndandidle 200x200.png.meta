@@ -1,0 +1,534 @@
+fileFormatVersion: 2
+guid: b69f048db36d745b39d2b33665c4f113
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3553331627676824704
+    second: batshockhndandidle 200x200_0
+  - first:
+      213: 3644394357563456547
+    second: batshockhndandidle 200x200_1
+  - first:
+      213: 7419966779123295254
+    second: batshockhndandidle 200x200_2
+  - first:
+      213: 8364217349096255983
+    second: batshockhndandidle 200x200_3
+  - first:
+      213: -1819210885106667405
+    second: batshockhndandidle 200x200_4
+  - first:
+      213: 2772564504647044123
+    second: batshockhndandidle 200x200_5
+  - first:
+      213: -2866290872719487180
+    second: batshockhndandidle 200x200_6
+  - first:
+      213: 753300934635459014
+    second: batshockhndandidle 200x200_7
+  - first:
+      213: 252823268502325633
+    second: batshockhndandidle 200x200_8
+  - first:
+      213: -7853663019265424499
+    second: batshockhndandidle 200x200_9
+  - first:
+      213: 968857742993103105
+    second: batshockhndandidle 200x200_10
+  - first:
+      213: -2698031785076984209
+    second: batshockhndandidle 200x200_11
+  - first:
+      213: 6429052773257352696
+    second: batshockhndandidle 200x200_12
+  - first:
+      213: -8785909345431957404
+    second: batshockhndandidle 200x200_13
+  - first:
+      213: 3072340321486214663
+    second: batshockhndandidle 200x200_14
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_0
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 406
+        width: 102
+        height: 179
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08476dcf948ff4130800000000000000
+      internalID: 3553331627676824704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_1
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 406
+        width: 103
+        height: 179
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32cf1000c5d739230800000000000000
+      internalID: 3644394357563456547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_2
+      rect:
+        serializedVersion: 2
+        x: 899
+        y: 569
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 614e7d2197409f660800000000000000
+      internalID: 7419966779123295254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_3
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 406
+        width: 100
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe1ba0d0d5ba31470800000000000000
+      internalID: 8364217349096255983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_4
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 406
+        width: 101
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37071bda65dd0c6e0800000000000000
+      internalID: -1819210885106667405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_5
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 406
+        width: 102
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1c08503ab02a7620800000000000000
+      internalID: 2772564504647044123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_6
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 369
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43f4c9433a3e838d0800000000000000
+      internalID: -2866290872719487180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_7
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 206
+        width: 102
+        height: 173
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c19ae97533447a00800000000000000
+      internalID: 753300934635459014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_8
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 206
+        width: 101
+        height: 173
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 189c8065c65328300800000000000000
+      internalID: 252823268502325633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_9
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 206
+        width: 101
+        height: 185
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d83001f281f220390800000000000000
+      internalID: -7853663019265424499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_10
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 206
+        width: 101
+        height: 185
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1099df8ebf2127d00800000000000000
+      internalID: 968857742993103105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_11
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 206
+        width: 101
+        height: 161
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f66f5c1e26aae8ad0800000000000000
+      internalID: -2698031785076984209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_12
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 0
+        width: 172
+        height: 212
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f59e384f65983950800000000000000
+      internalID: 6429052773257352696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_13
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 6
+        width: 100
+        height: 185
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4605eb4000e221680800000000000000
+      internalID: -8785909345431957404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: batshockhndandidle 200x200_14
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 6
+        width: 101
+        height: 185
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7069b439e3523aa20800000000000000
+      internalID: 3072340321486214663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: d680b4d7de58d43eba04cb5d41a07d5d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      batshockhndandidle 200x200_2: 7419966779123295254
+      batshockhndandidle 200x200_8: 252823268502325633
+      batshockhndandidle 200x200_4: -1819210885106667405
+      batshockhndandidle 200x200_0: 3553331627676824704
+      batshockhndandidle 200x200_7: 753300934635459014
+      batshockhndandidle 200x200_13: -8785909345431957404
+      batshockhndandidle 200x200_12: 6429052773257352696
+      batshockhndandidle 200x200_1: 3644394357563456547
+      batshockhndandidle 200x200_3: 8364217349096255983
+      batshockhndandidle 200x200_11: -2698031785076984209
+      batshockhndandidle 200x200_5: 2772564504647044123
+      batshockhndandidle 200x200_14: 3072340321486214663
+      batshockhndandidle 200x200_10: 968857742993103105
+      batshockhndandidle 200x200_9: -7853663019265424499
+      batshockhndandidle 200x200_6: -2866290872719487180
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
