@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -58,6 +59,11 @@ public class UISignIn : MonoBehaviour {
 			return;
 		}
 #endif
+	}
+	public void SendEmail()
+	{
+		string pattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+        if( Regex.IsMatch(eMail.text, pattern)) UserAccountManager.Instance.emailRecovery(eMail.text);
 	}
 
 	public void OnBtnClose()
