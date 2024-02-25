@@ -438,6 +438,7 @@ public class UserAccountManager : MonoBehaviour
         	// Debug.Log("Got error setting expiry date");
         	// Debug.Log(error.GenerateErrorReport());
     		// });
+
 			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
 			Keys = new List<string>(){key}
 			},
@@ -561,55 +562,60 @@ public void emailRecovery(string email)
 	public void SetUserNameAndPassword(string eMail, string username, string password, UnityAction successAction, UnityAction<string> failedAction)
 	{
 
-		// AddUsernamePasswordRequest req = new AddUsernamePasswordRequest();
-		// req.Username = username;
-		// req.Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
-		// req.Email = eMail;
-		// PlayFabClientAPI.AddUsernamePassword(req,
-		// 	result =>
-		// 	{
-		// 		GameState.username = username;
-		// 		RemoveLocalRecords();
-		// 		string namepassHash = GetNamePassHash(username, password);
-		// 		GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
-		// 		DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
-		// 		PlayerPrefs.SetString(DataKey.GetPrefKeyName (PropName_NamePassHash), namepassHash);
-		// 		SetDisplayName(username);
-		// 		PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
-		// 		if(GameState.IsPatient()){
-		// 			DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-		// 			string key = DataKey.DOCTORID;
-		// 			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
-		// 				Keys = new List<string>() { key }
-		// 			},
-		// 			result =>{
-		// 				if (result.Data != null && result.Data.ContainsKey(key))
-		// 				{
-		// 					GameState.DoctorID = result.Data[key].Value;
-		// 					DataKey.SetPrefsString(key, GameState.DoctorID);
-		// 					PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-		// 					PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
-							
-		// 					return;
-		// 				}
-		// 			},
-		// 			error =>{
-		// 				failedAction.Invoke(error.ToString());
-		// 				return;
-		// 			});
-		// 		}
-		// 		else{
-		// 			PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-		// 			successAction.Invoke();
-		// 			return;
-		// 		}
-				
-		// 	},
-		// 	error =>
-		// 	{
-		// 		failedAction.Invoke(error.ToString());
-		// 	}
-		// );
+		AddUsernamePasswordRequest req = new AddUsernamePasswordRequest();
+		req.Username = username;
+		req.Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+		req.Email = eMail;
+		PlayFabClientAPI.AddUsernamePassword(req,
+			result =>
+			{
+				GameState.username = username;
+				RemoveLocalRecords();
+				string namepassHash = GetNamePassHash(username, password);
+				GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+				DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
+				PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
+				SetDisplayName(username);
+				PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
+				if (GameState.IsPatient())
+				{
+					DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
+					string key = DataKey.DOCTORID;
+					PlayFabClientAPI.GetUserData(new GetUserDataRequest()
+					{
+						Keys = new List<string>() { key }
+					},
+					result =>
+					{
+						if (result.Data != null && result.Data.ContainsKey(key))
+						{
+							GameState.DoctorID = result.Data[key].Value;
+							DataKey.SetPrefsString(key, GameState.DoctorID);
+							PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+							PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
+
+							return;
+						}
+					},
+					error =>
+					{
+						failedAction.Invoke(error.ToString());
+						return;
+					});
+				}
+				else
+				{
+					PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+					successAction.Invoke();
+					return;
+				}
+
+			},
+			error =>
+			{
+				failedAction.Invoke(error.ToString());
+			}
+		);
 		PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest()
 		{
             TitleId = "CD663",
