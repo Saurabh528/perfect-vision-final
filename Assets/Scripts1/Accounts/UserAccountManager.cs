@@ -433,48 +433,13 @@ public class UserAccountManager : MonoBehaviour
             //	 },
             //	Permission = UserDataPermission.Public
 
-            //},
-            //result => Debug.Log("Successfully updated user data"),
-            //error =>	
-            //{
-            //	Debug.Log("Got error setting expiry date");
-            //	Debug.Log(error.GenerateErrorReport());
-            //});
-            PlayFabServerAPI.UpdateUserReadOnlyData(new PlayFab.ServerModels.UpdateUserDataRequest
-            {
-                PlayFabId = fabID, // Ensure this is the correct PlayFab ID for the user
-                Data = new Dictionary<string, string> {
-				{ "ExpiryDate", "2024-12-30" }
-				},
-                Permission = PlayFab.ServerModels.UserDataPermission.Public
-            },
-			result => Debug.Log("Successfully updated user data"),
-			error =>
-			{
-			Debug.Log("Got error setting expiry date");
-			Debug.Log(error.GenerateErrorReport());
-			});
-
-			GetUserExpiryDate(fabID);
-
-
-			//PlayFabClientAPI.GetUserData(new GetUserDataRequest
-   //       {
-   //             PlayFabId = fabID, // Optional for the current user
-   //             Keys = null // Passing null fetches all user data; specify keys to fetch specific data
-   //         },
-   //result => {
-   //if (result.Data == null || !result.Data.ContainsKey("ExpiryDate"))
-   //	Debug.Log("No Expiry Date set for user.");
-   //else
-   //	Debug.Log("Expiry Date: " + result.Data["ExpiryDate"].Value);
-   //},
-   //error => {
-   //Debug.Log("Got error getting user data:");
-   //Debug.Log(error.GenerateErrorReport());
-   //});
-
-            PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
+    		// },
+    		// result => Debug.Log("Successfully updated user data"),
+    		// error => {
+        	// Debug.Log("Got error setting expiry date");
+        	// Debug.Log(error.GenerateErrorReport());
+    		// });
+			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
 			Keys = new List<string>(){key}
 			},
 			result =>{
