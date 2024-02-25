@@ -67,30 +67,30 @@ public class SignInManager : MonoBehaviour
 // 		});
 //    }
 
-//     public void register()
-//     {
-//         if(!IsValidEmail(email.text))
-//         {
-//             Debug.Log("You entered wrong email");
-//             return;
-//         }
-//         PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest()
-// 		{
-//             TitleId = "CD663",
-//             Username = username.text,
-//             Email = email.text,
-//             Password = password.text,
-//             RequireBothUsernameAndEmail = true
-// 		}, result =>
-// 		{
-// 			Debug.Log("Registered!");
+    public void register()
+    {
+        if(!IsValidEmail(email.text))
+        {
+            Debug.Log("You entered wrong email");
+            return;
+        }
+        PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest()
+		{
+            TitleId = "CD663",
+            Username = username.text,
+            Email = email.text,
+            Password = password.text,
+            RequireBothUsernameAndEmail = true
+		}, result =>
+		{
+			Debug.Log("Registered!");
 			
-// 		}, error =>
-// 		{
-// 			Debug.Log($"Not Registered");
-// 			Debug.Log(error.ErrorMessage);
-// 		});
-//     }
+		}, error =>
+		{
+			Debug.Log($"Not Registered");
+			Debug.Log(error.ErrorMessage);
+		});
+    }
     
 
 

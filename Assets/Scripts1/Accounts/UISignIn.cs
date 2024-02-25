@@ -64,6 +64,11 @@ public class UISignIn : MonoBehaviour {
 	{
 		string pattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
         if( Regex.IsMatch(eMail.text, pattern)) UserAccountManager.Instance.emailRecovery(eMail.text);
+		else if(eMail.text == "") 
+		{
+			Debug.Log("Empty");
+			UserAccountManager.Instance.emailRecovery(eMail.text);
+		}
 	}
 
 	public void OnBtnClose()
