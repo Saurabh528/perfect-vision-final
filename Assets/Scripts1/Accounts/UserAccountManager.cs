@@ -426,21 +426,36 @@ public class UserAccountManager : MonoBehaviour
 			GameState.IsOnline = true;
 			string fabID = result.PlayFabId;
 			string key = DataKey.ROLE;
-			//PlayFabServerAPI.UpdateUserReadOnlyData(new UpdateUserDataRequest()
-			//{
-			//	Data = new Dictionary<string, string>() {
-			//	 {"ExpiryDate", "2024-12-30"}
-			//	 },
-			//	Permission = UserDataPermission.Public
+            //PlayFabServerAPI.UpdateUserReadOnlyData(new UpdateUserDataRequest()
+            //{
+            //	Data = new Dictionary<string, string>() {
+            //	 {"ExpiryDate", "2024-12-30"}
+            //	 },
+            //	Permission = UserDataPermission.Public
 
-			// },
-			// result => Debug.Log("Successfully updated user data"),
-			// error => {
-			// Debug.Log("Got error setting expiry date");
-			// Debug.Log(error.GenerateErrorReport());
-			// });
+            //},
+            // result => Debug.Log("Successfully updated user data"),
+            // error =>
+            // {
+            //	 Debug.Log("Got error setting expiry date");
+            //	 Debug.Log(error.GenerateErrorReport());
+            // });
+            PlayFabServerAPI.UpdateUserReadOnlyData(new PlayFab.ServerModels.UpdateUserDataRequest
+            {
+                PlayFabId = fabID, // Ensure this is the correct PlayFab ID for the user
+                Data = new Dictionary<string, string> {
+                { "ExpiryDate", "2024-12-30" }
+                },
+                Permission = PlayFab.ServerModels.UserDataPermission.Public
+            },
+           result => Debug.Log("Successfully updated user data"),
+           error =>
+           {
+               Debug.Log("Got error setting expiry date");
+               Debug.Log(error.GenerateErrorReport());
+           });
 
-			GetUserExpiryDate(fabID);
+            GetUserExpiryDate(fabID);
 
             PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
 			Keys = new List<string>(){key}
