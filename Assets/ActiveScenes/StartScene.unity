@@ -4293,7 +4293,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1640483649}
         m_TargetAssemblyTypeName: ExitUI, Assembly-CSharp
-        m_MethodName: OnBtnExitOK
+        m_MethodName: OnBtnLoginExitOk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

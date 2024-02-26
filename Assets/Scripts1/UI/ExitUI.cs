@@ -29,16 +29,24 @@ public class ExitUI : MonoBehaviour
     }
 
     public void OnBtnExitCancel(){
+        
         Time.timeScale = 1;
         Cursor.visible = !HideCursorOnResume;
         Instance.ExitPanel.SetActive(false);
     }
 
     public void OnBtnExitOK(){
+        Debug.Log("ClOSED POPUP");
         Time.timeScale = 0;
-        Application.Quit();
+        Instance.ExitPanel.SetActive(true);
+       
     }
 
+    public void OnBtnLoginExitOk()
+    {
+        Debug.Log("Application will quit");
+        Application.Quit();
+    }
     void Update(){
         if(IsShowingExitPanel()){
             if(Time.time > showtime + 1)
