@@ -426,20 +426,23 @@ public class UserAccountManager : MonoBehaviour
 			GameState.IsOnline = true;
 			string fabID = result.PlayFabId;
 			string key = DataKey.ROLE;
-            //PlayFabServerAPI.UpdateUserReadOnlyData(new UpdateUserDataRequest()
-            //{
-            //	Data = new Dictionary<string, string>() {
-            //	 {"ExpiryDate", "2024-12-30"}
-            //	 },
-            //	Permission = UserDataPermission.Public
+			//PlayFabServerAPI.UpdateUserReadOnlyData(new UpdateUserDataRequest()
+			//{
+			//	Data = new Dictionary<string, string>() {
+			//	 {"ExpiryDate", "2024-12-30"}
+			//	 },
+			//	Permission = UserDataPermission.Public
 
-    		// },
-    		// result => Debug.Log("Successfully updated user data"),
-    		// error => {
-        	// Debug.Log("Got error setting expiry date");
-        	// Debug.Log(error.GenerateErrorReport());
-    		// });
-			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
+			// },
+			// result => Debug.Log("Successfully updated user data"),
+			// error => {
+			// Debug.Log("Got error setting expiry date");
+			// Debug.Log(error.GenerateErrorReport());
+			// });
+
+			GetUserExpiryDate(fabID);
+
+            PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
 			Keys = new List<string>(){key}
 			},
 			result =>{
