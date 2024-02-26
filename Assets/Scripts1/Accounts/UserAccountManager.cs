@@ -19,8 +19,9 @@ using static UnityEngine.Networking.UnityWebRequest;
 public class UserAccountManager : MonoBehaviour
 {
 	const string PropName_NamePassHash = "NamePassHash";
-
-	[SerializeField] TextMeshProUGUI errorText;
+	[SerializeField] string date;
+    DateTime today = DateTime.Today;
+    [SerializeField] TextMeshProUGUI errorText;
 	public static UserAccountManager Instance;
 
 	public static UnityEvent OnSignInSuccess = new UnityEvent();
@@ -274,8 +275,9 @@ public class UserAccountManager : MonoBehaviour
 				DateTime expdate;
 				if (DateTime.TryParse(expdatestr, out expdate))
 				{
-					DateTime curdate = DateTime.Now;
-					if (expdate >= curdate)
+					//DateTime curdate = DateTime.Now;
+                    DateTime curdate = DateTime.Today;
+                    if (expdate >= curdate)
 					{
 						//try connect
 						PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
@@ -438,7 +440,7 @@ public class UserAccountManager : MonoBehaviour
 		}
 			 else
 		{
-			failedAction.Invoke("Missing License lifetime data1.");
+			//failedAction.Invoke("Missing License lifetime data1.");
 			return;
 		}
 	},
@@ -455,8 +457,9 @@ public class UserAccountManager : MonoBehaviour
 		
 		GameState.IsOnline = false;
 		Debug.Log("Using custom licenseKey: " + licensekey);
-
-		PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
+        //Debug.Log("DATEEEEEE ISSSSSSSS" + today.ToString("yyyy-MM-dd"));
+        DateTime expiryDate = today.AddMonths(6);
+        PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
 		{
 			CustomId = licensekey,
 			TitleId = PlayFabSettings.TitleId,
@@ -484,7 +487,7 @@ public class UserAccountManager : MonoBehaviour
             {
                 PlayFabId = fabID, // Ensure this is the correct PlayFab ID for the user
                 Data = new Dictionary<string, string> {
-                { "ExpiryDate", "2024-12-30" }
+                { "ExpiryDate", expiryDate.ToString() }
                 },
                 Permission = PlayFab.ServerModels.UserDataPermission.Public
             },
