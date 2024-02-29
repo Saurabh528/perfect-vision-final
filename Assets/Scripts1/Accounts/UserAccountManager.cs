@@ -648,187 +648,187 @@ public void emailRecovery(string email)
         
     }
 
-    //This is for registering the sign up user.
-    //public void SetUserNameAndPassword(string eMail, string username, string password, UnityAction successAction, UnityAction<string> failedAction)
-    //{
-    //       Debug.Log("SetUserNameAndPassword Function called");
-    //       AddUsernamePasswordRequest req = new AddUsernamePasswordRequest();
-    //	req.Username = username;
-    //	req.Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
-    //	req.Email = eMail;
-    //	PlayFabClientAPI.AddUsernamePassword(req,
-    //		result =>
-    //		{
-    //			GameState.username = username;
-    //			RemoveLocalRecords();
-    //			string namepassHash = GetNamePassHash(username, password);
-    //			GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
-    //			DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
-    //			PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
-    //			SetDisplayName(username);
-    //			PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
-    //			if (GameState.IsPatient())
-    //			{
-    //				DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-    //				string key = DataKey.DOCTORID;
-    //				PlayFabClientAPI.GetUserData(new GetUserDataRequest()
-    //				{
-    //					Keys = new List<string>() { key }
-    //				},
-    //				result =>
-    //				{
-    //					if (result.Data != null && result.Data.ContainsKey(key))
-    //					{
-    //						Debug.Log("result section of AddUsernamPassword");
-    //						GameState.DoctorID = result.Data[key].Value;
-    //						DataKey.SetPrefsString(key, GameState.DoctorID);
-    //						PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-    //						PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
+	//This is for registering the sign up user.
+	public void SetUserNameAndPassword(string eMail, string username, string password, UnityAction successAction, UnityAction<string> failedAction)
+	{
+		Debug.Log("SetUserNameAndPassword Function called");
+		AddUsernamePasswordRequest req = new AddUsernamePasswordRequest();
+		req.Username = username;
+		req.Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+		req.Email = eMail;
+		PlayFabClientAPI.AddUsernamePassword(req,
+			result =>
+			{
+				GameState.username = username;
+				RemoveLocalRecords();
+				string namepassHash = GetNamePassHash(username, password);
+				GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+				DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
+				PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
+				SetDisplayName(username);
+				PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
+				if (GameState.IsPatient())
+				{
+					DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
+					string key = DataKey.DOCTORID;
+					PlayFabClientAPI.GetUserData(new GetUserDataRequest()
+					{
+						Keys = new List<string>() { key }
+					},
+					result =>
+					{
+						if (result.Data != null && result.Data.ContainsKey(key))
+						{
+							Debug.Log("result section of AddUsernamPassword");
+							GameState.DoctorID = result.Data[key].Value;
+							DataKey.SetPrefsString(key, GameState.DoctorID);
+							PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+							PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
 
-    //						return;
-    //					}
-    //				},
-    //				error =>
-    //				{
-    //					Debug.Log("error section of AddUsernamePassword");
-    //					failedAction.Invoke(error.ToString());
-    //					return;
-    //				});
-    //			}
-    //			else
-    //			{
-    //                   Debug.Log("Outside else section of AddUsernamePassword");
-    //                   PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-    //				successAction.Invoke();
-    //				return;
-    //			}
+							return;
+						}
+					},
+					error =>
+					{
+						Debug.Log("error section of AddUsernamePassword");
+						failedAction.Invoke(error.ToString());
+						return;
+					});
+				}
+				else
+				{
+					Debug.Log("Outside else section of AddUsernamePassword");
+					PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+					successAction.Invoke();
+					return;
+				}
 
-    //		},
-    //		error =>
-    //		{
+			},
+			error =>
+			{
 
-    //               Debug.Log("Outside error section of AddUsernamePassword");
-    //               failedAction.Invoke(error.ToString());
-    //		}
-    //	);
-    //	PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest()
-    //	{
-    //           TitleId = "CD663",
-    //           Username = username,
-    //           Email = eMail,
-    //           Password = password,
-    //           RequireBothUsernameAndEmail = true
-    //	}, result =>
-    //	{
-    //		Debug.Log("Registered!");
+				Debug.Log("Outside error section of AddUsernamePassword");
+				failedAction.Invoke(error.ToString());
+			}
+		);
+		PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest()
+		{
+			TitleId = "CD663",
+			Username = username,
+			Email = eMail,
+			Password = password,
+			RequireBothUsernameAndEmail = true
+		}, result =>
+		{
+			Debug.Log("Registered!");
 
-    //	}, error =>
-    //	{
-    //		//THIS IS GIVING THE HTTP CONFLICT INBUILT ERROR
-    //		Debug.Log($"Not Registered");
-    //		Debug.Log(error.ErrorMessage);
-    //	});
-    //}
-    public void SetUserNameAndPassword(string eMail, string username, string password, UnityAction successAction, UnityAction<string> failedAction)
-    {
-        Debug.Log("SetUserNameAndPassword Function called");
+		}, error =>
+		{
+			//THIS IS GIVING THE HTTP CONFLICT INBUILT ERROR
+			Debug.Log($"Not Registered");
+			Debug.Log(error.ErrorMessage);
+		});
+	}
+	//public void SetUserNameAndPassword(string eMail, string username, string password, UnityAction successAction, UnityAction<string> failedAction)
+	//{
+	//    Debug.Log("SetUserNameAndPassword Function called");
 
-        if (string.IsNullOrEmpty(eMail) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-        {
-            Debug.LogError("Email, Username, or Password is empty.");
-            failedAction.Invoke("Email, Username, or Password cannot be empty.");
-            return;
-        }
+	//    if (string.IsNullOrEmpty(eMail) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+	//    {
+	//        Debug.LogError("Email, Username, or Password is empty.");
+	//        failedAction.Invoke("Email, Username, or Password cannot be empty.");
+	//        return;
+	//    }
 
-        AddUsernamePasswordRequest req = new AddUsernamePasswordRequest
-        {
-            Username = username,
-            Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier),
-            Email = eMail
-        };
+	//    AddUsernamePasswordRequest req = new AddUsernamePasswordRequest
+	//    {
+	//        Username = username,
+	//        Password = GetHashString(password + SystemInfo.deviceUniqueIdentifier),
+	//        Email = eMail
+	//    };
 
-        PlayFabClientAPI.AddUsernamePassword(req,
-            result =>
-            {
-                try
-                {
-                    GameState.username = username;
-                    RemoveLocalRecords();
-                    string namepassHash = GetNamePassHash(username, password);
-                    GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
-                    DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
-                    PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
-                    SetDisplayName(username);
-                    PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
+	//    PlayFabClientAPI.AddUsernamePassword(req,
+	//        result =>
+	//        {
+	//            try
+	//            {
+	//                GameState.username = username;
+	//                RemoveLocalRecords();
+	//                string namepassHash = GetNamePassHash(username, password);
+	//                GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+	//                DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
+	//                PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
+	//                SetDisplayName(username);
+	//                PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
 
-                    if (GameState.IsPatient())
-                    {
-                        DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-                        string key = DataKey.DOCTORID;
-                        PlayFabClientAPI.GetUserData(new GetUserDataRequest { Keys = new List<string> { key } },
-                            userDataResult =>
-                            {
-                                if (userDataResult.Data != null && userDataResult.Data.ContainsKey(key))
-                                {
-                                    Debug.Log("result section of AddUsernamePassword");
-                                    GameState.DoctorID = userDataResult.Data[key].Value;
-                                    DataKey.SetPrefsString(key, GameState.DoctorID);
-                                    PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                                    PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
-                                }
-                                else
-                                {
-                                    Debug.LogError("Doctor ID not found.");
-                                    failedAction.Invoke("Failed to retrieve Doctor ID.");
-                                }
-                            },
-                            userDataError =>
-                            {
-                                Debug.LogError($"Error retrieving user data: {userDataError.ErrorMessage}");
-                                failedAction.Invoke($"Error retrieving user data: {userDataError.ErrorMessage}");
-                            });
-                    }
-                    else
-                    {
-                        Debug.Log("Outside else section of AddUsernamePassword");
-                        PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                        successAction.Invoke();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"An exception occurred: {ex.Message}");
-                    failedAction.Invoke($"An unexpected error occurred: {ex.Message}");
-                }
-            },
-            error =>
-            {
-                Debug.LogError($"Outside error section of AddUsernamePassword: {error.ErrorMessage}");
-                failedAction.Invoke(error.ErrorMessage);
-            });
+	//                if (GameState.IsPatient())
+	//                {
+	//                    DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
+	//                    string key = DataKey.DOCTORID;
+	//                    PlayFabClientAPI.GetUserData(new GetUserDataRequest { Keys = new List<string> { key } },
+	//                        userDataResult =>
+	//                        {
+	//                            if (userDataResult.Data != null && userDataResult.Data.ContainsKey(key))
+	//                            {
+	//                                Debug.Log("result section of AddUsernamePassword");
+	//                                GameState.DoctorID = userDataResult.Data[key].Value;
+	//                                DataKey.SetPrefsString(key, GameState.DoctorID);
+	//                                PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+	//                                PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
+	//                            }
+	//                            else
+	//                            {
+	//                                Debug.LogError("Doctor ID not found.");
+	//                                failedAction.Invoke("Failed to retrieve Doctor ID.");
+	//                            }
+	//                        },
+	//                        userDataError =>
+	//                        {
+	//                            Debug.LogError($"Error retrieving user data: {userDataError.ErrorMessage}");
+	//                            failedAction.Invoke($"Error retrieving user data: {userDataError.ErrorMessage}");
+	//                        });
+	//                }
+	//                else
+	//                {
+	//                    Debug.Log("Outside else section of AddUsernamePassword");
+	//                    PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+	//                    successAction.Invoke();
+	//                }
+	//            }
+	//            catch (Exception ex)
+	//            {
+	//                Debug.LogError($"An exception occurred: {ex.Message}");
+	//                failedAction.Invoke($"An unexpected error occurred: {ex.Message}");
+	//            }
+	//        },
+	//        error =>
+	//        {
+	//            Debug.LogError($"Outside error section of AddUsernamePassword: {error.ErrorMessage}");
+	//            failedAction.Invoke(error.ErrorMessage);
+	//        });
 
-        PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest
-        {
-            TitleId = "CD663",
-            Username = username,
-            Email = eMail,
-            Password = password,
-            RequireBothUsernameAndEmail = true
-        },
-        registerResult =>
-        {
-            Debug.Log("Registered!");
-        },
-        registerError =>
-        {
-            Debug.LogError($"Not Registered: {registerError.ErrorMessage}");
-            // This might not be the right place to invoke failedAction since the user might already be registered.
-            // Consider your logic and when it's appropriate to report failure.
-        });
-    }
+	//    PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest
+	//    {
+	//        TitleId = "CD663",
+	//        Username = username,
+	//        Email = eMail,
+	//        Password = password,
+	//        RequireBothUsernameAndEmail = true
+	//    },
+	//    registerResult =>
+	//    {
+	//        Debug.Log("Registered!");
+	//    },
+	//    registerError =>
+	//    {
+	//        Debug.LogError($"Not Registered: {registerError.ErrorMessage}");
+	//        // This might not be the right place to invoke failedAction since the user might already be registered.
+	//        // Consider your logic and when it's appropriate to report failure.
+	//    });
+	//}
 
 
-    void OnLoadHomePatientDataSuccess(Dictionary<Int32, PatientData> plist)
+	void OnLoadHomePatientDataSuccess(Dictionary<Int32, PatientData> plist)
 	{
         Debug.Log("OnLoadHomePatientDataSuccess Function called");
         PatientMgr.SetPatientList(plist);
