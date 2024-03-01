@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class ModeMgr : MonoBehaviour
 {
     [SerializeField] GlobalSettingUI SettingUI;
@@ -17,7 +17,15 @@ public class ModeMgr : MonoBehaviour
         btnHomeTherapy.SetActive(GameState.IsPatient());
     }
 
-    public void OnBtnQuit(){
+
+    //This is the function which is used for logout
+    public void OnBtnQuit()
+    {
         Application.Quit();
+    }
+
+    public void StartScene()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 }
