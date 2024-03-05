@@ -1190,6 +1190,7 @@ using Newtonsoft.Json;
 using System;
 using UnityEngine.TextCore.Text;
 using System.Linq;
+using System.Data;
 
 public class UserAccountManager : MonoBehaviour
 {
@@ -1898,6 +1899,22 @@ public class UserAccountManager : MonoBehaviour
         //    Debug.Log($"Not Registered");
         //    Debug.Log(error.ErrorMessage);
         //});
+
+        //Sets the clinicLimit to 0.
+        string role = GameState.userRole.ToString();
+        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string> {
+        { "clinicLimit", "0" },
+        { "Role", role }
+        }
+        }, result => {
+            Debug.Log("Successfully added clinicLimit to user data.");
+            
+        }, error => {
+            Debug.LogError("Failed to add clinicLimit to user data: " + error.GenerateErrorReport());
+        });
+
     }
 
     void OnLoadHomePatientDataSuccess(Dictionary<Int32, PatientData> plist)
