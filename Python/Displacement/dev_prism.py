@@ -808,7 +808,7 @@ def main():
     if args.connect:
         sock = init_TCP()
     try:
-        with open('./Python/' + patientName + '/conversion_rate.txt', 'r') as file:
+        with open('./Python/' + '/conversion_rate.txt', 'r') as file:
             wcr = float(file.readline())
     except FileNotFoundError:
         if args.connect:
