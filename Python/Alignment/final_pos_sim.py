@@ -305,7 +305,7 @@
 #                         df = df.iloc[250:]
 #                         df.reset_index(drop=True, inplace=True)
                     
-#                     df = df._append(new_data, ignore_index=True)
+#                     df = df._concat(new_data, ignore_index=True)
 #                     df.to_csv('./Python/Alignment/screen_face_distance.csv', index=False)
 
 #                     e= {}
@@ -370,19 +370,19 @@
                     
 #                     if len(df_leld) < 30:     
 #                         new_data = {'vals': le_lp_d}
-#                         df_leld = df_leld._append(new_data, ignore_index=True)
+#                         df_leld = df_leld._concat(new_data, ignore_index=True)
 #                         df_leld.to_csv('./Python/Alignment/leld.csv', index=False)
                         
 #                         new_data = {'vals': le_rp_d}
-#                         df_lerd = df_lerd._append(new_data, ignore_index=True)
+#                         df_lerd = df_lerd._concat(new_data, ignore_index=True)
 #                         df_lerd.to_csv('./Python/Alignment/lerd.csv', index=False)
                         
 #                         new_data = {'vals': re_lp_d}
-#                         df_reld = df_reld._append(new_data, ignore_index=True)
+#                         df_reld = df_reld._concat(new_data, ignore_index=True)
 #                         df_reld.to_csv('./Python/Alignment/reld.csv', index=False)
                         
 #                         new_data = {'vals': re_rp_d}
-#                         df_rerd = df_rerd._append(new_data, ignore_index=True)
+#                         df_rerd = df_rerd._concat(new_data, ignore_index=True)
 #                         df_rerd.to_csv('./Python/Alignment/rerd.csv', index=False)
 
                         
@@ -447,7 +447,7 @@
 
 #                         #pos_sim = max((R1/R2),(L1/L2))/min((R1/R2),(L1/L2))
 #                         pos_sim = R1 * L1 / R2 / L2
-#                         pos_sim_values.append(pos_sim)
+#                         pos_sim_values.concat(pos_sim)
 
 #                         value = "Normal"
 #                         if pos_sim > 1.42:
@@ -465,9 +465,9 @@
                         
 #                         df = pd.read_csv('./Python/' + patientName + '/out_data.csv')
                
-#                         #df = df.append(data, ignore_index=True)
+#                         #df = df.concat(data, ignore_index=True)
                           
-#                         df = df._append(new_data, ignore_index=True)
+#                         df = df._concat(new_data, ignore_index=True)
 #                         df.to_csv('./Python/' + patientName + '/out_data.csv', index=False)
                         
 #                     if not args.quiet:
@@ -574,58 +574,58 @@ import os
 import queue
 import socket
 import sys
-port = 5066
-args = None
-def init_TCP():
-    port = args.port
+# port = 5066
+# args = None
+# def init_TCP():
+#     port = args.port
 
-    # '127.0.0.1' = 'localhost' = your computer internal data transmission IP
-    address = ('127.0.0.1', port)
-    # address = ('192.168.0.107', port)
+#     # '127.0.0.1' = 'localhost' = your computer internal data transmission IP
+#     address = ('127.0.0.1', port)
+#     # address = ('192.168.0.107', port)
 
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(address)
-        # print(socket.gethostbyname(socket.gethostname()) + "::" + str(port))
-        print("Connected to address:", socket.gethostbyname(socket.gethostname()) + ":" + str(port))
-        return s
-    except OSError as e:
-        print("Error while connecting :: %s" % e)
+#     try:
+#         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         s.connect(address)
+#         # print(socket.gethostbyname(socket.gethostname()) + "::" + str(port))
+#         print("Connected to address:", socket.gethostbyname(socket.gethostname()) + ":" + str(port))
+#         return s
+#     except OSError as e:
+#         print("Error while connecting :: %s" % e)
         
-        # quit the script if connection fails (e.g. Unity server side quits suddenly)
-        sys.exit()
+#         # quit the script if connection fails (e.g. Unity server side quits suddenly)
+#         sys.exit()
 
-def send_command_to_unity(s, strarg):
-    msg = 'CMD:' + strarg
+# def send_command_to_unity(s, strarg):
+#     msg = 'CMD:' + strarg
 
-    try:
-        s.send(bytes(msg, "utf-8"))
-    except socket.error as e:
-        print("error while sending :: " + str(e))
+#     try:
+#         s.send(bytes(msg, "utf-8"))
+#     except socket.error as e:
+#         print("error while sending :: " + str(e))
 
-        # quit the script if connection fails (e.g. Unity server side quits suddenly)
-        sys.exit()
-def send_message_to_unity(s, strarg):
-    msg = 'MSG:' + strarg
+#         # quit the script if connection fails (e.g. Unity server side quits suddenly)
+#         sys.exit()
+# def send_message_to_unity(s, strarg):
+#     msg = 'MSG:' + strarg
 
-    try:
-        s.send(bytes(msg, "utf-8"))
-    except socket.error as e:
-        print("error while sending :: " + str(e))
+#     try:
+#         s.send(bytes(msg, "utf-8"))
+#     except socket.error as e:
+#         print("error while sending :: " + str(e))
 
-        # quit the script if connection fails (e.g. Unity server side quits suddenly)
-        sys.exit()
+#         # quit the script if connection fails (e.g. Unity server side quits suddenly)
+#         sys.exit()
 
-def send_status_to_unity(s, strarg):
-    msg = 'STS:' + strarg
+# def send_status_to_unity(s, strarg):
+#     msg = 'STS:' + strarg
 
-    try:
-        s.send(bytes(msg, "utf-8"))
-    except socket.error as e:
-        print("error while sending :: " + str(e))
+#     try:
+#         s.send(bytes(msg, "utf-8"))
+#     except socket.error as e:
+#         print("error while sending :: " + str(e))
 
-        # quit the script if connection fails (e.g. Unity server side quits suddenly)
-        sys.exit()
+#         # quit the script if connection fails (e.g. Unity server side quits suddenly)
+#         sys.exit()
 
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -642,7 +642,7 @@ color = (255, 0, 0)
 
 # Line thickness of 2 px
 thickness = 1
-focus_df = pd.read_csv('dis_cal.csv')
+focus_df = pd.read_csv('H:\Vpower2\perfect-vision\Python\Alignment\dis_cal.csv') # focal length of camera shayd
 focus_values = focus_df.values.tolist()
 focus_values = [item for sublist in focus_values for item in sublist]
 focus = int(sum(focus_values)/len(focus_values))
@@ -723,26 +723,26 @@ column_names = ['Time', 'Value', 'Positional_Similarity']
 # df = pd.DataFrame(columns=column_names)
 
 # df.to_csv('out_data.csv', index=False)
-parser = ArgumentParser()
+# parser = ArgumentParser()
 
-parser.add_argument("--connect", action="store_true",
-                    help="connect to unity",
-                    default=False)
+# parser.add_argument("--connect", action="store_true",
+#                     help="connect to unity",
+#                     default=False)
                     
-parser.add_argument("--quiet", action="store_true",
-                    help="hide window",
-                    default=False)
+# parser.add_argument("--quiet", action="store_true",
+#                     help="hide window",
+#                     default=False)
 
-parser.add_argument("--port", type=int, 
-                    help="specify the port of the connection to unity. Have to be the same as in Unity", 
-                    default=5066)
-parser.add_argument("--cameraindex", type=int, 
-                    help="specify the web camera index", 
-                    default=0)
+# parser.add_argument("--port", type=int, 
+#                     help="specify the port of the connection to unity. Have to be the same as in Unity", 
+#                     default=5066)
+# parser.add_argument("--cameraindex", type=int, 
+#                     help="specify the web camera index", 
+#                     default=0)
 
-args = parser.parse_args()
-if args.connect:
-        socket = init_TCP()
+# args = parser.parse_args()
+# if args.connect:
+#         socket = init_TCP()
 cap = cv2.VideoCapture(0)
 fps = cap.get(cv2.CAP_PROP_FPS)
 print(fps)
@@ -840,7 +840,8 @@ with mp_face_mesh.FaceMesh(
                     df = df.iloc[250:]
                     df.reset_index(drop=True, inplace=True)
                 
-                df = df.append(new_data, ignore_index=True)
+                # df = df.concat(new_data, ignore_index=True)
+                df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
                 df.to_csv('./Python/Alignment/screen_face_distance.csv', index=False)
 
                 e= {}
@@ -904,19 +905,19 @@ with mp_face_mesh.FaceMesh(
                 
                 if len(df_leld) < 30:     
                     new_data = {'vals': le_lp_d}
-                    df_leld = df_leld._append(new_data, ignore_index=True)
+                    df_leld = pd.concat([df_leld, pd.DataFrame([new_data])], ignore_index=True)
                     df_leld.to_csv('./Python/Alignment/leld.csv', index=False)
                     
                     new_data = {'vals': le_rp_d}
-                    df_lerd = df_lerd._append(new_data, ignore_index=True)
+                    df_lerd = pd.concat([df_lerd, pd.DataFrame([new_data])], ignore_index=True)
                     df_lerd.to_csv('./Python/Alignment/lerd.csv', index=False)
                     
                     new_data = {'vals': re_lp_d}
-                    df_reld = df_reld._append(new_data, ignore_index=True)
+                    df_reld = pd.concat([df_reld, pd.DataFrame([new_data])], ignore_index=True)
                     df_reld.to_csv('./Python/Alignment/reld.csv', index=False)
                     
                     new_data = {'vals': re_rp_d}
-                    df_rerd = df_rerd._append(new_data, ignore_index=True)
+                    df_rerd = pd.concat([df_rerd, pd.DataFrame([new_data])], ignore_index=True)
                     df_rerd.to_csv('./Python/Alignment/rerd.csv', index=False)
                     
                     
@@ -996,9 +997,9 @@ with mp_face_mesh.FaceMesh(
                     
                     df = pd.read_csv('./Python/' + '/out_data.csv')
            
-                    #df = df.append(data, ignore_index=True)
+                    #df = df.concat(data, ignore_index=True)
                       
-                    df = df.append(new_data, ignore_index=True)
+                    df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
                     df.to_csv('./Python/out_data.csv', index=False)
                     
                     
@@ -1056,14 +1057,14 @@ grouped_df.dropna(subset=['duration_seconds'], inplace=True)
 grouped_df.reset_index(drop=True, inplace=True)
 
 grouped_df = grouped_df[['pos_similarity_interval', 'duration_seconds']]
-
+grouped_df.to_csv('./Python/grouped_output.csv')
 
 # In[5]:
 
 
-grouped_df.to_csv('./Python/grouped_output.csv')
-if args.connect:
-        send_command_to_unity(socket, 'EXIT')
+
+# if args.connect:
+#         send_command_to_unity(socket, 'EXIT')
 
 # In[ ]:
 
