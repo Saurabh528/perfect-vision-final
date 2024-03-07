@@ -808,7 +808,7 @@ def main():
     if args.connect:
         sock = init_TCP()
     try:
-        with open('./Python/' + '/conversion_rate.txt', 'r') as file:
+        with open('H:\Vpower2\perfect-vision\Python\ScreenCali' + '\cv.txt', 'r') as file:
             wcr = float(file.readline())
     except FileNotFoundError:
         if args.connect:
@@ -821,10 +821,10 @@ def main():
     # Example usage with webcam
     process_video(args.cameraindex)
 
-    np.savetxt('./Python/' + patientName + '/RELD.txt', RELD)
-    np.savetxt('./Python/' + patientName + '/RERD.txt', RERD)
-    np.savetxt('./Python/' + patientName + '/LELD.txt', LELD)
-    np.savetxt('./Python/' + patientName + '/LERD.txt', LERD)
+    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RELD.txt', RELD)
+    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RERD.txt', RERD)
+    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LELD.txt', LELD)
+    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LERD.txt', LERD)
 
     """ np.savetxt('./Python/' + patientName + '/righteyedev.txt', pdr)
     np.savetxt('./Python/' + patientName + '/lefteyedev.txt', pdr)

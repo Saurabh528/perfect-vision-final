@@ -510,7 +510,9 @@ def process_video():
                 cv2.putText(frame, f"width Conversion Rate: {width_conversion_rate:.2f} mm/pixel", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
                 cv2.putText(frame, f"height Conversion Rate: {height_conversion_rate:.2f} mm/pixel", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
                 cv2.putText(frame, f"press q to exit or attempt again", (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
-                with open('conversion_rate.txt', 'w') as file:
+                print("Working")
+                file_path  = r"H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
+                with open(file_path, 'w') as file:
                     file.write(str(width_conversion_rate))
 
 
