@@ -16,6 +16,7 @@ public static class PatientDataManager
 
 	public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
+        UnityEngine.Debug.Log("Delete Patient called");
 		if (pdata == null)
 			return;
 		PatientData backuppatient = PatientMgr.FindPatient(pdata.ID);
@@ -61,7 +62,9 @@ public static class PatientDataManager
 	}
 	public static void AddPatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
-		if (pdata == null)
+		//Called when we click add on the home section or clinic section called 
+        UnityEngine.Debug.Log("5)Add Patient called");
+        if (pdata == null)
 			return;
 		Dictionary<Int32, PatientData> plist = PatientMgr.GetPatientList();
 		foreach(KeyValuePair<Int32, PatientData> pair in plist){
@@ -97,6 +100,7 @@ public static class PatientDataManager
 		}
 		string doctorID = GameState.playfabID;
 		string licenseKey = UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+        UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
 		PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             TitleId = PlayFabSettings.TitleId,
@@ -185,7 +189,8 @@ public static class PatientDataManager
 
 	public static void UpdatePatient(PatientData pdata, UnityAction<PatientData> successAction = null, UnityAction<string> failAction = null)
 	{
-		if (pdata == null)
+        UnityEngine.Debug.Log("Update Patient called");
+        if (pdata == null)
 			return;
 		PatientData backuppatient = PatientMgr.FindPatient(pdata.ID);
 
@@ -249,8 +254,9 @@ public static class PatientDataManager
 	}
 	public static void LoadPatientData(UnityAction<Dictionary<Int32, PatientData>> successAction = null, UnityAction<string> failAction = null)
 	{
-		
-		if(GameState.IsOnline){
+		//This funcction is called first when clicked on Patient Enrollment
+        UnityEngine.Debug.Log("1)LoadPatientData Patient called");
+        if (GameState.IsOnline){
 			//online mode
 			GetUserDataRequest request = new GetUserDataRequest();
 			request.Keys = new List<string>();
@@ -310,7 +316,8 @@ public static class PatientDataManager
 	}
 
 	public static void GetHomePatientCalib(PatientData pd, UnityAction<PatientData> successAction = null){
-		if(pd == null)
+        UnityEngine.Debug.Log("GetHomePatientCalib Patient called");
+        if (pd == null)
 			return;
 		else if(pd.IsClinic()){
 			successAction.Invoke(pd);
