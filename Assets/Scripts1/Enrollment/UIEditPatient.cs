@@ -32,6 +32,7 @@ public class UIEditPatient : MonoBehaviour
 
 	void ShowMessage(string txt)
 	{
+		Debug.Log("ShowMessage function called.");
 		_msg.text = txt;
 		_msg.enabled = true;
 		_msgexpiretime = _msgTime;
@@ -39,6 +40,7 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnBtnAddPatient()
 	{
+		Debug.Log("On Button Add Patient called.");
 		_curdata = null;
 		_name.text = _age.text = _expireDate.text = "";
 		
@@ -54,6 +56,7 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnBtnEditPatient()
 	{
+		Debug.Log("On Button Edit Patient Called");
 		if (GameState.currentPatient == null)
 			return;
 		_curdata = GameState.currentPatient;
@@ -75,6 +78,8 @@ public class UIEditPatient : MonoBehaviour
 
 	public void AddOrEdit()
 	{
+		//AUTO GENERATED LICENSE KEY.
+		Debug.Log("AddOrEdit Function called");
 		DateTime ExpDatetime = new DateTime();
 		if(string.IsNullOrEmpty(_name.text))
 		{
@@ -119,6 +124,7 @@ public class UIEditPatient : MonoBehaviour
 
 	void OnAddPatientSuccess(PatientData pdata)
 	{
+		Debug.Log("On Add Patient Success called");
 		UIPatientList.Instance.AddPatientData(pdata);
 		if((THERAPPYPLACE)_place.value == THERAPPYPLACE.Clinic){
 			gameObject.SetActive(false);
@@ -130,11 +136,13 @@ public class UIEditPatient : MonoBehaviour
 
 	void OnUpdatePatientSuccess(PatientData pdata)
 	{
+		Debug.Log("On Update Patient Success called");
 		gameObject.SetActive(false);
 		UIPatientList.Instance.UpdatePatientData(pdata);
 	}
 
 	public void OnPlaceChanged(int value){
+		Debug.Log("On Place Changed function called");
 		THERAPPYPLACE place = (THERAPPYPLACE)value;
 		if(place == THERAPPYPLACE.Clinic){
 			_licenseKey.text = "";
