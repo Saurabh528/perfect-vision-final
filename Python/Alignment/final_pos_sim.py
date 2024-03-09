@@ -420,7 +420,7 @@ from datetime import datetime
 time_list = [datetime.now().strftime("%Y-%m-%d %H:%M:%S") for _ in range(len(leld_list))]
 
 # Assuming 'Value' is a placeholder here, fill it with a default value or leave empty
-value_list = ["YourValueHere" for _ in range(len(leld_list))]  # Replace "YourValueHere" with your actual data or logic
+value_list = ["LeLD" for _ in range(len(leld_list))]  # Replace "YourValueHere" with your actual data or logic
 
 # Create a DataFrame from your lists
 df = pd.DataFrame({

@@ -808,7 +808,9 @@ def main():
     if args.connect:
         sock = init_TCP()
     try:
-        with open('H:\Vpower2\perfect-vision\Python\ScreenCali' + '\cv.txt', 'r') as file:
+        script_dir = os.path.dirname(__file__)
+        file_path = os.path.join(script_dir, ".." , "ScreenCali" , 'cv.txt')
+        with open(file_path, 'r') as file:
             wcr = float(file.readline())
     except FileNotFoundError:
         if args.connect:
@@ -821,10 +823,15 @@ def main():
     # Example usage with webcam
     process_video(args.cameraindex)
 
-    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RELD.txt', RELD)
-    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RERD.txt', RERD)
-    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LELD.txt', LELD)
-    np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LERD.txt', LERD)
+    # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RELD.txt', RELD)
+    # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RERD.txt', RERD)
+    # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LELD.txt', LELD)
+    # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LERD.txt', LERD)
+    file_path = os.path.join(script_dir, ".." , "ScreenCali" )
+    np.savetxt(file_path + 'RELD.txt', RELD)
+    np.savetxt(file_path + 'RERD.txt', RERD)
+    np.savetxt(file_path + 'LELD.txt', LELD)
+    np.savetxt(file_path + 'LERD.txt', LERD)
 
     """ np.savetxt('./Python/' + patientName + '/righteyedev.txt', pdr)
     np.savetxt('./Python/' + patientName + '/lefteyedev.txt', pdr)
