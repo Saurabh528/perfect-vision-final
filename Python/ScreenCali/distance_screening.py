@@ -29,8 +29,7 @@ def calculate_screen_distance(landmarks, frame_width, frame_height):
     scale_factor = perceived_width / pixel_distance
     real_face_width = 14  # in millimeters
     screen_distance = (real_face_width * scale_factor) / 2
-
-    return screen_distance * 100  # Convert to centimeters
+    return screen_distance * 50  # Convert to centimeters
 
 # Globals for the rectangle drawing and calibration
 pt1 = (0, 0)
