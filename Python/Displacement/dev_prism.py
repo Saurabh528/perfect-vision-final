@@ -649,7 +649,8 @@ def process_video(video_path, num_rounds=5):
         send_command_to_unity(sock, "FAIL")
         time.sleep(0.5)
         send_command_to_unity(sock, "EXIT")
-    send_message_to_unity(sock, "Track the red point on the screen.")
+    # send_message_to_unity(sock, "Track the red point on the screen.")
+        send_message_to_unity(sock, "FOCUS ON GREEN DOT")
     time.sleep(1)
     send_message_to_unity(sock, "")
     with mp_face_mesh.FaceMesh(
