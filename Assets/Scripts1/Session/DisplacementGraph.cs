@@ -20,6 +20,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	public void DrawDisplacementData(List<float> Valuelist, Color color)
 	{
+		Debug.Log("DrawDisplacementData called");
 		UtilityFunc.DeleteAllChildTransforms(transform);
 		RectTransform rt = GetComponent<RectTransform>();
 		width = rt.rect.width;
@@ -37,6 +38,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	void DrawAxis(List<float> Valuelist)
 	{
+		Debug.Log("DrawAxis called");
 		graph.SetFontSize(30);
 		graph.TextOut("0", -rulerSize, -rulerSize, TextAnchor.LowerRight, FontStyle.Bold);
 		DrawHorizontalScale();
@@ -52,6 +54,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	void DrawHorizontalScale()
 	{
+		Debug.Log("DrawHorizontalScale called");
 		int horstepCount = 10;
 		widthPerS = width / horstepCount;
 		for (int i = 1; i <= horstepCount; i++)
@@ -70,6 +73,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	void DrawBoundRect()
 	{
+		Debug.Log("DrawBoundRect called");
 		graph.MoveTo(0, 0);
 		graph.LineTo(width, 0);
 		graph.LineTo(width, height);
@@ -79,6 +83,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	void DrawVerticalScale(float maxValue, bool showgrid = false)
 	{
+		Debug.Log("DrawVerticalScale called");
 		int verstepCount = 0;
 		float valueStep = 0;
 		if (maxValue <= 1)
@@ -128,6 +133,7 @@ public class DisplacementGraph : MonoBehaviour
 
 	void DrawGraph(List<float> Valuelist)
 	{
+		Debug.Log("Draw function called");
 		if (Valuelist.Count == 0)
 			return;
 		int count = Valuelist.Count;
