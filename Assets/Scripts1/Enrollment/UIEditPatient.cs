@@ -18,8 +18,26 @@ public class UIEditPatient : MonoBehaviour
 	float _msgexpiretime;
 	List<PatientData> _plist;
 	PatientData _curdata;
-	public string licenseKey;
-	private void Update()
+	static string licenseKey;
+	string displayLicenseString;
+
+
+    public static UIEditPatient Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Update()
 	{
 		if(_msgexpiretime > 0)
 		{
@@ -127,10 +145,14 @@ public class UIEditPatient : MonoBehaviour
 
     public static void AddLicenseKey(string licenseString)
     {
-        Debug.Log("Add License Key " + licenseString);
-
+        //Debug.Log("Add License Key " + licenseString);
+		licenseKey = licenseString;
     }
-    
+    public void DisplayLicenseString(){
+		displayLicenseString = UIEditPatient.licenseKey;
+		Debug.Log("Display License String is" + displayLicenseString);
+		_licenseKey.text = displayLicenseString;
+    }
     void OnAddPatientSuccess(PatientData pdata)
 	{
 		//This when we succesfully adding the patient

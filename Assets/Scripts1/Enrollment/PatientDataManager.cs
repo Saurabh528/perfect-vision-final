@@ -102,12 +102,14 @@ public static class PatientDataManager
 		string doctorID = GameState.playfabID;
         //string licenseKey = UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
         //      UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-
 	    
         var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
         UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
 		pdata.licenseKey = licenseKey;
 		UIEditPatient.AddLicenseKey(licenseKey);
+		UIEditPatient.Instance.DisplayLicenseString();
+
+
         PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             TitleId = PlayFabSettings.TitleId,
