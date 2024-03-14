@@ -7894,6 +7894,7 @@ MonoBehaviour:
   _msg: {fileID: 1956195118}
   _lblButton: {fileID: 230981923}
   _msgTime: 3
+  licenseKey: 
 --- !u!114 &413230462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13040,7 +13041,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 640555686}
-  m_RootOrder: 1
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

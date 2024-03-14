@@ -9,13 +9,14 @@ using System.Diagnostics;
 using UnityEngine;
 using PlayFab.GroupsModels;
 using UnityEngine.PlayerLoop;
+using System.Linq;
 
 public static class PatientDataManager
 {
 
-
-	public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
+    public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
+		
         UnityEngine.Debug.Log("Delete Patient called");
 		if (pdata == null)
 			return;
@@ -99,9 +100,15 @@ public static class PatientDataManager
 			return;
 		}
 		string doctorID = GameState.playfabID;
-		string licenseKey = UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+        //string licenseKey = UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+        //      UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
+
+	    
+        var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
         UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-		PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
+		pdata.licenseKey = licenseKey;
+		UIEditPatient.AddLicenseKey(licenseKey);
+        PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             TitleId = PlayFabSettings.TitleId,
             CustomId = licenseKey,
@@ -186,6 +193,7 @@ public static class PatientDataManager
         });		
 	}
 
+	
 
 	public static void UpdatePatient(PatientData pdata, UnityAction<PatientData> successAction = null, UnityAction<string> failAction = null)
 	{

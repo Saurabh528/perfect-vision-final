@@ -113,7 +113,7 @@ public class PatientData
 	public List<byte> therapygames = new List<byte>();
 	public string PFID;
 	public DateTime ExpireDate;
-	public PatientData(Int32 id, string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate)
+	public PatientData(Int32 id, string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate,string licensekey)
 	{
 		ID = id;
 		name = nm;
@@ -122,6 +122,7 @@ public class PatientData
 		details = dt;
 		place = plc;
 		ExpireDate = expireDate;
+		licenseKey = licensekey;
 	}
 
 	public string ToJSONString()
