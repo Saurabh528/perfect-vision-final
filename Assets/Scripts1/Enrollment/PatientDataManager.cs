@@ -10,6 +10,7 @@ using UnityEngine;
 using PlayFab.GroupsModels;
 using UnityEngine.PlayerLoop;
 using System.Linq;
+using UnityEditor.PackageManager;
 
 public static class PatientDataManager
 {
@@ -157,9 +158,14 @@ public static class PatientDataManager
 				result =>
 				{
 					UnityEngine.Debug.Log("UpdateUserData result 2 called---working");
-					UnityEngine.Debug.Log(pdata);
+
+					//----------------SOHAM-ADDITION-----------------
+                    pdata.licenseKey = licenseKey;
                     PatientMgr.AddPatientData(pdata);
-                    //successAction.Invoke(pdata);
+                    string jsonstr = JsonConvert.SerializeObject(plist);
+                    DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+                    successAction.Invoke(pdata);
+					//---------------SOHAM-ADDITION-------------------
                     PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 					{
 						TitleId = PlayFabSettings.TitleId,
