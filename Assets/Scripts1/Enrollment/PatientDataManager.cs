@@ -150,13 +150,14 @@ public static class PatientDataManager
 			PlayFabClientAPI.UpdateUserData(request,
 			result =>
 			{
-				UnityEngine.Debug.Log("UpdateUserData result 1 called");
+				UnityEngine.Debug.Log("UpdateUserData result 1 called---working");
 				//request.Data = new Dictionary<string, string>();
 				//request.Data.Add(DataKey.DOCTORID, doctorID);
 				PlayFabClientAPI.UpdateUserData(request,
 				result =>
 				{
-					UnityEngine.Debug.Log("UpdateUserData result 2 called");
+					UnityEngine.Debug.Log("UpdateUserData result 2 called---working");
+					UnityEngine.Debug.Log(pdata);
                     PatientMgr.AddPatientData(pdata);
                     //successAction.Invoke(pdata);
                     PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
@@ -190,7 +191,7 @@ public static class PatientDataManager
 						return;
 					}, error =>
 					{
-						UnityEngine.Debug.Log("UpdateUserData error 2 called");
+						UnityEngine.Debug.Log("UpdateUserData error 2 called---working");
                         //failAction.Invoke(error.ToString());
                         //Application.Quit();
                         return;
