@@ -1352,6 +1352,7 @@ public class UserAccountManager : MonoBehaviour
                     {
                         if (result.Data != null && result.Data.ContainsKey(key))
                         {
+                            //----------CHECK THIS-------------
                             GameState.DoctorID = result.Data[key].Value;
                             DataKey.SetPrefsString(key, GameState.DoctorID);
                             GetUserDataRequest request = new GetUserDataRequest();

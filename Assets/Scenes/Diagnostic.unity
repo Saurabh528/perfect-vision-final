@@ -290,13 +290,13 @@ RectTransform:
   m_Children:
   - {fileID: 1687679898}
   - {fileID: 523409485}
+  - {fileID: 1109548669}
+  - {fileID: 655428196}
   - {fileID: 435791818}
   - {fileID: 719646734}
   - {fileID: 740486534}
   - {fileID: 962437189}
   - {fileID: 1062173628}
-  - {fileID: 655428196}
-  - {fileID: 1109548669}
   m_Father: {fileID: 1146190807}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3864,7 +3864,7 @@ GameObject:
   - component: {fileID: 1109548671}
   - component: {fileID: 1109548670}
   m_Layer: 5
-  m_Name: Visual Activity Test
+  m_Name: Visual Acuity Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4043,7 +4043,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Visual Activity Test
+  m_text: Visual Acuity Test
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5c5ee151f9307453bad78be36b51a077, type: 2}
   m_sharedMaterial: {fileID: 2517202264660172603, guid: 5c5ee151f9307453bad78be36b51a077, type: 2}
