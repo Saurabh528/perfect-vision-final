@@ -1437,18 +1437,18 @@ public class UserAccountManager : MonoBehaviour
         Debug.Log("SignIn function called");
         Debug.Log("Using name and password: " + username);
 
-        string namepassHash = GetNamePassHash(username, password);
-         string pwdhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+        //string namepassHash = GetNamePassHash(username, password);
+         //string pwdhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
 
 
         GameState.username = username;
         GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
 
         //offline mode
-         if(PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&
+         if (/*PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&*/
          !string.IsNullOrEmpty(GameState.playfabID))
          {
-         	GameState.passwordhash = pwdhash;
+         	GameState.passwordhash = password;
          	GameState.IsOnline = false;
          	string expdatestr = DataKey.GetPrefsString(DataKey.EXPIREDATE);
          	if(!string.IsNullOrEmpty(expdatestr)){
@@ -1516,7 +1516,7 @@ public class UserAccountManager : MonoBehaviour
             }, result =>
             {
                 GameState.IsOnline = true;
-                GameState.passwordhash = pwdhash;
+                GameState.passwordhash = password;
                 GameState.username = username;
                 GameState.playfabID = result.PlayFabId;
                 SignInOnline(successAction, failedAction);
@@ -1540,7 +1540,7 @@ public class UserAccountManager : MonoBehaviour
             }, result =>
             {
                 GameState.IsOnline = true;
-                GameState.passwordhash = pwdhash;
+                GameState.passwordhash = password;
                 GameState.username = username;
                 GameState.playfabID = result.PlayFabId;
                 SignInOnline(successAction, failedAction);
@@ -1563,6 +1563,10 @@ public class UserAccountManager : MonoBehaviour
         result =>
         {
             successAction.Invoke();
+            //GameState.username = username;
+            GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
+            GameState.playfabID = fabID;
+
 
             // if (result.Data != null && result.Data.ContainsKey(key))
             // {
@@ -1839,10 +1843,10 @@ public class UserAccountManager : MonoBehaviour
         PlayFabClientAPI.AddUsernamePassword(req,
             result =>
             {
-                //GameState.username = username;
+                GameState.username = username;
                 //RemoveLocalRecords();
                 //string namepassHash = GetNamePassHash(username, password);
-                //GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+                GameState.passwordhash = password;
                 //DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
                 //PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
                 SetDisplayName(username);

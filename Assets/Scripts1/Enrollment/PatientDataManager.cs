@@ -160,13 +160,13 @@ public static class PatientDataManager
 					UnityEngine.Debug.Log("UpdateUserData result 2 called---working");
 
 					//----------------SOHAM-ADDITION-----------------
-                    //pdata.licenseKey = licenseKey;
-                    //PatientMgr.AddPatientData(pdata);
-                    //string jsonstr = JsonConvert.SerializeObject(plist);
-                    //DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-                    //successAction.Invoke(pdata);
+					//pdata.licenseKey = licenseKey;
+					//PatientMgr.AddPatientData(pdata);
+					//string jsonstr = JsonConvert.SerializeObject(plist);
+					//DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+					//successAction.Invoke(pdata);
 					//---------------SOHAM-ADDITION-------------------
-                    PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
+					PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 					{
 						TitleId = PlayFabSettings.TitleId,
 						Username = GameState.username,
@@ -197,7 +197,7 @@ public static class PatientDataManager
 						return;
 					}, error =>
 					{
-						UnityEngine.Debug.Log("UpdateUserData error 2 called---working");
+						UnityEngine.Debug.Log("UpdateUserData error 2 called ---working");
                         //failAction.Invoke(error.ToString());
                         //Application.Quit();
                         return;
