@@ -828,11 +828,12 @@ def main():
     # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'RERD.txt', RERD)
     # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LELD.txt', LELD)
     # np.savetxt('H:\Vpower2\perfect-vision\Python\ScreenCali\' + patientName' + 'LERD.txt', LERD)
-    file_path = os.path.join(script_dir, ".." , "ScreenCali" )
-    np.savetxt(file_path + 'RELD.txt', RELD)
-    np.savetxt(file_path + 'RERD.txt', RERD)
-    np.savetxt(file_path + 'LELD.txt', LELD)
-    np.savetxt(file_path + 'LERD.txt', LERD)
+    # file_path = os.path.join(script_dir, ".." , "ScreenCali" )
+    file_path = "D:\PROJECTS\perfect-vision-aman2\Python\Displacement"
+    np.savetxt(file_path + '\RELD.txt', RELD)
+    np.savetxt(file_path + '\RERD.txt', RERD)
+    np.savetxt(file_path + '\LELD.txt', LELD)
+    np.savetxt(file_path + '\LERD.txt', LERD)
 
     """ np.savetxt('./Python/' + patientName + '/righteyedev.txt', pdr)
     np.savetxt('./Python/' + patientName + '/lefteyedev.txt', pdr)
@@ -841,7 +842,7 @@ def main():
 
     # In[ ]:
 if __name__ == "__main__":
-
+    asdasdasdasdsdasdas
     parser = ArgumentParser()
 
     parser.add_argument("--connect", action="store_true",

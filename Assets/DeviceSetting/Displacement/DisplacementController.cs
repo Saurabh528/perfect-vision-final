@@ -95,6 +95,7 @@ public class DisplacementController : MonoBehaviour
 		{
 			if (_textStatus)
 				_textStatus.text = message.Substring(4);
+
 		}
 	}
 
@@ -132,13 +133,19 @@ public class DisplacementController : MonoBehaviour
 
 	void ShowResult()
 	{
+		UnityEngine.Debug.Log("Show Result called");
 		MakeResultView("Iris Displacement (LEFT EYE)", PatientMgr.GetPatientDataDir() + "/data_left_displacement.csv");
 		MakeResultView("Iris Displacement (RIGHT EYE)", PatientMgr.GetPatientDataDir() + "/data_right_displacement.csv");
-		string alternatepath = PatientMgr.GetPatientDataDir() + "/alternate_test.csv";
-		if (File.Exists(alternatepath)){
+		//string alternatepath = PatientMgr.GetPatientDataDir() + "/alternate_test.csv";
+        string alternatepath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\Displacement\\RELD.txt";
+		UnityEngine.Debug.Log(alternatepath);
+        if (File.Exists(alternatepath)){
+			UnityEngine.Debug.Log("Alternate path ke andar");
 			string[] strs = File.ReadAllLines(alternatepath);
+			UnityEngine.Debug.Log(strs);
 			if(strs.Length > 1) {
 				string[] valuestrs = strs[1].Split(new char[] {','});
+				UnityEngine.Debug.Log(valuestrs);
 				float rightAver = float.Parse(valuestrs[1]);
 				float leftAver = float.Parse(valuestrs[2]);
 				if(valuestrs.Length > 2) {
