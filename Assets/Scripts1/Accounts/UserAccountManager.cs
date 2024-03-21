@@ -1554,6 +1554,7 @@ public class UserAccountManager : MonoBehaviour
     }
     void SignUpForDoctor(string fabID, UnityAction successAction, UnityAction<string> failedAction)
     {
+        Debug.Log("SignUp Doctor called");
         string key = DataKey.EXPIREDATE;
         PlayFabClientAPI.GetUserReadOnlyData(new GetUserDataRequest()
         {
@@ -1562,6 +1563,7 @@ public class UserAccountManager : MonoBehaviour
         result =>
         {
             successAction.Invoke();
+
             // if (result.Data != null && result.Data.ContainsKey(key))
             // {
             // 	string str = result.Data[key].Value;
@@ -1616,7 +1618,7 @@ public class UserAccountManager : MonoBehaviour
 
     public void SignUp(string licensekey, UnityAction successAction, UnityAction<string> failedAction)
     {
-
+        Debug.Log("SignUp Function called");
         GameState.IsOnline = false;
         Debug.Log("Using custom licenseKey: " + licensekey);
 
