@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System.Diagnostics;
 using System.IO;
 using System.Drawing;
+using System;
 
 public class CraneGameController : GamePlayController
 {
@@ -110,16 +111,16 @@ public class CraneGameController : GamePlayController
 		float maxBaseX = 200;
 		if (!IsDiagnosticMode())
 			maxBaseX = GamePlayController.GetDifficultyValue(1, maxBaseX / 5, 10, maxBaseX, _checkResult.Count + 1);
-		_armBaseX = Random.Range(-maxBaseX, maxBaseX);
+		_armBaseX = UnityEngine.Random.Range(-maxBaseX, maxBaseX);
         UpdateArmPibot();
 
 		float maxDistHalf = 50;
 		if (!IsDiagnosticMode())
 			maxDistHalf = GamePlayController.GetDifficultyValue(1, maxDistHalf / 5, 10, maxDistHalf, _checkResult.Count + 1);
-		_armDistHalf = Random.Range(maxDistHalf, maxDistHalf * 2) * (Random.value > 0.5f ? -1 : 1);
+		_armDistHalf = UnityEngine.Random.Range(maxDistHalf, maxDistHalf * 2) * (UnityEngine.Random.value > 0.5f ? -1 : 1);
         UpdateArms();
 
-		_boxDistHalf = Random.Range(-20f, 20f);
+		_boxDistHalf = UnityEngine.Random.Range(-20f, 20f);
 		_rtBoxblue.anchoredPosition = new Vector3(_boxDistHalf, 0, 0);
 		_rtBoxred.anchoredPosition = new Vector3(-_boxDistHalf, 0, 0);
 		_textResult.gameObject.SetActive(false);
@@ -175,7 +176,8 @@ public class CraneGameController : GamePlayController
 		int positionDist = (int)VisualFactor.ScreenCMToArcSecond(positionCM);*/
 		int depthDist = (int)(_boxDistHalf - _armDistHalf);
 		_textResult.text = $"Depth distance: {depthDist}\r\nPosition distance: {(int)_armBaseX}";
-		_textResult.gameObject.SetActive(true);
+        SaveData(depthDist, _armBaseX);
+        _textResult.gameObject.SetActive(true);
 		_objExplain.SetActive(true);
 
 		if (!IsDiagnosticMode())
@@ -186,6 +188,28 @@ public class CraneGameController : GamePlayController
 			IncreaseScore(GetScoreIncrease(depthDist, (int)_armBaseX));
 		}
 	}
+
+	void SaveData(int x,float y)
+	{
+        string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane2d.txt"; // The path to the file where you want to save the integer.
+		y = (int)y;
+        try
+        {
+            // Convert the integer to a string since WriteAllText expects string data.
+            File.WriteAllText(filePath, "");
+            File.AppendAllText(filePath, x.ToString());
+            File.AppendAllText(filePath, " ");
+            File.AppendAllText(filePath, y.ToString());         
+            UnityEngine.Debug.Log("This is x" + x);
+            UnityEngine.Debug.Log("This is y" + y);
+            
+        }
+        catch (Exception ex)
+        {
+            // If something goes wrong, this will print the error message.
+            UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        }
+    }
 	int GetScoreIncrease(int depDist, int posDist, int intDest = 0)
 	{
 		if (Mathf.Abs(depDist) <= 5 && Mathf.Abs(posDist) <= 5 && Mathf.Abs(intDest) <= 5)
