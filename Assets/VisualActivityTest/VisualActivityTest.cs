@@ -202,8 +202,9 @@ public class VisualActivityTest : MonoBehaviour
 
     void SaveData(int L,int R)
     {
-        string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\VAT.txt"; // The path to the file where you want to save the integer.
-      
+        string filePath = Directory.GetCurrentDirectory() + "\\Python\\VAT.txt";
+        UnityEngine.Debug.Log("Path is " + filePath);
+
         try
         {
             // Convert the integer to a string since WriteAllText expects string data.

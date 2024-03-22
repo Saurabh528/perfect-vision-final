@@ -219,8 +219,9 @@ public class Crane3DGameController : GamePlayController
 	void SaveData(int x,int y,int z)
 	{
         //int numberToSave = 123; // This is the integer you want to save.
-        string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
-
+        //string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
+        string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
+        UnityEngine.Debug.Log("Path is "+filePath);
         try
         {
 			// Convert the integer to a string since WriteAllText expects string data.
