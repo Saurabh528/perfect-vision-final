@@ -134,21 +134,34 @@ public class Slider1 : MonoBehaviour
 
 	public void OnBtnComplete()
 	{
-		if (GameState.currentPatient != null){
+		if (GameState.currentPatient != null)
+		{
 			PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
 			string dpiFilename = DPICaculator.GetDPIPath();
 			if(File.Exists(dpiFilename)){
 				string[] lines = File.ReadAllLines(dpiFilename);
-				if(lines.Length  >= 2 && lines[0] == GameState.currentPatient.name)
-					ChangeScene.LoadScene("DeviceSetting");
+				if (lines.Length >= 2 && lines[0] == GameState.currentPatient.name)
+				{
+                    Debug.Log("Device Setting 1");
+                    ChangeScene.LoadScene("DeviceSetting");
+				}
 				else
+				{
+					Debug.Log("DPICheck Scene 1");
 					ChangeScene.LoadScene("DPICheck");
+				}
 			}
 			else
-				ChangeScene.LoadScene("DPICheck");
+			{
+                Debug.Log("DPICheck Scene 2");
+                ChangeScene.LoadScene("DPICheck");
+			}
 		}
 		else
-			ChangeScene.LoadScene("DeviceSetting");
+		{
+            Debug.Log("Device Setting 2");
+            ChangeScene.LoadScene("DeviceSetting");
+        }
 	}
 
 	public void OnSliderTransparent(Boolean value)

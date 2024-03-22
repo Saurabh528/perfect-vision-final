@@ -1851,38 +1851,39 @@ public class UserAccountManager : MonoBehaviour
                 //PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
                 SetDisplayName(username);
                 //PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
-                //if (GameState.IsPatient())
-                //{
-                //    DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-                //    string key = DataKey.DOCTORID;
-                //    PlayFabClientAPI.GetUserData(new GetUserDataRequest()
-                //    {
-                //        Keys = new List<string>() { key }
-                //    },
-                //    result =>
-                //    {
-                //        if (result.Data != null && result.Data.ContainsKey(key))
-                //        {
-                //            GameState.DoctorID = result.Data[key].Value;
-                //            DataKey.SetPrefsString(key, GameState.DoctorID);
-                //            //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                //            PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
+                if (GameState.IsPatient())
+                {
+                    Debug.Log("AddUsernamPassword called in GameState.IsPatient()");
+                    DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
+                    string key = DataKey.DOCTORID;
+                    PlayFabClientAPI.GetUserData(new GetUserDataRequest()
+                    {
+                        Keys = new List<string>() { key }
+                    },
+                    result =>
+                    {
+                        if (result.Data != null && result.Data.ContainsKey(key))
+                        {
+                            GameState.DoctorID = result.Data[key].Value;
+                            DataKey.SetPrefsString(key, GameState.DoctorID);
+                            //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+                            PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
 
-                //            return;
-                //        }
-                //    },
-                //    error =>
-                //    {
-                //        failedAction.Invoke(error.ToString());
-                //        return;
-                //    });
-                //}
-                //else
-                //{
-                //    //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                    successAction.Invoke();
-                //    return;
-                //}
+                            return;
+                        }
+                    },
+                    error =>
+                    {
+                        failedAction.Invoke(error.ToString());
+                        return;
+                    });
+                }
+                else
+                {
+                    //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+                successAction.Invoke();
+                    return;
+                }
             },
             error =>
             {
@@ -1926,6 +1927,7 @@ public class UserAccountManager : MonoBehaviour
 
     void OnLoadHomePatientDataSuccess(Dictionary<Int32, PatientData> plist)
     {
+        Debug.Log("OnLoadHomePatientDataSuccess Called");
         PatientMgr.SetPatientList(plist);
         GameState.currentPatient = plist.ElementAt(0).Value;
         ChangeScene.LoadScene("ColorScreen");
