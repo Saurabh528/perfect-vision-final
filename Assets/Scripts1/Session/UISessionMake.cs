@@ -5,6 +5,8 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using System.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
 
 public class UISessionMake : MonoBehaviour
 {
@@ -16,6 +18,7 @@ public class UISessionMake : MonoBehaviour
 	[SerializeField] TMP_InputField _inputGameName;
 	[SerializeField] ListBox _matchedList;
 	[SerializeField] Toggle _toggle2Min, _toggle5Min;
+	static int count = 0;
 	const string PREFNAME_THERAPY_2MIN = "2MinTherapy";
 	int _timeMin;
 	private void Start()
@@ -125,24 +128,114 @@ public class UISessionMake : MonoBehaviour
 			EnrollmentManager.Instance.ShowMessage(error);
 	}
 
-	public void OnBtnStartSession()
-	{
-		if (GameState.currentPatient == null)
-			EnrollmentManager.Instance.ShowMessage("Please select patient.");
-		else if (SessionMgr.GetGameList().Count < 6){
-			if(GameState.IsDoctor())
-				EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
-			else
-				EnrollmentManager.Instance.ShowMessage("6 games have to be selected by doctor.");
-		}
-		else
-		{
-			
-			SessionMgr.StartSession(_timeMin * 60);
-		}
-	}
+    //public void OnBtnStartSession()
+    //{
+    //	++count;
+    //	Debug.Log(count);
+    //	if (GameState.currentPatient == null)
+    //	{
+    //		Debug.Log("If1 section of the OnBtnStartSession");
+    //		EnrollmentManager.Instance.ShowMessage("Please select patient.");
+    //	}
+    //	else if (SessionMgr.GetGameList().Count < 6)
+    //	{
+    //		if (GameState.IsDoctor())
+    //		{
+    //			Debug.Log("If2 section of the OnBtnStartSession");
+    //			EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+    //		}
+    //		else
+    //		{
+    //			Debug.Log("Else1 section of the OnBtnStartSession");
+    //			EnrollmentManager.Instance.ShowMessage("6 games have to be selected by doctor.");
+    //		}
+    //	}
+    //	else
+    //	{
+    //		Debug.Log("Else2 section of the OnBtnStartSession  ");
+    //		SessionMgr.StartSession(_timeMin * 60);
+    //	}
+    //}
+    public void OnBtnStartSession()
+    {
+        ++count;
+        Debug.Log("Count: " + count);
 
-	public void OnEditGameNameChanged(string str)
+        if (GameState.currentPatient == null)
+        {
+            Debug.Log("If1 section of the OnBtnStartSession");
+            EnrollmentManager.Instance.ShowMessage("Please select a patient.");
+        }
+        else if (SessionMgr.GetGameList().Count < 6)
+        {
+            if (GameState.IsDoctor())
+            {
+                Debug.Log("If2 section of the OnBtnStartSession");
+                EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+            }
+            else
+            {
+                Debug.Log("Else1 section of the OnBtnStartSession");
+                EnrollmentManager.Instance.ShowMessage("6 games have to be selected by the doctor.");
+            }
+        }
+        else
+        {
+            Debug.Log("Else2 section of the OnBtnStartSession");
+            SessionMgr.StartSession(_timeMin * 60);
+            FetchCountFromPatientData();
+        }
+    }
+
+    private void FetchCountFromPatientData()
+    {
+        if (GameState.currentPatient == null)
+        {
+            Debug.LogError("Current patient is null.");
+            return;
+        }
+
+        string patientPlayFabID = GameState.currentPatient.PFID;
+
+        // Fetch "Count" from the patient's player data
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest
+        {
+            PlayFabId = patientPlayFabID
+        }, patientUserDataResult =>
+        {
+            if (patientUserDataResult.Data != null && patientUserDataResult.Data.ContainsKey("Count"))
+            {
+                // If "Count" is present in the patient's data, use it
+                int count = int.Parse(patientUserDataResult.Data["Count"].Value);
+                Debug.Log("Count from patient: " + count);
+            }
+            else
+            {
+                Debug.LogWarning("Patient data does not contain 'Count' key.");
+                var data = new Dictionary<string, string>
+            {
+                { "Count", count.ToString() }
+            };
+
+                PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+                {
+                    Data = data
+                },
+                result =>
+                {
+                    Debug.Log("Count appended to patient data successfully.");
+                },
+                error =>
+                {
+                    Debug.LogError("Error appending count to patient data: " + error.ErrorMessage);
+                });
+            }
+        }, error =>
+        {
+            Debug.LogError("Error fetching patient data: " + error.ErrorMessage);
+        });
+    }
+    public void OnEditGameNameChanged(string str)
 	{
 		if(string.IsNullOrEmpty(str))
 			_matchedList.gameObject.SetActive(false);
