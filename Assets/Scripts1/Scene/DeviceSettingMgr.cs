@@ -34,8 +34,9 @@ public class DeviceSettingMgr : MonoBehaviour
 	}
 	public void OnBtnBack()
 	{
-		if (GameState.IsDoctor())
-			ChangeScene.LoadScene("ModePanel");
+        //if (GameState.currentPatient == null)
+        if (GameState.IsDoctor())
+            ChangeScene.LoadScene("ModePanel");
 		else
 			ChangeScene.LoadScene(GameState.IsDoctor()? "Enrollment": "HomeTherapy");
 	}
