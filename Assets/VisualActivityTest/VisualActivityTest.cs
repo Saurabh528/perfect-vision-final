@@ -193,7 +193,7 @@ public class VisualActivityTest : MonoBehaviour
         Panel_Result.SetActive(true);
         Panel_Result.transform.Find("LeftEye").GetComponent<TextMeshProUGUI>().text = $"Left eye: \t~20/{LeftScore}";
         Panel_Result.transform.Find("RightEye").GetComponent<TextMeshProUGUI>().text = $"Right eye:\t~20/{RightScore}";
-
+        
         SaveData(LeftScore, RightScore);
 
         CountText.gameObject.SetActive(false);

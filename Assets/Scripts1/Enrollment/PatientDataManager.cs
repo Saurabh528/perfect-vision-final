@@ -82,7 +82,6 @@ public static class PatientDataManager
 			PatientMgr.AddPatientData(pdata);
 			string jsonstr = JsonConvert.SerializeObject(plist);
 			DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-
 			UpdateUserDataRequest request = new UpdateUserDataRequest();
 			request.Data = new Dictionary<string, string>();
 			request.Data.Add(DataKey.PATIENT, jsonstr);
