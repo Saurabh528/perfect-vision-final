@@ -64,6 +64,7 @@ public static class PatientDataManager
 	}
 	public static void AddPatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
+
 		//Called when we click add on the home section or clinic section called 
         UnityEngine.Debug.Log("5)Add Patient called");
         if (pdata == null)
@@ -135,9 +136,11 @@ public static class PatientDataManager
 			UnityEngine.Debug.Log("Username is " + GameState.username);
 			UnityEngine.Debug.Log("Password is" + GameState.passwordhash);
 
+
             var request = new UpdateUserDataRequest()
             {
-                Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } },
+                Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
+                    { "COUNT","0" } },
                 Permission = UserDataPermission.Public
             };
 

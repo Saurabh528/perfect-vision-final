@@ -5,8 +5,20 @@ using UnityEngine;
 
 public class DeviceSettingMgr : MonoBehaviour
 {
+	public GameObject backBtn;
+	public GameObject nextBtn;
 	private void Start()
 	{
+		if (GameState.IsPatient())
+		{
+			backBtn.SetActive(false);
+			nextBtn.SetActive(true);
+		}
+		if(GameState.IsDoctor())
+		{
+            backBtn.SetActive(true);
+            nextBtn.SetActive(false);
+		}
 		Cursor.visible = true;
 		GameState.currentGameMode = GAMEMODE.DeviceSetting;
 		Directory.CreateDirectory(PatientMgr.GetPatientDataDir());
@@ -22,7 +34,7 @@ public class DeviceSettingMgr : MonoBehaviour
 	}
 	public void OnBtnBack()
 	{
-		if (GameState.currentPatient == null)
+		if (GameState.IsDoctor())
 			ChangeScene.LoadScene("ModePanel");
 		else
 			ChangeScene.LoadScene(GameState.IsDoctor()? "Enrollment": "HomeTherapy");

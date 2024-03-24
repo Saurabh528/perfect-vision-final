@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Linq;
 using PlayFab.ClientModels;
 using PlayFab;
+using UnityEngine.SceneManagement;
 
 public class UISessionMake : MonoBehaviour
 {
@@ -18,9 +19,10 @@ public class UISessionMake : MonoBehaviour
 	[SerializeField] TMP_InputField _inputGameName;
 	[SerializeField] ListBox _matchedList;
 	[SerializeField] Toggle _toggle2Min, _toggle5Min;
-	static int count = 0;
-	const string PREFNAME_THERAPY_2MIN = "2MinTherapy";
+    const string PREFNAME_THERAPY_2MIN = "2MinTherapy";
 	int _timeMin;
+	private int count;
+	private int countLimit;
 	private void Start()
 	{
 		
@@ -158,83 +160,297 @@ public class UISessionMake : MonoBehaviour
     //}
     public void OnBtnStartSession()
     {
-        ++count;
-        Debug.Log("Count: " + count);
-
-        if (GameState.currentPatient == null)
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
-            Debug.Log("If1 section of the OnBtnStartSession");
-            EnrollmentManager.Instance.ShowMessage("Please select a patient.");
-        }
-        else if (SessionMgr.GetGameList().Count < 6)
-        {
-            if (GameState.IsDoctor())
+            if (result.Data != null && (result.Data.ContainsKey("CountLimit") || result.Data.ContainsKey("COUNT")))
             {
-                Debug.Log("If2 section of the OnBtnStartSession");
-                EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+                countLimit = int.Parse(result.Data["CountLimit"].Value);
+                count = int.Parse(result.Data["COUNT"].Value);
+                //3
+                Debug.Log("Count Limit extracted is: " + countLimit);
+                Debug.Log("Count extracted is" + count);
+
             }
             else
             {
-                Debug.Log("Else1 section of the OnBtnStartSession");
-                EnrollmentManager.Instance.ShowMessage("6 games have to be selected by the doctor.");
+                Debug.LogWarning("Player data does not contain 'CountLimit' key. Setting default CountLimit to 15.");
+
+                //           // Set default CountLimit to 15 in player data
+                //           var data = new Dictionary<string, string>
+                //           {
+                //               { "CountLimit", countLimit.ToString() },
+                //{ "COUNT",count.ToString() }
+                //           };
+
+                //           PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+                //           {
+                //               Data = data
+                //           },
+                //           updateResult =>
+                //           {
+                //               Debug.Log("Default CountLimit set in player data.");
+                //           },
+                //           updateError =>
+                //           {
+                //               Debug.LogError("Error setting default CountLimit: " + updateError.ErrorMessage);
+                //           });
+
             }
-        }
-        else
+			if (count <= countLimit)
+			{
+				count++;
+			}
+            Debug.Log("Count after incremented is " + count);
+            var request = new UpdateUserDataRequest()
         {
-            Debug.Log("Else2 section of the OnBtnStartSession");
-            SessionMgr.StartSession(_timeMin * 60);
-            FetchCountFromPatientData();
-        }
-    }
+            Data = new Dictionary<string, string> { { "COUNT", count.ToString() } }
+        };
 
-    private void FetchCountFromPatientData()
-    {
-        if (GameState.currentPatient == null)
-        {
-            Debug.LogError("Current patient is null.");
-            return;
-        }
-
-        string patientPlayFabID = GameState.currentPatient.PFID;
-
-        // Fetch "Count" from the patient's player data
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest
-        {
-            PlayFabId = patientPlayFabID
-        }, patientUserDataResult =>
-        {
-            if (patientUserDataResult.Data != null && patientUserDataResult.Data.ContainsKey("Count"))
+        PlayFabClientAPI.UpdateUserData(request,
+            result =>
             {
-                // If "Count" is present in the patient's data, use it
-                int count = int.Parse(patientUserDataResult.Data["Count"].Value);
-                Debug.Log("Count from patient: " + count);
+                //4
+                Debug.Log("COUNT in UPDATE USER DATA is" + count);
+                Debug.Log("Successfully updated");
+                //Debug.Log("Count after incremented is " + count);
+
+                if (GameState.currentPatient == null)
+                {
+                    Debug.Log("If1 section of the OnBtnStartSession");
+                    EnrollmentManager.Instance.ShowMessage("Please select a patient.");
+                }
+                else if (SessionMgr.GetGameList().Count < 6)
+                {
+                    if (GameState.IsDoctor())
+                    {
+                        Debug.Log("If2 section of the OnBtnStartSession");
+                        EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+                    }
+                    else
+                    {
+                        Debug.Log("Else1 section of the OnBtnStartSession");
+                        EnrollmentManager.Instance.ShowMessage("6 games have to be selected by the doctor.");
+                    }
+                }
+                else
+                {
+                    if (count == 3)
+                    {
+                        Debug.Log("Session Count Reached. Restarting session...");
+                        count = 0;
+                        var request = new UpdateUserDataRequest()
+                        {
+                            Data = new Dictionary<string, string> { 
+						{ "COUNT","0" } },
+                            //Permission = UserDataPermission.Public
+                        };
+                        Debug.Log("COUNT after restarting the session is" + count);
+						PlayFabClientAPI.UpdateUserData(request,
+							result =>
+							{
+								Debug.Log("Session Restarted");
+                                SceneManager.LoadScene("ColorScreen");
+                            },
+							error =>
+							{
+								Debug.Log("Session failed");
+							}
+							);
+                    }
+                    else
+                    {
+                        //2
+                        Debug.Log("Else2 section of the OnBtnStartSession");
+                        SessionMgr.StartSession(_timeMin * 60);
+
+                    }
+                }
+            },
+            error =>
+            {
+                Debug.Log("No successfully updated");
             }
-            else
-            {
-                Debug.LogWarning("Patient data does not contain 'Count' key.");
-                var data = new Dictionary<string, string>
-            {
-                { "Count", count.ToString() }
-            };
+            );
+        //SetPlayerData(count);
+        //1)
 
-                PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
-                {
-                    Data = data
-                },
-                result =>
-                {
-                    Debug.Log("Count appended to patient data successfully.");
-                },
-                error =>
-                {
-                    Debug.LogError("Error appending count to patient data: " + error.ErrorMessage);
-                });
-            }
+    //    Debug.Log("Count after incremented is " + count);
+
+    //    if (GameState.currentPatient == null)
+    //    {
+    //        Debug.Log("If1 section of the OnBtnStartSession");
+    //        EnrollmentManager.Instance.ShowMessage("Please select a patient.");
+    //    }
+    //    else if (SessionMgr.GetGameList().Count < 6)
+    //    {
+    //        if (GameState.IsDoctor())
+    //        {
+    //            Debug.Log("If2 section of the OnBtnStartSession");
+    //            EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+    //        }
+    //        else
+    //        {
+    //            Debug.Log("Else1 section of the OnBtnStartSession");
+    //            EnrollmentManager.Instance.ShowMessage("6 games have to be selected by the doctor.");
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (count == 3)
+    //        {
+    //            Debug.Log("Session Count Reached. Restarting session...");
+				//count = 0;
+				//Debug.Log("COUNT after restarting the session is" + count);
+    //            RestartSession();
+    //        }
+    //        else
+    //        {
+				////2
+    //            Debug.Log("Else2 section of the OnBtnStartSession");
+    //            SessionMgr.StartSession(_timeMin * 60);
+                
+    //        }
+    //    }
         }, error =>
         {
-            Debug.LogError("Error fetching patient data: " + error.ErrorMessage);
+            Debug.LogError("Error fetching player data: " + error.ErrorMessage);
+
         });
+        //int k = GetPlayerData();
+
+		//count++;
+
+  //      var request = new UpdateUserDataRequest()
+  //      {
+  //          Data = new Dictionary<string, string> { { "COUNT", count.ToString() } }
+  //      };
+
+  //      PlayFabClientAPI.UpdateUserData(request,
+  //          result =>
+  //          {
+  //              //4
+  //              Debug.Log("COUNT in UPDATE USER DATA is" + count);
+  //              Debug.Log("Successfully updated");
+  //          },
+  //          error =>
+  //          {
+  //              Debug.Log("No successfully updated");
+  //          }
+  //          );
+  //      //SetPlayerData(count);
+  //      //1)
+
+  //      Debug.Log("Count after incremented is " + count);
+
+  //      if (GameState.currentPatient == null)
+  //      {
+  //          Debug.Log("If1 section of the OnBtnStartSession");
+  //          EnrollmentManager.Instance.ShowMessage("Please select a patient.");
+  //      }
+  //      else if (SessionMgr.GetGameList().Count < 6)
+  //      {
+  //          if (GameState.IsDoctor())
+  //          {
+  //              Debug.Log("If2 section of the OnBtnStartSession");
+  //              EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+  //          }
+  //          else
+  //          {
+  //              Debug.Log("Else1 section of the OnBtnStartSession");
+  //              EnrollmentManager.Instance.ShowMessage("6 games have to be selected by the doctor.");
+  //          }
+  //      }
+  //      else
+  //      {
+  //          if (count == 3)
+  //          {
+  //              Debug.Log("Session Count Reached. Restarting session...");
+		//		count = 0;
+		//		Debug.Log("COUNT after restarting the session is" + count);
+  //              RestartSession();
+  //          }
+  //          else
+  //          {
+		//		//2
+  //              Debug.Log("Else2 section of the OnBtnStartSession");
+  //              SessionMgr.StartSession(_timeMin * 60);
+                
+  //          }
+  //      }
     }
+
+    //private void RestartSession()
+    //{
+    //    SceneManager.LoadScene("ColorScreen");
+    //}
+
+	//private void SetPlayerData(int count)
+	//{
+	//	var request = new UpdateUserDataRequest()
+	//	{
+	//		Data = new Dictionary<string, string> { { "COUNT", count.ToString() } }
+	//	};
+
+	//	PlayFabClientAPI.UpdateUserData(request,
+	//		result =>
+	//		{
+	//			//4
+	//			Debug.Log("COUNT in UPDATE USER DATA is" + count);
+	//			Debug.Log("Successfully updated");
+	//		},
+	//		error =>
+	//		{
+	//			Debug.Log("No successfully updated");
+	//		}
+	//		);
+	//}		
+			
+  //  private int GetPlayerData()
+  //  {
+		//int count=0,countLimit=3;
+  //      PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+  //      {
+  //          if (result.Data != null && (result.Data.ContainsKey("CountLimit") || result.Data.ContainsKey("COUNT")))
+  //          {
+  //               countLimit = int.Parse(result.Data["CountLimit"].Value);
+  //               count = int.Parse(result.Data["COUNT"].Value);
+		//		//3
+  //              Debug.Log("Count Limit extracted is: " + countLimit);
+		//		Debug.Log("Count extracted is" + count);
+				
+  //          }
+  //          else
+  //          {
+  //              Debug.LogWarning("Player data does not contain 'CountLimit' key. Setting default CountLimit to 15.");
+
+		//		//           // Set default CountLimit to 15 in player data
+		//		//           var data = new Dictionary<string, string>
+		//		//           {
+		//		//               { "CountLimit", countLimit.ToString() },
+		//		//{ "COUNT",count.ToString() }
+		//		//           };
+
+		//		//           PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+		//		//           {
+		//		//               Data = data
+		//		//           },
+		//		//           updateResult =>
+		//		//           {
+		//		//               Debug.Log("Default CountLimit set in player data.");
+		//		//           },
+		//		//           updateError =>
+		//		//           {
+		//		//               Debug.LogError("Error setting default CountLimit: " + updateError.ErrorMessage);
+		//		//           });
+			
+  //          }
+  //      }, error =>
+  //      {
+  //          Debug.LogError("Error fetching player data: " + error.ErrorMessage);
+            
+  //      });
+		//return count;
+  //  }
     public void OnEditGameNameChanged(string str)
 	{
 		if(string.IsNullOrEmpty(str))

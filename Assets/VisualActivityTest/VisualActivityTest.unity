@@ -3291,6 +3291,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1897706619}
     m_Modifications:
+    - target: {fileID: 1374118625651895920, guid: 501066dfddc343647a30c0cf825ce95d, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1374118625856441474, guid: 501066dfddc343647a30c0cf825ce95d, type: 3}
       propertyPath: m_Name
       value: PanelControl
@@ -3386,6 +3390,10 @@ PrefabInstance:
     - target: {fileID: 1374118625915853304, guid: 501066dfddc343647a30c0cf825ce95d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: LoadScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 1374118627087857931, guid: 501066dfddc343647a30c0cf825ce95d, type: 3}
+      propertyPath: m_text
+      value: BinoPlay
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
