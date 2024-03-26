@@ -103,7 +103,7 @@ public abstract class DataKey
 public class PatientData
 {
 	public Int32 ID;
-	public string name;
+	public  string name;
 	public byte age;
 	public string licenseKey;
 	public GENDER gender;
@@ -139,6 +139,10 @@ public class PatientData
 	}
 	
 }
+
+
+
+
 
 /* public class HomePatientData{
 	public CalibraionDetails cali = new CalibraionDetails();

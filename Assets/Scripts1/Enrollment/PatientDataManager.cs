@@ -179,11 +179,14 @@ public static class PatientDataManager
 						pdata.licenseKey = licenseKey;
 						PatientMgr.AddPatientData(pdata);
 						string jsonstr = JsonConvert.SerializeObject(plist);
-						DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+                        string jsonstr2 = JsonConvert.SerializeObject(pdata);
+                        DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
 						UpdateUserDataRequest request = new UpdateUserDataRequest();
 						request.Data = new Dictionary<string, string>();
-						request.Data.Add(DataKey.PATIENT, jsonstr);
-						request.Permission = UserDataPermission.Public;
+                        request.Data.Add(DataKey.PATIENT, jsonstr);
+                        request.Data.Add(pdata.name, jsonstr2);
+						UnityEngine.Debug.Log("PatientName is" + pdata.name);
+                        request.Permission = UserDataPermission.Public;
 						PlayFabClientAPI.UpdateUserData(request,
 							result =>
 							{
