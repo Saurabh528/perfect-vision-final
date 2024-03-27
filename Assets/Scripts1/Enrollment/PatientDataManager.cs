@@ -139,7 +139,7 @@ public static class PatientDataManager
             var request = new UpdateUserDataRequest()
             {
                 Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } },
+                    { "COUNT","0" } , {"Crane3D", ""}},
                 Permission = UserDataPermission.Public
             };
 

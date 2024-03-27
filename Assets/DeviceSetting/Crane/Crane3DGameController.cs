@@ -10,7 +10,8 @@ using System.IO;
 using System.Drawing;
 using TouchControlsKit;
 using System;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;	
 public class CraneCheckResult
 {
 	public int depthDist, positionDist, intervalDist;
@@ -220,27 +221,79 @@ public class Crane3DGameController : GamePlayController
 	{
         //int numberToSave = 123; // This is the integer you want to save.
         //string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
-        string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
-        UnityEngine.Debug.Log("Path is "+filePath);
-        try
-        {
-			// Convert the integer to a string since WriteAllText expects string data.
-			File.WriteAllText(filePath, "");
-            File.AppendAllText(filePath, x.ToString());
-            File.AppendAllText(filePath, " ");
-            File.AppendAllText(filePath, y.ToString());
-            File.AppendAllText(filePath, " ");
-            File.AppendAllText(filePath, z.ToString());
-            File.AppendAllText(filePath, " ");
-            UnityEngine.Debug.Log("This is x" + x);
-            UnityEngine.Debug.Log("This is y" + y);
-            UnityEngine.Debug.Log("This is z" + z);
-        }
-        catch (Exception ex)
-        {
-            // If something goes wrong, this will print the error message.
-            UnityEngine.Debug.Log("An error occurred: " + ex.Message);
-        }
+        // string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
+        // UnityEngine.Debug.Log("Path is "+filePath);
+		// var res = new {x,y,z};
+		var request = new GetUserDataRequest { PlayFabId = pdata.PFID};
+		PlayFabClientAPI.GetUserData(request,
+            result =>
+			{
+//				if (result.Data != null && result.Data.ContainsKey("Crane3D"))
+  //              {
+					string prevJson = result.Data["Crane3D"].Value;
+					JObject prevJObject = JObject.Parse(prevJson);
+					JObject newSessionData = new JObject();
+                    newSessionData["x"] = x.ToString();
+        			newSessionData["y"] = y.ToString();
+        			newSessionData["z"] = z.ToString();
+					string sessions = "Sessions" + count.ToString();
+					prevJObject[sessions] = newSessionData;
+					string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+					var request = new UpdateUserDataRequest()
+                    {
+                			Data = new Dictionary<string, string> { {"Crane3D",updatedJson} },
+                			Permission = UserDataPermission.Public
+            		};
+					PlayFabClientAPI.UpdateUserData(request,
+			         result =>
+					 {
+						UnityEngine.Debug.Log("Successfully added crane3D data");
+
+
+					 }
+					 error =>
+					 {
+						UnityEngine.Debug.Log("Not added crane3D data");
+						
+
+
+					 }):
+
+
+
+
+//                }
+
+
+
+			} ,// Success callback
+            error => 
+			{
+				UnityEngine.Debug.Log("Crane3D data GetUserData api called error");
+
+			} );// Error callback
+		
+
+		
+        // try
+        // {
+		// 	// Convert the integer to a string since WriteAllText expects string data.
+		// 	// File.WriteAllText(filePath, "");
+        //     // File.AppendAllText(filePath, x.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // File.AppendAllText(filePath, y.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // File.AppendAllText(filePath, z.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // UnityEngine.Debug.Log("This is x" + x);
+        //     // UnityEngine.Debug.Log("This is y" + y);
+        //     // UnityEngine.Debug.Log("This is z" + z);
+        // }
+        // catch (Exception ex)
+        // {
+        //     // If something goes wrong, this will print the error message.
+        //     UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        // }
     }
 	int GetScoreIncrease(int depDist, int posDist, int intDest)
 	{
