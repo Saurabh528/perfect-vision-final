@@ -7,7 +7,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System;
 using System.IO;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
 public class VisualActivityTest : MonoBehaviour
 {
     public enum SYMBOLTYPE{
@@ -202,25 +205,61 @@ public class VisualActivityTest : MonoBehaviour
 
     void SaveData(int L,int R)
     {
-        string filePath = Directory.GetCurrentDirectory() + "\\Python\\VAT.txt";
-        UnityEngine.Debug.Log("Path is " + filePath);
+        //string filePath = Directory.GetCurrentDirectory() + "\\Python\\VAT.txt";
+        //UnityEngine.Debug.Log("Path is " + filePath);
 
-        try
-        {
-            // Convert the integer to a string since WriteAllText expects string data.
-            File.WriteAllText(filePath, "");
-            File.AppendAllText(filePath, L.ToString());
-            File.AppendAllText(filePath, " ");
-            File.AppendAllText(filePath, R.ToString());
-            UnityEngine.Debug.Log("This is LeftEye" + L);
-            UnityEngine.Debug.Log("This is RightEye" + R);
+        //try
+        //{
+        //    // Convert the integer to a string since WriteAllText expects string data.
+        //    File.WriteAllText(filePath, "");
+        //    File.AppendAllText(filePath, L.ToString());
+        //    File.AppendAllText(filePath, " ");
+        //    File.AppendAllText(filePath, R.ToString());
+        //    UnityEngine.Debug.Log("This is LeftEye" + L);
+        //    UnityEngine.Debug.Log("This is RightEye" + R);
 
-        }
-        catch (Exception ex)
-        {
-            // If something goes wrong, this will print the error message.
-            UnityEngine.Debug.Log("An error occurred: " + ex.Message);
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    // If something goes wrong, this will print the error message.
+        //    UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        //}
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                var prevJson = result.Data["VAT"].Value;
+                int count = Int32.Parse(result.Data["COUNT"].Value);
+                count++;
+                UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                newSessionData["LeftScore"] = L.ToString();
+                newSessionData["RightScore"] = R.ToString();
+                string sessions = "Sessions" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "VAT", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added VAT data");
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added VAT data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("VAT data GetUserData api called error");
+
+            });// Error callback
     }
     IEnumerator Routine_SpawnRandomSymbol(){
         TryCount++;

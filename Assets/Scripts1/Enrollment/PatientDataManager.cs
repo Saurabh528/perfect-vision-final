@@ -135,7 +135,26 @@ public static class PatientDataManager
 			UnityEngine.Debug.Log("Username is " + GameState.username);
 			UnityEngine.Debug.Log("Password is" + GameState.passwordhash);
 
-            string init = @"
+            string crane3Ddata = @"
+{
+    ""Sesion0"": {
+        ""x"": ""0"",
+        ""y"": ""0"",
+        ""z"": ""0""
+    }
+}";
+
+
+            string crane2Ddata = @"
+{
+    ""Sesion0"": {
+        ""x"": ""0"",
+        ""y"": ""0"",
+        ""z"": ""0""
+    }
+}";
+
+            string VATData = @"
 {
     ""Sesion0"": {
         ""x"": ""0"",
@@ -147,7 +166,7 @@ public static class PatientDataManager
             var request = new UpdateUserDataRequest()
             {
                 Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } , {"Crane3D", init}},
+                    { "COUNT","0" } , {"Crane3D", crane3Ddata},{ "Crane2D",crane2Ddata},{ "VAT",VATData} },
                 Permission = UserDataPermission.Public
             };
 

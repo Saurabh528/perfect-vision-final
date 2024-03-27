@@ -9,7 +9,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using System;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
 public class CraneGameController : GamePlayController
 {
 	
@@ -191,25 +194,62 @@ public class CraneGameController : GamePlayController
 
 	void SaveData(int x,float y)
 	{
-        string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane2d.txt";
-        UnityEngine.Debug.Log("Path is " + filePath);
-        y = (int)y;
-        try
-        {
-            // Convert the integer to a string since WriteAllText expects string data.
-            File.WriteAllText(filePath, "");
-            File.AppendAllText(filePath, x.ToString());
-            File.AppendAllText(filePath, " ");
-            File.AppendAllText(filePath, y.ToString());         
-            UnityEngine.Debug.Log("This is x" + x);
-            UnityEngine.Debug.Log("This is y" + y);
-            
-        }
-        catch (Exception ex)
-        {
-            // If something goes wrong, this will print the error message.
-            UnityEngine.Debug.Log("An error occurred: " + ex.Message);
-        }
+        //string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane2d.txt";
+        //UnityEngine.Debug.Log("Path is " + filePath);
+        //y = (int)y;
+        //try
+        //{
+        //    // Convert the integer to a string since WriteAllText expects string data.
+        //    File.WriteAllText(filePath, "");
+        //    File.AppendAllText(filePath, x.ToString());
+        //    File.AppendAllText(filePath, " ");
+        //    File.AppendAllText(filePath, y.ToString());         
+        //    UnityEngine.Debug.Log("This is x" + x);
+        //    UnityEngine.Debug.Log("This is y" + y);
+
+        //}
+        //catch (Exception ex)
+        //{
+        //    // If something goes wrong, this will print the error message.
+        //    UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        //}
+
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                var prevJson = result.Data["Crane2D"].Value;
+                int count = Int32.Parse(result.Data["COUNT"].Value); 
+                count++;
+                UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                newSessionData["x"] = x.ToString();
+                newSessionData["y"] = y.ToString();
+                string sessions = "Sessions" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "Crane2D", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added crane2D data");
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added crane2D data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("Crane2D data GetUserData api called error");
+
+            });// Error callback
     }
 	int GetScoreIncrease(int depDist, int posDist, int intDest = 0)
 	{
