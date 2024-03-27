@@ -14,7 +14,7 @@ using UnityEditor.PackageManager;
 
 public static class PatientDataManager
 {
-
+    
     public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
 		
@@ -135,11 +135,19 @@ public static class PatientDataManager
 			UnityEngine.Debug.Log("Username is " + GameState.username);
 			UnityEngine.Debug.Log("Password is" + GameState.passwordhash);
 
+            string init = @"
+{
+    ""Sesion0"": {
+        ""x"": ""0"",
+        ""y"": ""0"",
+        ""z"": ""0""
+    }
+}";
 
             var request = new UpdateUserDataRequest()
             {
                 Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } , {"Crane3D", ""}},
+                    { "COUNT","0" } , {"Crane3D", init}},
                 Permission = UserDataPermission.Public
             };
 

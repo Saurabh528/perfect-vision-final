@@ -11,7 +11,10 @@ using System.Drawing;
 using TouchControlsKit;
 using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;	
+using Newtonsoft.Json.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
+
 public class CraneCheckResult
 {
 	public int depthDist, positionDist, intervalDist;
@@ -39,6 +42,9 @@ public class Crane3DGameController : GamePlayController
 	
 	List<CraneCheckResult>	_checkResult = new List<CraneCheckResult>();
 	// Start is called before the first frame update
+
+	
+
 	public override void Start()
     {
 		_orgArmPivotY = _rtArmPivot.localPosition.y;
@@ -219,18 +225,22 @@ public class Crane3DGameController : GamePlayController
 
 	void SaveData(int x,int y,int z)
 	{
-        //int numberToSave = 123; // This is the integer you want to save.
-        //string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
-        // string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
-        // UnityEngine.Debug.Log("Path is "+filePath);
+		//int numberToSave = 123; // This is the integer you want to save.
+		//string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
+		// string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
+		// UnityEngine.Debug.Log("Path is "+filePath);
 		// var res = new {x,y,z};
-		var request = new GetUserDataRequest { PlayFabId = pdata.PFID};
-		PlayFabClientAPI.GetUserData(request,
+		
+		//var request = new GetUserDataRequest { PlayFabId = pdata.PFID};
+		PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
 			{
 //				if (result.Data != null && result.Data.ContainsKey("Crane3D"))
   //              {
-					string prevJson = result.Data["Crane3D"].Value;
+					var prevJson = result.Data["Crane3D"].Value;
+					int count = Int32.Parse(result.Data["COUNT"].Value); //THIS COUNT HAS TO BE CHANGE AND MADE GLOBALLY from PLAYFAB
+					count++;
+					UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
 					JObject prevJObject = JObject.Parse(prevJson);
 					JObject newSessionData = new JObject();
                     newSessionData["x"] = x.ToString();
@@ -239,28 +249,24 @@ public class Crane3DGameController : GamePlayController
 					string sessions = "Sessions" + count.ToString();
 					prevJObject[sessions] = newSessionData;
 					string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
 					var request = new UpdateUserDataRequest()
                     {
                 			Data = new Dictionary<string, string> { {"Crane3D",updatedJson} },
                 			Permission = UserDataPermission.Public
             		};
-					PlayFabClientAPI.UpdateUserData(request,
-			         result =>
-					 {
-						UnityEngine.Debug.Log("Successfully added crane3D data");
+				PlayFabClientAPI.UpdateUserData(request,
+				 result =>
+				 {
+					 UnityEngine.Debug.Log("Successfully added crane3D data");
 
 
-					 }
-					 error =>
-					 {
-						UnityEngine.Debug.Log("Not added crane3D data");
-						
+				 },
+				 error =>
+				 {
+					 UnityEngine.Debug.Log("Not added crane3D data");
 
-
-					 }):
-
-
-
+				 });
 
 //                }
 
