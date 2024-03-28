@@ -1625,7 +1625,6 @@ public class UserAccountManager : MonoBehaviour
         Debug.Log("SignUp Function called");
         GameState.IsOnline = false;
         Debug.Log("Using custom licenseKey: " + licensekey);
-
         PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             CustomId = licensekey,

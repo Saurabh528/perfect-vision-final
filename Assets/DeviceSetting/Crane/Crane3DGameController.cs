@@ -238,14 +238,18 @@ public class Crane3DGameController : GamePlayController
 //				if (result.Data != null && result.Data.ContainsKey("Crane3D"))
   //              {
 					var prevJson = result.Data["Crane3D"].Value;
-					int count = Int32.Parse(result.Data["COUNT"].Value); //THIS COUNT HAS TO BE CHANGE AND MADE GLOBALLY from PLAYFAB
-					count++;
-					UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
+					int count = Int32.Parse(result.Data["DiagnosticCount"].Value); //THIS COUNT HAS TO BE CHANGE AND MADE GLOBALLY from PLAYFAB
+                                                                                   //count++
+					DateTime now = DateTime.Now;
+					string dateCurrent = now.ToShortDateString();
+
+					UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
 					JObject prevJObject = JObject.Parse(prevJson);
 					JObject newSessionData = new JObject();
                     newSessionData["x"] = x.ToString();
         			newSessionData["y"] = y.ToString();
         			newSessionData["z"] = z.ToString();
+					newSessionData["Date"] = dateCurrent;
 					string sessions = "Sessions" + count.ToString();
 					prevJObject[sessions] = newSessionData;
 					string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);

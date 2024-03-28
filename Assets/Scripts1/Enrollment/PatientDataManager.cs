@@ -10,7 +10,7 @@ using UnityEngine;
 using PlayFab.GroupsModels;
 using UnityEngine.PlayerLoop;
 using System.Linq;
-using UnityEditor.PackageManager;
+//using UnityEditor.PackageManager;
 
 public static class PatientDataManager
 {
@@ -140,7 +140,8 @@ public static class PatientDataManager
     ""Sesion0"": {
         ""x"": ""0"",
         ""y"": ""0"",
-        ""z"": ""0""
+        ""z"": ""0"",
+		""Date"":""yyyy-mm-dd""
     }
 }";
 
@@ -150,23 +151,23 @@ public static class PatientDataManager
     ""Sesion0"": {
         ""x"": ""0"",
         ""y"": ""0"",
-        ""z"": ""0""
+		""Date"":""yyyy-mm-dd""
     }
 }";
 
             string VATData = @"
 {
     ""Sesion0"": {
-        ""x"": ""0"",
-        ""y"": ""0"",
-        ""z"": ""0""
+        ""L"": ""0"",
+        ""R"": ""0"",
+		""Date"":""yyyy-mm-dd""
     }
 }";
 
             var request = new UpdateUserDataRequest()
             {
                 Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } , {"Crane3D", crane3Ddata},{ "Crane2D",crane2Ddata},{ "VAT",VATData} },
+                    { "COUNT","0" } ,{"DiagnosticCount","0"}, {"Crane3D", crane3Ddata},{ "Crane2D",crane2Ddata},{ "VAT",VATData} },
                 Permission = UserDataPermission.Public
             };
 

@@ -217,14 +217,21 @@ public class CraneGameController : GamePlayController
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
             {
+                //var prevJson = result.Data["Crane2D"].Value;
+                //int count = Int32.Parse(result.Data["COUNT"].Value); 
                 var prevJson = result.Data["Crane2D"].Value;
-                int count = Int32.Parse(result.Data["COUNT"].Value); 
-                count++;
-                UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                //count++;
+
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
                 JObject prevJObject = JObject.Parse(prevJson);
                 JObject newSessionData = new JObject();
                 newSessionData["x"] = x.ToString();
                 newSessionData["y"] = y.ToString();
+                newSessionData["Date"] = dateCurrent;
                 string sessions = "Sessions" + count.ToString();
                 prevJObject[sessions] = newSessionData;
                 string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);

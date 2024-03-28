@@ -224,17 +224,25 @@ public class VisualActivityTest : MonoBehaviour
         //    // If something goes wrong, this will print the error message.
         //    UnityEngine.Debug.Log("An error occurred: " + ex.Message);
         //}
+
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
             {
                 var prevJson = result.Data["VAT"].Value;
-                int count = Int32.Parse(result.Data["COUNT"].Value);
-                count++;
-                UnityEngine.Debug.Log("COUNT VARIABLE IS" + count);
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                //var prevJson = result.Data["VAT"].Value;
+                //int count = Int32.Parse(result.Data["COUNT"].Value);
+                //count++;
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
                 JObject prevJObject = JObject.Parse(prevJson);
                 JObject newSessionData = new JObject();
-                newSessionData["LeftScore"] = L.ToString();
-                newSessionData["RightScore"] = R.ToString();
+                
+                newSessionData["LeftScore"] = "~20/"+L.ToString();
+                newSessionData["RightScore"] = "~20/"+R.ToString();
+                newSessionData["Date"] = dateCurrent;
                 string sessions = "Sessions" + count.ToString();
                 prevJObject[sessions] = newSessionData;
                 string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
