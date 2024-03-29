@@ -23,7 +23,8 @@ thickness = 2
 # Open the file 'focus_value.txt', read its content, and print the value it contains
 script_dir = os.path.dirname(__file__)
 # file_path = os.path.join(script_dir, '/ScreenCali/cv.txt')
-file_path = "H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
+#file_path = "H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
+file_path = "D:\PROJECTS\perfect-vision-aman2\Python\ScreenCali\cv.txt"
 with open(file_path, 'r') as file:  # Open the file in read mode
     value = file.read().strip()  # Read the content and remove any leading/trailing whitespace
 

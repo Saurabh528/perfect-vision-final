@@ -1,0 +1,2 @@
+Distance 40: Width Rate = 0.22001579456476283, Height Rate = 0.12190289406841989
+Distance 45: Width Rate = 0.21715818646974885, Height Rate = 0.11713765400935278
