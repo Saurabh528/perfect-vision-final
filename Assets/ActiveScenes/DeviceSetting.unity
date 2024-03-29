@@ -1801,6 +1801,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 455ef3615522aca4e9fbfe02d140b547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backBtn: {fileID: 0}
+  nextBtn: {fileID: 0}
 --- !u!4 &834293040
 Transform:
   m_ObjectHideFlags: 0
