@@ -1652,11 +1652,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04baec2c2c414c643af5956c6461cfaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VAT: {fileID: 1109548668}
+  VAT: {fileID: 1109548670}
   Worth4DotTest: {fileID: 655428195}
   Alignment: {fileID: 435791817}
   Displacement: {fileID: 719646733}
-  FusionAndDepth2D: {fileID: 740486533}
+  Crane2D: {fileID: 740486535}
 --- !u!4 &360736902
 Transform:
   m_ObjectHideFlags: 0

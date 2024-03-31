@@ -7,14 +7,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class ColorManager : MonoBehaviour
 {
-    public GameObject VAT;
+    public Button VAT;
     public GameObject Worth4DotTest;
     public GameObject Alignment;
     public GameObject Displacement;
-    public GameObject FusionAndDepth2D;
+    public Button Crane2D;
     // Start is called before the first frame update
     void Start()
     {
@@ -53,12 +53,7 @@ public class ColorManager : MonoBehaviour
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
             {
-                if (!result.Data.ContainsKey("DiagnosticCount") || !result.Data.ContainsKey("Crane2D"))
-                {
-                    Debug.Log("DiagnosticCount or Crane2D not found in user data.");
-                    return;
-                }
-
+                
                 int count;
                 if (!int.TryParse(result.Data["DiagnosticCount"].Value, out count))
                 {
@@ -77,8 +72,7 @@ public class ColorManager : MonoBehaviour
                     Debug.Log($"Failed to parse Crane2D as JSON: {ex.Message}");
                     return;
                 }
-
-                count--;
+                count = Int32.Parse(result.Data["DiagnosticCount"].Value);
                 string sessionNeeded = "Session" + count.ToString();
                 Debug.Log("Session needed is " + sessionNeeded);
 
@@ -93,6 +87,7 @@ public class ColorManager : MonoBehaviour
                 if (resultFoundX != null)
                 {
                     Debug.Log("Result Found is " + resultFoundX);
+                    Crane2D.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
                 }
                 else
                 {

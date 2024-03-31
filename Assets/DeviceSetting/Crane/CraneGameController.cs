@@ -232,7 +232,7 @@ public class CraneGameController : GamePlayController
                 newSessionData["x"] = x.ToString();
                 newSessionData["y"] = y.ToString();
                 newSessionData["Date"] = dateCurrent;
-                string sessions = "Sessions" + count.ToString();
+                string sessions = "Session" + count.ToString();
                 prevJObject[sessions] = newSessionData;
                 string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
 
