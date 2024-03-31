@@ -137,7 +137,7 @@ public static class PatientDataManager
 
             string crane3Ddata = @"
 {
-    ""Sesion0"": {
+    ""Session0"": {
         ""x"": ""0"",
         ""y"": ""0"",
         ""z"": ""0"",
@@ -148,7 +148,7 @@ public static class PatientDataManager
 
             string crane2Ddata = @"
 {
-    ""Sesion0"": {
+    ""Session0"": {
         ""x"": ""0"",
         ""y"": ""0"",
 		""Date"":""yyyy-mm-dd""
@@ -157,7 +157,7 @@ public static class PatientDataManager
 
             string VATData = @"
 {
-    ""Sesion0"": {
+    ""Session0"": {
         ""L"": ""0"",
         ""R"": ""0"",
 		""Date"":""yyyy-mm-dd""

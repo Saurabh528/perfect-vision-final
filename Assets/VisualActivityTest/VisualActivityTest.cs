@@ -256,6 +256,7 @@ public class VisualActivityTest : MonoBehaviour
                  result =>
                  {
                      UnityEngine.Debug.Log("Successfully added VAT data");
+
                  },
                  error =>
                  {
