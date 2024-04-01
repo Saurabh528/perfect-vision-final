@@ -6,7 +6,6 @@ from datetime import datetime
 import time
 import os
 
-
 def calculate_head_orientation(landmarks):
     # Assume landmarks are normalized [0, 1]l
     # Define some key landmarks
@@ -130,6 +129,7 @@ with mp_face_mesh.FaceMesh(
                 frame = cv2.putText(frame, text2, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                 frame = cv2.putText(frame, text3, (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                 
+                
                 centre_right_iris_x_1 = int((d[iris_right_horzn[0]][0] + d[iris_right_horzn[1]][0])/2)
                 centre_right_iris_y_1 = int((d[iris_right_horzn[0]][1] + d[iris_right_horzn[1]][1])/2)
                 
@@ -188,12 +188,241 @@ cv2.destroyAllWindows()
 final_focus = sum(focus)/len(focus)
 
 
+# file_path = 'focus_value.txt'
+
+# # Open the file in write mode ('w') and write the focus value to it
+# with open(file_path, 'w') as file:
+#     # Write the single value followed by a newline character
+#     file.write(f"{final_focus}\n")
+
+# print(f"Focus value has been written to {file_path}")
 script_dir = os.path.dirname(__file__)
 file_path = os.path.join(script_dir, 'cv.txt')
                 # file_path  = r"H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
 with open(file_path, 'w') as file:
         file.write(str(final_focus))
 print(f"Focus value has been written to {file_path}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# import mediapipe as mp
+# import cv2
+# import numpy as np
+# import math
+# from datetime import datetime
+# import time
+# import os
+
+
+# def calculate_head_orientation(landmarks):
+#     # Assume landmarks are normalized [0, 1]l
+#     # Define some key landmarks
+#     nose_tip = landmarks[1]  # Tip of the nose
+#     nose_bridge = landmarks[6]  # Top of the nose bridge
+#     left_eye_outer = landmarks[33]  # Outer corner of the left eye
+#     right_eye_outer = landmarks[263]  # Outer corner of the right eye
+#     # Convert landmarks to numpy arrays
+#     nose_tip = np.array([nose_tip.x, nose_tip.y, nose_tip.z])
+#     nose_bridge = np.array([nose_bridge.x, nose_bridge.y, nose_bridge.z])
+#     left_eye_outer = np.array([left_eye_outer.x, left_eye_outer.y, left_eye_outer.z])
+#     right_eye_outer = np.array([right_eye_outer.x, right_eye_outer.y, right_eye_outer.z])
+#     # Calculate the vectors
+#     horizontal_vector = right_eye_outer - left_eye_outer
+#     vertical_vector = nose_bridge - nose_tip
+#     # Normalize the vectors
+#     horizontal_vector_normalized = horizontal_vector / np.linalg.norm(horizontal_vector)
+#     vertical_vector_normalized = vertical_vector / np.linalg.norm(vertical_vector)
+#     # Calculate roll
+#     roll = np.arctan2(horizontal_vector_normalized[1], horizontal_vector_normalized[0])
+#     roll = np.degrees(roll)
+#     # Calculate yaw and pitch
+#     # This is a simplified approach - for more accuracy, a 3D head model or additional landmarks might be necessary
+#     yaw = np.arctan2(vertical_vector_normalized[0], vertical_vector_normalized[2])
+#     yaw = np.degrees(yaw)
+#     pitch = np.arctan2(vertical_vector_normalized[1], vertical_vector_normalized[2])
+#     pitch = np.degrees(pitch)
+#     return roll, yaw, pitch
+
+# def get_unique(c):
+#     temp_list = list(c)
+#     temp_set = set()
+#     for t in temp_list:
+#         temp_set.add(t[0])
+#         temp_set.add(t[1])
+#     return list(temp_set)
+
+
+
+# mp_face_mesh = mp.solutions.face_mesh
+# connections_iris = mp_face_mesh.FACEMESH_IRISES
+# iris_indices = get_unique(connections_iris)
+
+# connections_left_eyes =  mp_face_mesh.FACEMESH_LEFT_EYE
+# left_eyes_indices = get_unique(connections_left_eyes)
+
+# connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
+# right_eyes_indices = get_unique(connections_right_eyes)
+
+
+# iris_right_horzn = [469,471]
+# iris_right_vert = [470,472]
+# iris_left_horzn = [474,476]
+# iris_left_vert = [475,477]
+
+
+
+# # In[5]:
+
+
+# def get_unique(c):
+#     temp_list = list(c)
+#     temp_set = set()
+#     for t in temp_list:
+#         temp_set.add(t[0])
+#         temp_set.add(t[1])
+#     return list(temp_set)
+
+
+# # In[6]:
+
+
+# mp_face_mesh = mp.solutions.face_mesh
+# connections_iris = mp_face_mesh.FACEMESH_IRISES
+# iris_indices = get_unique(connections_iris)
+
+# connections_left_eyes =  mp_face_mesh.FACEMESH_LEFT_EYE
+# left_eyes_indices = get_unique(connections_left_eyes)
+
+# connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
+# right_eyes_indices = get_unique(connections_right_eyes)
+# cap = cv2.VideoCapture(0)
+# fps = cap.get(cv2.CAP_PROP_FPS)
+# start_time = time.time()
+# focus = []
+# with mp_face_mesh.FaceMesh(
+#     static_image_mode=True,
+#     max_num_faces=2,
+#     refine_landmarks=True,
+#     min_detection_confidence=0.3) as face_mesh:
+#     count = 0 
+#     while cap.isOpened():
+#         flag = 0
+#         ret, frame = cap.read()
+
+#         if not ret:
+#             break
+
+#         results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+#         try:
+#             for face_landmark in results.multi_face_landmarks:
+#                 lms = face_landmark.landmark
+#                 d= {}
+#                 for index in iris_indices:
+#                     x = int(lms[index].x*frame.shape[1])
+#                     y = int(lms[index].y*frame.shape[0])
+#                     d[index] = (x,y)
+#                 black = np.zeros(frame.shape).astype("uint8")
+#                 for index in iris_indices:
+#                     #print(index)
+#                     cv2.circle(frame,(d[index][0],d[index][1]),1,(0,255,0),-1)
+#                 text = "Sit at 50 cms from the screen and"
+#                 text2 = "press p 10 times in still position"
+#                 text3 = " once comfortable"
+#                 roll, yaw, pitch = calculate_head_orientation(face_landmark.landmark)
+#                 frame = cv2.putText(frame, f'Roll: {roll:.2f}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#                 frame = cv2.putText(frame, f'Yaw: {yaw:.2f}', (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#                 frame = cv2.putText(frame, f'Pitch: {pitch:.2f}', (50, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#                 frame = cv2.putText(frame, text, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+#                 frame = cv2.putText(frame, text2, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+#                 frame = cv2.putText(frame, text3, (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                
+#                 centre_right_iris_x_1 = int((d[iris_right_horzn[0]][0] + d[iris_right_horzn[1]][0])/2)
+#                 centre_right_iris_y_1 = int((d[iris_right_horzn[0]][1] + d[iris_right_horzn[1]][1])/2)
+                
+#                 centre_right_iris_x_2 = int((d[iris_right_vert[0]][0] + d[iris_right_vert[1]][0])/2)
+#                 centre_right_iris_y_2 = int((d[iris_right_vert[0]][1] + d[iris_right_vert[1]][1])/2)
+                
+                    
+#                 centre_left_iris_x_1 = int((d[iris_left_horzn[0]][0] + d[iris_left_horzn[1]][0])/2)
+#                 centre_left_iris_y_1 = int((d[iris_left_horzn[0]][1] + d[iris_left_horzn[1]][1])/2)
+                
+#                 centre_left_iris_x_2 = int((d[iris_left_vert[0]][0] + d[iris_left_vert[1]][0])/2)
+#                 centre_left_iris_y_2 = int((d[iris_left_vert[0]][1] + d[iris_left_vert[1]][1])/2)
+                
+#                 centre_left_iris_x = int((centre_left_iris_x_1 + centre_left_iris_x_2)/2)
+#                 centre_left_iris_y = int((centre_left_iris_y_1 + centre_left_iris_y_2)/2)
+                
+#                 centre_right_iris_x = int((centre_right_iris_x_1 + centre_right_iris_x_2)/2)
+#                 centre_right_iris_y = int((centre_right_iris_y_1 + centre_right_iris_y_2)/2)
+                
+#                 cv2.circle(frame,(centre_right_iris_x,centre_right_iris_y),2,(0,255,0),-1)
+#                 cv2.circle(frame,(centre_left_iris_x,centre_left_iris_y),2,(0,255,0),-1)
+                
+#                 w = ((centre_right_iris_x - centre_left_iris_x)**2 + (centre_right_iris_y - centre_left_iris_y)**2)**0.5
+                
+#                 W = 6.3
+                
+#                 d = 50
+            
+#                 f = (w*d)/W
+                
+
+
+#                 cv2.imshow("final", frame)
+#                 if cv2.waitKey(1) & 0xFF == ord('p'):
+#                     focus.append(f)
+#                     #frame = cv2.putText(frame, "Sit Still and press p 10 times", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+#                     cv2.imshow("final", frame)
+#                     if len(focus) >= 10:
+#                         flag = 1
+#                         break
+
+#         except Exception as e:
+#             print(e)
+
+#         if flag == 1:
+#             break
+#     count = 0
+
+# cap.release()
+# cv2.destroyAllWindows()
+
+
+# # In[12]:
+
+
+# final_focus = sum(focus)/len(focus)
+
+
+# script_dir = os.path.dirname(__file__)
+# file_path = os.path.join(script_dir, 'cv.txt')
+#                 # file_path  = r"H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
+# with open(file_path, 'w') as file:
+#         file.write(str(final_focus))
+# print(f"Focus value has been written to {file_path}")
 
 
 
