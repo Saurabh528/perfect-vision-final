@@ -158,11 +158,12 @@ public static class PatientDataManager
             string VATData = @"
 {
     ""Session0"": {
-        ""L"": ""0"",
-        ""R"": ""0"",
+        ""LeftScore"": ""0"",
+        ""RightScore"": ""0"",
 		""Date"":""yyyy-mm-dd""
     }
 }";
+// Alignment , Displacement , Worth4test
 
             var request = new UpdateUserDataRequest()
             {

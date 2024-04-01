@@ -99,6 +99,7 @@ public class ColorManager : MonoBehaviour
                 JObject sessionObjectVAT = (JObject)currentVATJObject[sessionNeeded];
                 string resultFoundCrane2D = (string)sessionObjectCrane2D?["x"];
                 string resultFoundVAT = (string)sessionObjectVAT?["LeftScore"];
+
                 if (resultFoundCrane2D != null)
                 {
                     Debug.Log("Result Found is " + resultFoundCrane2D);
@@ -108,6 +109,7 @@ public class ColorManager : MonoBehaviour
                 {
                     Debug.Log($"Result not found for {sessionNeeded}.");
                 }
+
                 if (resultFoundVAT != null)
                 {
                     Debug.Log("Result Found is " + resultFoundVAT);
@@ -117,16 +119,9 @@ public class ColorManager : MonoBehaviour
                 {
                     Debug.Log($"Result not found for {sessionNeeded}.");
                 }
-                DateTime currentDate = DateTime.Now;
+// Add Green logic for 3 games.
 
-        // Get the previous date.
-        DateTime previousDate = DateTime.Parse("2024-04-01");
-
-        // Calculate the difference between the two dates.
-        TimeSpan difference = currentDate.Subtract(previousDate);
-
-        // Display the difference.
-            UnityEngine.Debug.Log("The difference between the two dates is days." + difference.Days);
+        
             },
             error =>
             {

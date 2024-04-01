@@ -218,7 +218,9 @@ public class CraneGameController : GamePlayController
             result =>
             {
                 //var prevJson = result.Data["Crane2D"].Value;
-                //int count = Int32.Parse(result.Data["COUNT"].Value); 
+                //int count = Int32.Parse(result.Data["COUNT"].Value);
+				string sessions = "Session" + count.ToString();
+				// check if the session already exists.  If it exists, do not manipulate Json string. 
                 var prevJson = result.Data["Crane2D"].Value;
                 int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
                 //count++;
@@ -232,7 +234,7 @@ public class CraneGameController : GamePlayController
                 newSessionData["x"] = x.ToString();
                 newSessionData["y"] = y.ToString();
                 newSessionData["Date"] = dateCurrent;
-                string sessions = "Session" + count.ToString();
+                
                 prevJObject[sessions] = newSessionData;
                 string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
 
