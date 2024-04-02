@@ -8,6 +8,11 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using TMPro;
+using PlayFab;
+using PlayFab.ClientModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 public class DisplacementController : MonoBehaviour
 {
 	[SerializeField] TCPListener _tcp;
@@ -373,4 +378,50 @@ public class DisplacementController : MonoBehaviour
 		prgTime.Add(chk);
 		document.Add(prgTime);
 	}
+	void SaveData(int x , int y)
+	{
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                 
+                var prevJson = result.Data["Displacement"].Value;
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                //count++;
+
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                newSessionData["x"] = x.ToString();
+                newSessionData["y"] = y.ToString();
+                newSessionData["Date"] = dateCurrent;
+                
+				string sessions = "Session" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "Displacement", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added Displacement data");
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added Displacement data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("Displacement data GetUserData api called error");
+
+            });// Error callback
+    }
 }

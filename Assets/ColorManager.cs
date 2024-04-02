@@ -60,11 +60,17 @@ public class ColorManager : MonoBehaviour
                 //     Debug.Log("Failed to parse DiagnosticCount as int.");
                 //     return;
                 // }
+                // We get the recent most session : 
+                count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                string sessionNeeded = "Session" + count.ToString();
+                Debug.Log("Session needed is " + sessionNeeded);
 
                 var currentCrane2D = result.Data["Crane2D"].Value;
                 var currentVAT = result.Data["VAT"].Value;
                 var currentWorth4Dot = result.Data["Worth4Dot"].Value;
-                JObject currentCrane2DJObject, currentVATJObject,currentWorth4DotJObject;
+                var currentAlignment = result.Data["Worth4Dot"].Value;
+                var currentDisplacement = result.Data["Worth4Dot"].Value;
+                JObject currentCrane2DJObject, currentVATJObject,currentWorth4DotJObject,currentAlignmentJObject,currentDisplacementJObject;
                 try
                 {
                     currentCrane2DJObject = JObject.Parse(currentCrane2D);
@@ -96,9 +102,27 @@ public class ColorManager : MonoBehaviour
                     Debug.Log($"Failed to parse Worth4Dot test as JSON: {ex.Message}");
                     return;
                 }
-                count = Int32.Parse(result.Data["DiagnosticCount"].Value);
-                string sessionNeeded = "Session" + count.ToString();
-                Debug.Log("Session needed is " + sessionNeeded);
+                try
+                {
+                    currentAlignmentJObject = JObject.Parse(currentAlignment);
+                    
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log($"Failed to parse Alignment as JSON: {ex.Message}");
+                    return;
+                }
+                try
+                {
+                    currentDisplacementJObject = JObject.Parse(currentDisplacement);
+                    
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log($"Failed to parse Displacement JSON: {ex.Message}");
+                    return;
+                }
+                
 
                 //if (currentCrane2DJObject[sessionNeeded] == null)
                 //{
@@ -109,9 +133,13 @@ public class ColorManager : MonoBehaviour
                 JObject sessionObjectCrane2D = (JObject)currentCrane2DJObject[sessionNeeded];
                 JObject sessionObjectVAT = (JObject)currentVATJObject[sessionNeeded];
                 JObject sessionWorth4Dot = (JObject)currentWorth4DotJObject[sessionNeeded];
+                JObject sessionAlignment = (JObject)currentAlignmentJObject[sessionNeeded];
+                JObject sessionDisplacement = (JObject)currentDisplacementJObject[sessionNeeded];
                 string resultFoundCrane2D = (string)sessionObjectCrane2D?["x"];
                 string resultFoundVAT = (string)sessionObjectVAT?["LeftScore"];
                 string resultFoundWorth4Dot = (string)sessionWorth4Dot?["Diagnosis"];
+                string resultFoundAlignment = (string)sessionAlignment?["Placeholder"];
+                string resultFoundDisplacement = (string)sessionDisplacement?["Placeholder"];
                 if (resultFoundCrane2D != null)
                 {
                     Debug.Log("Result Found is " + resultFoundCrane2D);
@@ -140,7 +168,24 @@ public class ColorManager : MonoBehaviour
                 {
                     Debug.Log($"Result not found for {sessionNeeded}.");
                 }
-                // Add Green logic for 3 games.
+                if (resultFoundAlignment != null)
+                {
+                    Debug.Log("Result Found is " + resultFoundAlignment);
+                    Alignment.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+                }
+                else
+                {
+                    Debug.Log($"Result not found for {sessionNeeded}.");
+                }
+                if (resultFoundDisplacement != null)
+                {
+                    Debug.Log("Result Found is " + resultFoundDisplacement);
+                    Displacement.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+                }
+                else
+                {
+                    Debug.Log($"Result not found for {sessionNeeded}.");
+                }
 
 
             },

@@ -243,7 +243,7 @@ public class VisualActivityTest : MonoBehaviour
                 newSessionData["LeftScore"] = "~20/"+L.ToString();
                 newSessionData["RightScore"] = "~20/"+R.ToString();
                 newSessionData["Date"] = dateCurrent;
-                string sessions = "Sessions" + count.ToString();
+                string sessions = "Session" + count.ToString();
                 prevJObject[sessions] = newSessionData;
                 string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
 
