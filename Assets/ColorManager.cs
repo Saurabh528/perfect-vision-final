@@ -63,7 +63,8 @@ public class ColorManager : MonoBehaviour
 
                 var currentCrane2D = result.Data["Crane2D"].Value;
                 var currentVAT = result.Data["VAT"].Value;
-                JObject currentCrane2DJObject, currentVATJObject;
+                var currentWorth4Dot = result.Data["Worth4Dot"].Value;
+                JObject currentCrane2DJObject, currentVATJObject,currentWorth4DotJObject;
                 try
                 {
                     currentCrane2DJObject = JObject.Parse(currentCrane2D);
@@ -85,21 +86,32 @@ public class ColorManager : MonoBehaviour
                     Debug.Log($"Failed to parse VAT as JSON: {ex.Message}");
                     return;
                 }
+                try
+                {
+                    currentWorth4DotJObject = JObject.Parse(currentWorth4Dot);
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log($"Failed to parse Worth4Dot test as JSON: {ex.Message}");
+                    return;
+                }
                 count = Int32.Parse(result.Data["DiagnosticCount"].Value);
                 string sessionNeeded = "Session" + count.ToString();
                 Debug.Log("Session needed is " + sessionNeeded);
 
-                if (currentCrane2DJObject[sessionNeeded] == null)
-                {
-                    Debug.Log($"Session {sessionNeeded} not found in Crane2D data.");
-                    return;
-                }
+                //if (currentCrane2DJObject[sessionNeeded] == null)
+                //{
+                //    Debug.Log($"Session {sessionNeeded} not found in Crane2D data.");
+                //    return;
+                //}
 
                 JObject sessionObjectCrane2D = (JObject)currentCrane2DJObject[sessionNeeded];
                 JObject sessionObjectVAT = (JObject)currentVATJObject[sessionNeeded];
+                JObject sessionWorth4Dot = (JObject)currentWorth4DotJObject[sessionNeeded];
                 string resultFoundCrane2D = (string)sessionObjectCrane2D?["x"];
                 string resultFoundVAT = (string)sessionObjectVAT?["LeftScore"];
-
+                string resultFoundWorth4Dot = (string)sessionWorth4Dot?["Diagnosis"];
                 if (resultFoundCrane2D != null)
                 {
                     Debug.Log("Result Found is " + resultFoundCrane2D);
@@ -119,9 +131,18 @@ public class ColorManager : MonoBehaviour
                 {
                     Debug.Log($"Result not found for {sessionNeeded}.");
                 }
-// Add Green logic for 3 games.
+                if (resultFoundWorth4Dot != null)
+                {
+                    Debug.Log("Result Found is " + resultFoundWorth4Dot);
+                    Worth4DotTest.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+                }
+                else
+                {
+                    Debug.Log($"Result not found for {sessionNeeded}.");
+                }
+                // Add Green logic for 3 games.
 
-        
+
             },
             error =>
             {

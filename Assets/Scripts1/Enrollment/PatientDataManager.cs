@@ -164,11 +164,34 @@ public static class PatientDataManager
     }
 }";
 // Alignment , Displacement , Worth4test
-
+            string AlignmentData = @"
+{
+    ""Session0"": {
+        ""LeftScore"": ""0"",
+        ""RightScore"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+            string DisplacementData = @"
+{
+    ""Session0"": {
+        ""LeftScore"": ""0"",
+        ""RightScore"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+            string Worth4DotData = @"
+{
+    ""Session0"": {
+        ""LeftScore"": ""0"",
+        ""RightScore"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
             var request = new UpdateUserDataRequest()
             {
                 Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } ,{"DiagnosticCount","0"}, {"Crane3D", crane3Ddata},{ "Crane2D",crane2Ddata},{ "VAT",VATData} },
+                    { "COUNT","0" } ,{"DiagnosticCount","0"}, {"Crane3D", crane3Ddata},{ "Crane2D",crane2Ddata},{ "VAT",VATData},{ "Alignment",AlignmentData},{"Displacement",DisplacementData },{"Worth4Dot",Worth4DotData } },
                 Permission = UserDataPermission.Public
             };
 

@@ -1653,9 +1653,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VAT: {fileID: 1109548670}
-  Worth4DotTest: {fileID: 655428195}
-  Alignment: {fileID: 435791817}
-  Displacement: {fileID: 719646733}
+  Worth4DotTest: {fileID: 655428197}
+  Alignment: {fileID: 435791819}
+  Displacement: {fileID: 719646735}
   Crane2D: {fileID: 740486535}
 --- !u!4 &360736902
 Transform:
