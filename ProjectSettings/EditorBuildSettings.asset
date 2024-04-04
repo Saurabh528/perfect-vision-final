@@ -122,4 +122,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/VisualActivityTest/VisualActivityTest.unity
     guid: 540e9439dae05f34c9613d0b6c703f26
+  - enabled: 1
+    path: Assets/FlapNFly/FlapNFly.unity
+    guid: fef23bcac8c23c847b5cfb575dadc8bc
   m_configObjects: {}
