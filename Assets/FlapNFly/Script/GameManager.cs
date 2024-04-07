@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOver;
     public GameObject reload;
     public GameObject menu;
-    public GameObject stopScript;
+    //public GameObject stopScript;
 
 
     int score;
@@ -28,13 +28,12 @@ public class GameManager : MonoBehaviour
         menu.SetActive(true);
         Time.timeScale = 0;
 
-
     }
     public void IncreaseScore()
     {
-        Debug.Log("Score got increased");
-       //score++;
-        //scoreText.text = score.ToString();//converting our integer to string.
+       Debug.Log("Score got increased");
+       score++;
+       scoreText.text = score.ToString();//converting our integer to string.
     }
     
 }
