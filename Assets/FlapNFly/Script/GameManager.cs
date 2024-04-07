@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class GameManager : MonoBehaviour
 {
-    //public Text scoreText;//for storing scores
+    public TextMeshProUGUI scoreText;//for storing scores
     public GameObject gameOver;
     public GameObject reload;
     public GameObject menu;
@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        Debug.Log("HITTTT");
         gameOver.SetActive(true);
         reload.SetActive(true);
         menu.SetActive(true);
