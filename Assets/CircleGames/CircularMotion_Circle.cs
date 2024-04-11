@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class CircularMotion_Circle : MonoBehaviour
@@ -10,7 +11,16 @@ public class CircularMotion_Circle : MonoBehaviour
     public float maxDistance = 5f;
     public Slider speedSlider;
     private bool movingApart = true;
-
+    public GameObject pauseButton;
+    public GameObject resumeButton;
+    public Transform circle;
+    public Transform square;
+    public TextMeshProUGUI distanceText;
+    private void Awake()
+    {
+        pauseButton.SetActive(true);
+        resumeButton.SetActive(false);
+    }
     void Update()
     {
         float currentDistance = Vector3.Distance(object1.position, object2.position);
@@ -39,6 +49,23 @@ public class CircularMotion_Circle : MonoBehaviour
             //     movingApart = true; // Start moving them apart again
             // }
         }
+
+        float distance = Vector3.Distance(circle.position, square.position);
+        distanceText.text = "Distance: " + distance.ToString("F2");
+    }
+
+    public void PauseButton()
+    {
+        pauseButton.SetActive(false);
+        resumeButton.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void ResumeButton()
+    {
+
+        resumeButton.SetActive(false);
+        pauseButton.SetActive(true);
+        Time.timeScale = 1;
     }
 }
 
