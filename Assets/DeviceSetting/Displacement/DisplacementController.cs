@@ -23,9 +23,10 @@ public class DisplacementController : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _textStatus;
 	Process pythonProcess;
 	bool _finished = false;
+    public TextMeshProUGUI textDisplay;  // Reference to your TextMeshProUGUI component
+    string filePath = @"D:\PROJECTS\perfect-vision-aman2\Python\displacement.txt";  // Name of your text file
 
-	// Start is called before the first frame update
-	void Start()
+    void Start()
     {
 #if UNITY_EDITOR
 		//UISignIn.StartFromSignInDebugMode();
@@ -138,8 +139,20 @@ public class DisplacementController : MonoBehaviour
 
 	void ShowResult()
 	{
-		UnityEngine.Debug.Log("Show Result called");
-		MakeResultView("Iris Displacement (LEFT EYE)", PatientMgr.GetPatientDataDir() + "/data_left_displacement.csv");
+		//activate the textDisplay object
+		textDisplay.gameObject.SetActive(true);
+        if (System.IO.File.Exists(filePath))
+        {
+            // Read all text from the file
+            string contents = System.IO.File.ReadAllText(filePath);
+            // Set the text of your TextMeshProUGUI component
+            textDisplay.text = contents;
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("File not found: " + filePath);
+        }
+        MakeResultView("Iris Displacement (LEFT EYE)", PatientMgr.GetPatientDataDir() + "/data_left_displacement.csv");
 		MakeResultView("Iris Displacement (RIGHT EYE)", PatientMgr.GetPatientDataDir() + "/data_right_displacement.csv");
 		//string alternatepath = PatientMgr.GetPatientDataDir() + "/alternate_test.csv";
         string alternatepath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\Displacement\\RELD.txt";
