@@ -1194,7 +1194,7 @@ print("Standard Deviation:", std_dev2)
 text_to_save = f"Eye 1: Mean Value = {mean_value1}, Standard Deviation = {std_dev1}\nEye 2: Mean Value = {mean_value2}, Standard Deviation = {std_dev2}"
 
 # File path where the text will be saved
-file_path = "eye_statistics.txt"  # You can specify a different path or filename
+file_path = "D:\PROJECTS\perfect-vision-aman2\Python\displacement.txt"  # You can specify a different path or filename
 
 # Writing to the file
 with open(file_path, "w") as file:
