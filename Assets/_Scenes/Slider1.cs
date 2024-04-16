@@ -7,6 +7,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using PlayFab;
+using PlayFab.ClientModels;
 
 public class Slider1 : MonoBehaviour
 {
@@ -134,21 +136,62 @@ public class Slider1 : MonoBehaviour
 
 	public void OnBtnComplete()
 	{
-		if (GameState.currentPatient != null){
-			PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
-			string dpiFilename = DPICaculator.GetDPIPath();
-			if(File.Exists(dpiFilename)){
-				string[] lines = File.ReadAllLines(dpiFilename);
-				if(lines.Length  >= 2 && lines[0] == GameState.currentPatient.name)
-					ChangeScene.LoadScene("DeviceSetting");
-				else
-					ChangeScene.LoadScene("DPICheck");
-			}
-			else
-				ChangeScene.LoadScene("DPICheck");
-		}
-		else
-			ChangeScene.LoadScene("DeviceSetting");
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+    result =>
+    {
+        int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+        count++;
+        var request = new UpdateUserDataRequest()
+        {
+            Data = new Dictionary<string, string> { { "DiagnosticCount", count.ToString() } },
+            Permission = UserDataPermission.Public
+        };
+        PlayFabClientAPI.UpdateUserData(request,
+         result =>
+         {
+             UnityEngine.Debug.Log("Successfully changed the DiagnostiCount");
+             if (GameState.currentPatient != null)
+             {
+                 PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
+                 string dpiFilename = DPICaculator.GetDPIPath();
+                 if (File.Exists(dpiFilename))
+                 {
+                     string[] lines = File.ReadAllLines(dpiFilename);
+                     if (lines.Length >= 2 && lines[0] == GameState.currentPatient.name)
+                     {
+                         Debug.Log("Device Setting 1");
+                         ChangeScene.LoadScene("DeviceSetting");
+                     }
+                     else
+                     {
+                         Debug.Log("DPICheck Scene 1");
+                         ChangeScene.LoadScene("DPICheck");
+                     }
+                 }
+                 else
+                 {
+                     Debug.Log("DPICheck Scene 2");
+                     ChangeScene.LoadScene("DPICheck");
+                 }
+             }
+             else
+             {
+                 Debug.Log("Device Setting 2");
+                 ChangeScene.LoadScene("DeviceSetting");
+             }
+         },
+         error =>
+         {
+             UnityEngine.Debug.Log("Not Successfully changed the DiagnostiCount");
+         });
+
+    },
+    error =>
+    {
+        UnityEngine.Debug.Log("Error in GetUserData request");
+
+    });
+        
 	}
 
 	public void OnSliderTransparent(Boolean value)

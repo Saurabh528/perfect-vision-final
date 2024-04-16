@@ -1352,6 +1352,7 @@ public class UserAccountManager : MonoBehaviour
                     {
                         if (result.Data != null && result.Data.ContainsKey(key))
                         {
+                            //----------CHECK THIS-------------
                             GameState.DoctorID = result.Data[key].Value;
                             DataKey.SetPrefsString(key, GameState.DoctorID);
                             GetUserDataRequest request = new GetUserDataRequest();
@@ -1436,18 +1437,18 @@ public class UserAccountManager : MonoBehaviour
         Debug.Log("SignIn function called");
         Debug.Log("Using name and password: " + username);
 
-        string namepassHash = GetNamePassHash(username, password);
-         string pwdhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+        //string namepassHash = GetNamePassHash(username, password);
+         //string pwdhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
 
 
         GameState.username = username;
         GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
 
         //offline mode
-         if(PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&
+         if (/*PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&*/
          !string.IsNullOrEmpty(GameState.playfabID))
          {
-         	GameState.passwordhash = pwdhash;
+         	GameState.passwordhash = password;
          	GameState.IsOnline = false;
          	string expdatestr = DataKey.GetPrefsString(DataKey.EXPIREDATE);
          	if(!string.IsNullOrEmpty(expdatestr)){
@@ -1515,7 +1516,7 @@ public class UserAccountManager : MonoBehaviour
             }, result =>
             {
                 GameState.IsOnline = true;
-                GameState.passwordhash = pwdhash;
+                GameState.passwordhash = password;
                 GameState.username = username;
                 GameState.playfabID = result.PlayFabId;
                 SignInOnline(successAction, failedAction);
@@ -1539,7 +1540,7 @@ public class UserAccountManager : MonoBehaviour
             }, result =>
             {
                 GameState.IsOnline = true;
-                GameState.passwordhash = pwdhash;
+                GameState.passwordhash = password;
                 GameState.username = username;
                 GameState.playfabID = result.PlayFabId;
                 SignInOnline(successAction, failedAction);
@@ -1553,6 +1554,7 @@ public class UserAccountManager : MonoBehaviour
     }
     void SignUpForDoctor(string fabID, UnityAction successAction, UnityAction<string> failedAction)
     {
+        Debug.Log("SignUp Doctor called");
         string key = DataKey.EXPIREDATE;
         PlayFabClientAPI.GetUserReadOnlyData(new GetUserDataRequest()
         {
@@ -1561,6 +1563,11 @@ public class UserAccountManager : MonoBehaviour
         result =>
         {
             successAction.Invoke();
+            //GameState.username = username;
+            GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
+            GameState.playfabID = fabID;
+
+
             // if (result.Data != null && result.Data.ContainsKey(key))
             // {
             // 	string str = result.Data[key].Value;
@@ -1615,10 +1622,9 @@ public class UserAccountManager : MonoBehaviour
 
     public void SignUp(string licensekey, UnityAction successAction, UnityAction<string> failedAction)
     {
-
+        Debug.Log("SignUp Function called");
         GameState.IsOnline = false;
         Debug.Log("Using custom licenseKey: " + licensekey);
-
         PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             CustomId = licensekey,
@@ -1836,46 +1842,47 @@ public class UserAccountManager : MonoBehaviour
         PlayFabClientAPI.AddUsernamePassword(req,
             result =>
             {
-                //GameState.username = username;
+                GameState.username = username;
                 //RemoveLocalRecords();
                 //string namepassHash = GetNamePassHash(username, password);
-                //GameState.passwordhash = GetHashString(password + SystemInfo.deviceUniqueIdentifier);
+                GameState.passwordhash = password;
                 //DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
                 //PlayerPrefs.SetString(DataKey.GetPrefKeyName(PropName_NamePassHash), namepassHash);
                 SetDisplayName(username);
                 //PlayerPrefs.SetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID), GameState.playfabID);
-                //if (GameState.IsPatient())
-                //{
-                //    DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-                //    string key = DataKey.DOCTORID;
-                //    PlayFabClientAPI.GetUserData(new GetUserDataRequest()
-                //    {
-                //        Keys = new List<string>() { key }
-                //    },
-                //    result =>
-                //    {
-                //        if (result.Data != null && result.Data.ContainsKey(key))
-                //        {
-                //            GameState.DoctorID = result.Data[key].Value;
-                //            DataKey.SetPrefsString(key, GameState.DoctorID);
-                //            //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                //            PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
+                if (GameState.IsPatient())
+                {
+                    Debug.Log("AddUsernamPassword called in GameState.IsPatient()");
+                    DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
+                    string key = DataKey.DOCTORID;
+                    PlayFabClientAPI.GetUserData(new GetUserDataRequest()
+                    {
+                        Keys = new List<string>() { key }
+                    },
+                    result =>
+                    {
+                        if (result.Data != null && result.Data.ContainsKey(key))
+                        {
+                            GameState.DoctorID = result.Data[key].Value;
+                            DataKey.SetPrefsString(key, GameState.DoctorID);
+                            //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+                            PatientDataManager.LoadPatientData(OnLoadHomePatientDataSuccess, null);
 
-                //            return;
-                //        }
-                //    },
-                //    error =>
-                //    {
-                //        failedAction.Invoke(error.ToString());
-                //        return;
-                //    });
-                //}
-                //else
-                //{
-                //    //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
-                    successAction.Invoke();
-                //    return;
-                //}
+                            return;
+                        }
+                    },
+                    error =>
+                    {
+                        failedAction.Invoke(error.ToString());
+                        return;
+                    });
+                }
+                else
+                {
+                    //PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
+                successAction.Invoke();
+                    return;
+                }
             },
             error =>
             {
@@ -1919,6 +1926,7 @@ public class UserAccountManager : MonoBehaviour
 
     void OnLoadHomePatientDataSuccess(Dictionary<Int32, PatientData> plist)
     {
+        Debug.Log("OnLoadHomePatientDataSuccess Called");
         PatientMgr.SetPatientList(plist);
         GameState.currentPatient = plist.ElementAt(0).Value;
         ChangeScene.LoadScene("ColorScreen");

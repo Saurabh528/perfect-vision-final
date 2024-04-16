@@ -33,7 +33,15 @@ public class UISignIn : MonoBehaviour {
 
     void OnSignInSuccess () {
 		GameState.username = username.text;
-		ChangeScene.LoadScene(ChangeScene.SCENENAME_MODEPANEL);
+		if(GameState.IsDoctor())
+		{
+            ChangeScene.LoadScene(ChangeScene.SCENENAME_MODEPANEL);
+        }
+		else
+		{
+            ChangeScene.LoadScene("HomeTherapy");
+        }
+		
 	}
 
 

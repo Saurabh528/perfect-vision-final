@@ -9,13 +9,15 @@ using System.Diagnostics;
 using UnityEngine;
 using PlayFab.GroupsModels;
 using UnityEngine.PlayerLoop;
+using System.Linq;
+//using UnityEditor.PackageManager;
 
 public static class PatientDataManager
 {
-
-
-	public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
+    
+    public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
+		
         UnityEngine.Debug.Log("Delete Patient called");
 		if (pdata == null)
 			return;
@@ -62,6 +64,7 @@ public static class PatientDataManager
 	}
 	public static void AddPatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
+
 		//Called when we click add on the home section or clinic section called 
         UnityEngine.Debug.Log("5)Add Patient called");
         if (pdata == null)
@@ -83,6 +86,7 @@ public static class PatientDataManager
 			request.Data = new Dictionary<string, string>();
 			request.Data.Add(DataKey.PATIENT, jsonstr);
 			request.Permission = UserDataPermission.Public;
+
 			PlayFabClientAPI.UpdateUserData(request,
 				result => {
 					successAction.Invoke(pdata);
@@ -98,27 +102,121 @@ public static class PatientDataManager
 			failAction.Invoke($"Can not add patient in offline mode.");
 			return;
 		}
-		string doctorID = GameState.playfabID;
-		string licenseKey = UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+		//string doctorID = GameState.playfabID;
+        //string licenseKey = UtilityFunc.ComputeSha256Hash(SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+        //UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
+        var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
         UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-		PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
+        //var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
+        //UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
+        pdata.licenseKey = licenseKey;
+		UIEditPatient.AddLicenseKey(licenseKey);
+		UIEditPatient.Instance.DisplayLicenseString();
+
+
+        PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             TitleId = PlayFabSettings.TitleId,
             CustomId = licenseKey,
             CreateAccount = true
 			//, InfoRequestParameters = new GetPlayerCombinedInfoRequestParams(GetTitleData=True)
-        }, (result) => {
+        },result=>{
+			UnityEngine.Debug.Log("UpdateUserData result 0 called");
 			pdata.PFID = result.PlayFabId;
-			UpdateUserDataRequest request = new UpdateUserDataRequest();
-			request.Data = new Dictionary<string, string>();
-			request.Data.Add(DataKey.DOCTORID, doctorID);
+
+            //UpdateUserDataRequest request = new UpdateUserDataRequest();
+            //request.Data = new Dictionary<string, string>();
+            //request.Data.Add(DataKey.DOCTORID, doctorID);
+
+			//result.PlayFabId gives the patient's id
+
+            var doctorID = GameState.playfabID;
+			UnityEngine.Debug.Log("Playfab id is " + doctorID);
+			UnityEngine.Debug.Log("Username is " + GameState.username);
+			UnityEngine.Debug.Log("Password is" + GameState.passwordhash);
+
+            string crane3Ddata = @"
+{
+    ""Session0"": {
+        ""x"": ""0"",
+        ""y"": ""0"",
+        ""z"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+
+
+            string crane2Ddata = @"
+{
+    ""Session0"": {
+        ""x"": ""0"",
+        ""y"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+
+            string VATData = @"
+{
+    ""Session0"": {
+        ""LeftScore"": ""0"",
+        ""RightScore"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+// Alignment , Displacement , Worth4test
+            string AlignmentData = @"
+{
+    ""Session0"": {
+        ""Placeholder"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+            string DisplacementData = @"
+{
+    ""Session0"": {
+        ""Result"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+            string Worth4DotData = @"
+{
+    ""Session0"": {
+        ""Placeholder"": ""0"",
+		""Date"":""yyyy-mm-dd""
+    }
+}";
+            var request = new UpdateUserDataRequest()
+            {
+                Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
+                    { "COUNT","0" } ,{"DiagnosticCount","0"}, { "Crane2D",crane2Ddata},{ "VAT",VATData},{ "Alignment",AlignmentData},{"Displacement",DisplacementData },{"Worth4Dot",Worth4DotData } }, //{"Crane3D", crane3Ddata},
+                Permission = UserDataPermission.Public
+            };
+
+			//var request = new UpdateUserDataRequest
+			//{
+			//    Data = new Dictionary<string, string>
+			//{
+			//    { "DoctorID", GameState.playfabID } // Associate the current doctor's ID with the patient
+			//}
+			//};
 			PlayFabClientAPI.UpdateUserData(request,
-			result => {
-				request = new UpdateUserDataRequest();
-				request.Data = new Dictionary<string, string>();
-				request.Data.Add(DataKey.ROLE, USERROLE.PATIENT.ToString());
+			result =>
+			{
+				UnityEngine.Debug.Log("UpdateUserData result 1 called---working");
+				//request.Data = new Dictionary<string, string>();
+				//request.Data.Add(DataKey.DOCTORID, doctorID);
 				PlayFabClientAPI.UpdateUserData(request,
-				result => {
+				result =>
+				{
+					UnityEngine.Debug.Log("UpdateUserData result 2 called---working");
+
+					//----------------SOHAM-ADDITION-----------------
+					//pdata.licenseKey = licenseKey;
+					//PatientMgr.AddPatientData(pdata);
+					//string jsonstr = JsonConvert.SerializeObject(plist);
+					//DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+					//successAction.Invoke(pdata);
+					//---------------SOHAM-ADDITION-------------------
 					PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 					{
 						TitleId = PlayFabSettings.TitleId,
@@ -126,30 +224,42 @@ public static class PatientDataManager
 						Password = GameState.passwordhash,
 					}, result =>
 					{
+						UnityEngine.Debug.Log("UpdateUserData result 3 called");
 						pdata.licenseKey = licenseKey;
 						PatientMgr.AddPatientData(pdata);
 						string jsonstr = JsonConvert.SerializeObject(plist);
-						DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+                        string jsonstr2 = JsonConvert.SerializeObject(pdata);
+                        DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
 						UpdateUserDataRequest request = new UpdateUserDataRequest();
 						request.Data = new Dictionary<string, string>();
-						request.Data.Add(DataKey.PATIENT, jsonstr);
-						request.Permission = UserDataPermission.Public;
+                        request.Data.Add(DataKey.PATIENT, jsonstr);
+                        request.Data.Add(pdata.name, jsonstr2);
+						UnityEngine.Debug.Log("PatientName is" + pdata.name);
+                        request.Permission = UserDataPermission.Public;
 						PlayFabClientAPI.UpdateUserData(request,
-							result => {
+							result =>
+							{
+								UnityEngine.Debug.Log("UpdateUserData result 4 called");
 								successAction.Invoke(pdata);
 							},
-							error => {
+							error =>
+							{
+								UnityEngine.Debug.Log("UpdateUserData error 1 called");
 								PatientMgr.RemovePatient(pdata.ID);
 								failAction.Invoke(error.ToString());
-						});
+							});
 						return;
 					}, error =>
 					{
-						Application.Quit();
-						return;
+						UnityEngine.Debug.Log("UpdateUserData error 2 called ---working");
+                        //failAction.Invoke(error.ToString());
+                        //Application.Quit();
+                        return;
 					});
 				},
-				error => {
+				error =>
+				{
+					UnityEngine.Debug.Log("UpdateUserData error 3 called");
 					PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 					{
 						TitleId = PlayFabSettings.TitleId,
@@ -157,15 +267,20 @@ public static class PatientDataManager
 						Password = GameState.passwordhash,
 					}, result =>
 					{
+						UnityEngine.Debug.Log("UpdateUserData result 5 called");
 						failAction.Invoke(error.ToString());
 					},
-					error =>{
+					error =>
+					{
+						UnityEngine.Debug.Log("UpdateUserData error 4 called");
 						Application.Quit();
 					});
 					return;
 				});
 			},
-			error => {
+			error =>
+			{
+				UnityEngine.Debug.Log("UpdateUserData error 5 called");
 				PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 				{
 					TitleId = PlayFabSettings.TitleId,
@@ -173,19 +288,25 @@ public static class PatientDataManager
 					Password = GameState.passwordhash,
 				}, result =>
 				{
+					UnityEngine.Debug.Log("UpdateUserData result 6 called");
 					failAction.Invoke(error.ToString());
 				},
-				error =>{
+				error =>
+				{
+					UnityEngine.Debug.Log("UpdateUserData error 5 called");
 					Application.Quit();
 				});
 				return;
 			});
-       	},
-		error => {
-            failAction.Invoke(error.ToString());
-        });		
+		},
+		error =>
+		{
+			UnityEngine.Debug.Log("UpdateUserData error 6 called");
+			failAction.Invoke(error.ToString());
+		});
 	}
 
+	
 
 	public static void UpdatePatient(PatientData pdata, UnityAction<PatientData> successAction = null, UnityAction<string> failAction = null)
 	{
