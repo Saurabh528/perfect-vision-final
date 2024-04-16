@@ -14,6 +14,11 @@ using PlayFab.ClientModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using UnityEngine.Networking;
+using PlayFab.Internal;
+using PlayFab.DataModels;
+using EntityKey = PlayFab.DataModels.EntityKey;
+
 public class DotAlignmentController : GamePlayController {
 
 	public Text textScore;
@@ -101,7 +106,9 @@ public class DotAlignmentController : GamePlayController {
 
 	void ShowResult()
 	{
-		foreach (Transform child in _dotParent)
+		UnityEngine.Debug.Log("SHW RESULT CALLEDDDDDDDDDDDD");
+        UploadCSV("D:\\PROJECTS\\perfect-vision-aman2\\Python\\collected_metrics.csv");
+        foreach (Transform child in _dotParent)
 		{
 			child.gameObject.SetActive(false);
 		}
@@ -179,7 +186,8 @@ public class DotAlignmentController : GamePlayController {
 			_btnHelp.SetActive(true);
 			_textStatus.gameObject.SetActive(false);
 		}
-	}
+        
+    }
 
 	void CreateSimilarityGraph(List<IrisState> irisList, IRISSIMCLASS isclass)
 	{
@@ -247,7 +255,9 @@ public class DotAlignmentController : GamePlayController {
 		{
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
-		}
+			UnityEngine.Debug.Log("PYTHON PROCESS IS NOT NULLLLLLl");
+            
+        }
 		else
 			_textInstruction.text = "Checking failed. Try again.";
 	}
@@ -522,7 +532,61 @@ public class DotAlignmentController : GamePlayController {
 		}
 		contentByte.Stroke();
 	}
-	void SaveData(int x , int y)
+
+    private void UploadCSV(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            UnityEngine.Debug.LogError("File not found: " + filePath);
+            return;
+        }
+
+        byte[] fileContents = File.ReadAllBytes(filePath);
+
+        PlayFabDataAPI.InitiateFileUploads(new InitiateFileUploadsRequest
+        {
+            Entity = new EntityKey
+            {
+                Id = PlayFabSettings.staticPlayer.EntityId, // Use EntityId and Type from settings, populated after login
+                Type = PlayFabSettings.staticPlayer.EntityType
+            },
+            FileNames = new List<string> { Path.GetFileName(filePath) }
+        },
+        uploadResult =>
+        {
+            if (uploadResult.UploadDetails.Count > 0)
+            {
+                UploadFileToPlayFab(uploadResult.UploadDetails[0].UploadUrl, fileContents, uploadResult.UploadDetails[0].FileName);
+            }
+        },
+        error =>
+        {
+            UnityEngine.Debug.LogError("Error initiating file upload: " + error.ErrorMessage);
+        });
+    }
+
+    private void UploadFileToPlayFab(string uploadUrl, byte[] fileContents, string fileName)
+    {
+        var www = new UnityWebRequest(uploadUrl, "PUT")
+        {
+            uploadHandler = new UploadHandlerRaw(fileContents),
+            downloadHandler = new DownloadHandlerBuffer()
+        };
+        www.SetRequestHeader("Content-Type", "application/octet-stream");
+
+        www.SendWebRequest().completed += (operation) =>
+        {
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                UnityEngine.Debug.LogError("Error uploading file: " + www.error);
+            }
+            else
+            {
+                UnityEngine.Debug.Log("File successfully uploaded: " + fileName);
+            }
+        };
+    }
+    void SaveData(int x , int y)
 	{
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
@@ -550,18 +614,22 @@ public class DotAlignmentController : GamePlayController {
                 {
                     Data = new Dictionary<string, string> { { "Alignment", updatedJson } },
                     Permission = UserDataPermission.Public
-                };
-                PlayFabClientAPI.UpdateUserData(request,
-                 result =>
-                 {
-                     UnityEngine.Debug.Log("Successfully added Alignment data");
+				};
+				PlayFabClientAPI.UpdateUserData(request,
+				 result =>
+				 {
+					 UnityEngine.Debug.Log("Successfully added Alignment data");
+                    
                  },
-                 error =>
-                 {
-                     UnityEngine.Debug.Log("Not added Alignment data");
-
+				 error =>
+				 {
+					 UnityEngine.Debug.Log("Not added Alignment data");
+                     UnityEngine.Debug.Log("Error fetching user data: " + error.GenerateErrorReport());
                  });
-            },// Success callback
+
+
+					
+			},// Success callback
             error =>
             {
                 UnityEngine.Debug.Log("Alignment data GetUserData api called error");

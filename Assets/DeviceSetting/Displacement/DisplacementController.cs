@@ -23,8 +23,8 @@ public class DisplacementController : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _textStatus;
 	Process pythonProcess;
 	bool _finished = false;
-    public TextMeshProUGUI textDisplay;  // Reference to your TextMeshProUGUI component
-    string filePath = @"D:\PROJECTS\perfect-vision-aman2\Python\displacement.txt";  // Name of your text file
+    public TextMeshProUGUI textDisplay; 
+    string filePath = @"D:\PROJECTS\perfect-vision-aman2\Python\displacement.txt";  //Do the dynamic path
 
     void Start()
     {
@@ -147,6 +147,7 @@ public class DisplacementController : MonoBehaviour
             string contents = System.IO.File.ReadAllText(filePath);
             // Set the text of your TextMeshProUGUI component
             textDisplay.text = contents;
+			SaveData(contents);
         }
         else
         {
@@ -391,7 +392,7 @@ public class DisplacementController : MonoBehaviour
 		prgTime.Add(chk);
 		document.Add(prgTime);
 	}
-	void SaveData(int x , int y)
+	void SaveData(string s)
 	{
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
             result =>
@@ -407,8 +408,7 @@ public class DisplacementController : MonoBehaviour
                 UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
                 JObject prevJObject = JObject.Parse(prevJson);
                 JObject newSessionData = new JObject();
-                newSessionData["x"] = x.ToString();
-                newSessionData["y"] = y.ToString();
+                newSessionData["Result"] = s;
                 newSessionData["Date"] = dateCurrent;
                 
 				string sessions = "Session" + count.ToString();

@@ -174,7 +174,7 @@ public static class PatientDataManager
             string DisplacementData = @"
 {
     ""Session0"": {
-        ""Placeholder"": ""0"",
+        ""Result"": ""0"",
 		""Date"":""yyyy-mm-dd""
     }
 }";

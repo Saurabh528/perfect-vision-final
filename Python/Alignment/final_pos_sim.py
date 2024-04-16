@@ -2421,6 +2421,7 @@ for dot_number, dot_metrics in metrics.items():
 
 # Create a DataFrame
 df_metrics = pd.DataFrame(flat_metrics, columns=['Dot Number', 'Position', 'Metric1', 'Metric2', 'Metric3', 'Metric4'])
+df_metrics = df_metrics.groupby('Position').agg(['mean', 'std'])
 
 # Save the DataFrame to a file
 df_metrics.to_csv('D:\PROJECTS\perfect-vision-aman2\Python\collected_metrics.csv', index=False)

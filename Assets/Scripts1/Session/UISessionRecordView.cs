@@ -14,6 +14,9 @@ using Org.BouncyCastle.Asn1.BC;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using System.Drawing.Imaging;
+using PlayFab;
+using PlayFab.ClientModels;
+using TMPro;
 
 public class MyPdfPageEventHandler : PdfPageEventHelper
 {
@@ -49,13 +52,25 @@ public class UISessionRecordView : MonoBehaviour
 	[SerializeField] ColorCalibrationProgressView _colorCaliProgView;
 	[SerializeField] GameObject _disProgressSection, _sessionProgressSection, _colorProgressSection;
 	[SerializeField] CalibrationSliderProgressView _calisliderView;
+	public TextMeshProUGUI textCrane2D;
+    public TextMeshProUGUI textDisplacement;
+    public TextMeshProUGUI textVAT;
+    public TextMeshProUGUI textAlignment;
+    public TextMeshProUGUI textWorth4DOT;
     private void Awake()
 	{
 		Instance = this;
-	}
+        //textCrane2D make it disable
+        textCrane2D.enabled = false;
+		textDisplacement.enabled = false;
+		textVAT.enabled = false;
+		textAlignment.enabled = false;
+		textWorth4DOT.enabled = false;
+
+    }
 	public void LoadSessionData()
 	{
-		
+		UnityEngine.Debug.Log("Load Session Data called");
 		if (GameState.currentPatient == null)
 		{
 			Clear();
@@ -67,6 +82,7 @@ public class UISessionRecordView : MonoBehaviour
 
 	void OnLoadPatientSessionDataSuccess()
 	{
+		UnityEngine.Debug.Log("On Load Patient Session Data Success called");
 		ShowPatientSessionData();
 	}
 
@@ -78,6 +94,8 @@ public class UISessionRecordView : MonoBehaviour
 
 	public void Clear()
 	{
+		//2 called,4th time called
+		UnityEngine.Debug.Log("Clear Called");
 		foreach (UISessionReportButton btn in _ssReportButtons)
 		{
 			GameObject.Destroy(btn.gameObject);
@@ -90,6 +108,9 @@ public class UISessionRecordView : MonoBehaviour
 
 	public void ShowPatientSessionData()
 	{
+		
+		//1st called,3rd time called
+		UnityEngine.Debug.Log("Show Patient Session Data called");
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
 		Clear();
 		List<SessionRecord> sessionlist = record.GetSessionRecordList();
@@ -104,11 +125,14 @@ public class UISessionRecordView : MonoBehaviour
 			btn.transform.SetSiblingIndex(siblingIndex++);
 			_ssReportButtons.Add(btn);
 		}
-	}
+        
+    }
 
+	
 	public void ShowSessionReport(UISessionReportButton button)
 	{
-		_reportView.ViewRecord(button._ssRecord);
+        UnityEngine.Debug.Log("Show Session Report called");
+        _reportView.ViewRecord(button._ssRecord);
 		_reportView.transform.SetSiblingIndex(button.transform.GetSiblingIndex() + 1);
 		_reportView.transform.SetSiblingIndex(button.transform.GetSiblingIndex() + 1);
 		_reportView.gameObject.SetActive(true);
@@ -117,7 +141,8 @@ public class UISessionRecordView : MonoBehaviour
 
 	ColorCalibrationProgressView CreateColorCalibrationView(ColorChannel channel)
 	{
-		ColorCalibrationProgressView view = Instantiate(_colorCalibProgViewTmpl, _colorCalibProgViewTmpl.transform.position, _colorCalibProgViewTmpl.transform.rotation);
+        UnityEngine.Debug.Log("Color Callibiration VIew called");
+        ColorCalibrationProgressView view = Instantiate(_colorCalibProgViewTmpl, _colorCalibProgViewTmpl.transform.position, _colorCalibProgViewTmpl.transform.rotation);
 		view.transform.SetParent(_colorCalibProgViewTmpl.transform.parent);
 		view.transform.localScale = _colorCalibProgViewTmpl.transform.localScale;
 		view.name = channel.ToString();
@@ -128,6 +153,8 @@ public class UISessionRecordView : MonoBehaviour
 	}
 	public void OnBtnProgressionAnalysis()
 	{
+		
+		UnityEngine.Debug.Log("On Btn Progression Analysis called");
 		ClearProgressViews();
 		List<DisplacementRecord> dispplaceRecords = GetMeanDisplacementList();
 		if(dispplaceRecords !=  null &&  dispplaceRecords.Count != 0)
@@ -165,11 +192,59 @@ public class UISessionRecordView : MonoBehaviour
 			_progressViews.Add(view);
 		}
 		StartCoroutine(Routine_ScrollToProgression());
-	}
+        GetDataFunction();
+    }
+    void GetDataFunction()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+    result =>
+    {
 
-	
-	IEnumerator Routine_ScrollToProgression()
+        //var prevJson = result.Data["Crane2D"].Value;
+        //int count = Int32.Parse(result.Data["COUNT"].Value);
+        // check if the session already exists.  If it exists, do not manipulate Json string. 
+        /*var prevJson = result.Data["Crane2D"].Value;
+        int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+        //count++;
+
+        DateTime now = DateTime.Now;
+        string dateCurrent = now.ToShortDateString();
+
+        UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+        JObject prevJObject = JObject.Parse(prevJson);
+        JObject newSessionData = new JObject();
+        newSessionData["x"] = x.ToString();
+        newSessionData["y"] = y.ToString();
+        newSessionData["Date"] = dateCurrent;
+
+        string sessions = "Session" + count.ToString();
+        prevJObject[sessions] = newSessionData;
+        string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);*/
+
+        UnityEngine.Debug.Log("Get User Data called");
+        textCrane2D.enabled = true;
+		textDisplacement.enabled = true;
+		textVAT.enabled = true;
+		textAlignment.enabled = true;
+		textWorth4DOT.enabled = true;
+        UnityEngine.Debug.Log(result.Data["Crane2D"].Value);
+		textCrane2D.text = "CRANE2D: " + result.Data["Crane2D"].Value;
+		textDisplacement.text = "Displacement: " + result.Data["Displacement"].Value;
+        textVAT.text = "VAT: " + result.Data["VAT"].Value;
+		textAlignment.text = "Alignment: " + result.Data["Alignment"].Value;
+		textWorth4DOT.text = "Worth 4 DOT: " + result.Data["Worth4Dot"].Value;
+    },// Success callback
+    error =>
+    {
+        UnityEngine.Debug.Log("Crane2D data GetUserData api called error");
+
+    });// Error callback
+    }
+
+
+    IEnumerator Routine_ScrollToProgression()
 	{
+
 		//if(_scrollRect.content.sizeDelta.y < 2000)
 		{
 			//yield return new WaitForSeconds(0.1f);
@@ -193,6 +268,8 @@ public class UISessionRecordView : MonoBehaviour
 
 	public void ClearProgressViews()
 	{
+		//3rd called,
+		UnityEngine.Debug.Log("Clear Progress Views called");
 		_disProgressSection.SetActive(false);
 		_sessionProgressSection.SetActive(false);
 		_colorProgressSection.SetActive(false);
@@ -459,6 +536,7 @@ public class UISessionRecordView : MonoBehaviour
 
 	void DrawColorCalibrationGraph(Document document, PdfWriter writer, ColorChannel channel)
 	{
+		UnityEngine.Debug.Log("DrawColorCalibrationGraph called");
 		Dictionary<DateTime, uint> timeValuelist = UISessionRecordView.GetSessionColorList(channel);
 		PDFUtil.AddSubSection(UtilityFunc.ColorChannelToName(channel) + " Slider RGB Values Over Time", document);
 		iTextSharp.text.pdf.BaseFont bfntHead = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
