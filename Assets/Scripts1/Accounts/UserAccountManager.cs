@@ -1912,7 +1912,7 @@ public class UserAccountManager : MonoBehaviour
         PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
         {
             Data = new Dictionary<string, string> {
-        { "clinicLimit", "0" },
+        { "clinicLimit", "0" },{"homeLimit","0"},
         { "Role", role }
         }
         }, result => {

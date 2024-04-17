@@ -57,6 +57,7 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnBtnAddPatient()
 	{
+		//1st Called when click on Add Patient
 		//Called 2nd when click on Add
 		Debug.Log("2) Button Add Patient called.");
 		_curdata = null;
