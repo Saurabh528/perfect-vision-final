@@ -47,6 +47,19 @@ then open the folder in unity or you can find useful stuff by [browsing awesome 
 	◦ [ScreenCali/](https://github.com/NiKuang413/PerfectVision/tree/master/Python/ScreenCali) : Python scripts used in ScreenCali tool
 - [WindowsBuild/](https://github.com/NiKuang413/PerfectVision/tree/master/WindowsBuild) : Executables for Windows platform. This includes main unity project executables and python builds. Python scripts in Python directory can be built using pyinstaller command and .spec files.
 
+## Additions
+
+# FlapNFly Game
+
+# Convergence Game
+
+# Function: Save Data
+This function SaveData uses PlayFab's API to update a user's session data with specified x and y coordinates along with the current date. It increments a session count, updates or appends a new session entry in JSON format, and handles both success and error callbacks with appropriate console logging. This method is useful for tracking and storing user position data over multiple sessions in an application.
+
+# KeyValue pair of Diagnostic Tools
+
+
+
 ## How to Build
 
 
