@@ -1,0 +1,2 @@
+Eye 1: Mean Value = 7.29, Standard Deviation = 2.77
+Eye 2: Mean Value = 17.6, Standard Deviation = 15.58

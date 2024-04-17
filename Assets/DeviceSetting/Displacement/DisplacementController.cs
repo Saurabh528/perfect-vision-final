@@ -8,6 +8,11 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using TMPro;
+using PlayFab;
+using PlayFab.ClientModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 public class DisplacementController : MonoBehaviour
 {
 	[SerializeField] TCPListener _tcp;
@@ -18,9 +23,10 @@ public class DisplacementController : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _textStatus;
 	Process pythonProcess;
 	bool _finished = false;
+    public TextMeshProUGUI textDisplay; 
+    string filePath = @"D:\PROJECTS\perfect-vision-aman2\Python\displacement.txt";  //Do the dynamic path
 
-	// Start is called before the first frame update
-	void Start()
+    void Start()
     {
 #if UNITY_EDITOR
 		//UISignIn.StartFromSignInDebugMode();
@@ -95,6 +101,7 @@ public class DisplacementController : MonoBehaviour
 		{
 			if (_textStatus)
 				_textStatus.text = message.Substring(4);
+
 		}
 	}
 
@@ -132,13 +139,32 @@ public class DisplacementController : MonoBehaviour
 
 	void ShowResult()
 	{
-		MakeResultView("Iris Displacement (LEFT EYE)", PatientMgr.GetPatientDataDir() + "/data_left_displacement.csv");
+		//activate the textDisplay object
+		textDisplay.gameObject.SetActive(true);
+        if (System.IO.File.Exists(filePath))
+        {
+            // Read all text from the file
+            string contents = System.IO.File.ReadAllText(filePath);
+            // Set the text of your TextMeshProUGUI component
+            textDisplay.text = contents;
+			SaveData(contents);
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("File not found: " + filePath);
+        }
+        MakeResultView("Iris Displacement (LEFT EYE)", PatientMgr.GetPatientDataDir() + "/data_left_displacement.csv");
 		MakeResultView("Iris Displacement (RIGHT EYE)", PatientMgr.GetPatientDataDir() + "/data_right_displacement.csv");
-		string alternatepath = PatientMgr.GetPatientDataDir() + "/alternate_test.csv";
-		if (File.Exists(alternatepath)){
+		//string alternatepath = PatientMgr.GetPatientDataDir() + "/alternate_test.csv";
+        string alternatepath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\Displacement\\RELD.txt";
+		UnityEngine.Debug.Log(alternatepath);
+        if (File.Exists(alternatepath)){
+			UnityEngine.Debug.Log("Alternate path ke andar");
 			string[] strs = File.ReadAllLines(alternatepath);
+			UnityEngine.Debug.Log(strs);
 			if(strs.Length > 1) {
 				string[] valuestrs = strs[1].Split(new char[] {','});
+				UnityEngine.Debug.Log(valuestrs);
 				float rightAver = float.Parse(valuestrs[1]);
 				float leftAver = float.Parse(valuestrs[2]);
 				if(valuestrs.Length > 2) {
@@ -366,4 +392,49 @@ public class DisplacementController : MonoBehaviour
 		prgTime.Add(chk);
 		document.Add(prgTime);
 	}
+	void SaveData(string s)
+	{
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                 
+                var prevJson = result.Data["Displacement"].Value;
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                //count++;
+
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                newSessionData["Result"] = s;
+                newSessionData["Date"] = dateCurrent;
+                
+				string sessions = "Session" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "Displacement", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added Displacement data");
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added Displacement data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("Displacement data GetUserData api called error");
+
+            });// Error callback
+    }
 }

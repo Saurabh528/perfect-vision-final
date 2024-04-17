@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Org.BouncyCastle.Asn1.Mozilla;
+using Newtonsoft.Json.Linq;
 
 public abstract class GameConst
 {
@@ -59,8 +60,9 @@ public abstract class GameState
 		set{
 			_playfabID = value;
 			StringEncrypter.SetKey(value);
-		}
-	}
+        }
+    }
+	//public string playfabID2 = ;
 	public static string passwordhash = "";
 	public static bool MODE_DOCTORTEST = false;
 	public static USERROLE userRole;
