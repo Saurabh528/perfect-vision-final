@@ -14,6 +14,7 @@ public class UIEditPatient : MonoBehaviour
 	[SerializeField] TMP_Dropdown _gender, _place;
 	[SerializeField] TextMeshProUGUI _msg;
 	[SerializeField] TextMeshProUGUI _lblButton;
+	[SerializeField] GameObject AddButton;
 	public float _msgTime = 3;
 	float _msgexpiretime;
 	List<PatientData> _plist;
@@ -26,6 +27,7 @@ public class UIEditPatient : MonoBehaviour
 
     private void Awake()
     {
+		AddButton.SetActive(false);
         if (Instance == null)
         {
             Instance = this;
@@ -182,9 +184,11 @@ public class UIEditPatient : MonoBehaviour
 			_licenseKey.text = "";
 			_expireDate.gameObject.SetActive(false);
 			_licenseKey.gameObject.SetActive(false);
+			AddButton.SetActive(false);
 		}
 		else{
-			_expireDate.gameObject.SetActive(true);
+             AddButton.SetActive(true);
+            _expireDate.gameObject.SetActive(true);
 			_licenseKey.gameObject.SetActive(true);
 		}
 	}

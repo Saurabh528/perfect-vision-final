@@ -8097,6 +8097,7 @@ MonoBehaviour:
   _place: {fileID: 150742552}
   _msg: {fileID: 1956195118}
   _lblButton: {fileID: 230981923}
+  AddButton: {fileID: 683221087}
   _msgTime: 3
 --- !u!114 &413230462
 MonoBehaviour:
@@ -34959,6 +34960,11 @@ MonoBehaviour:
   _sessionProgressSection: {fileID: 1214473935}
   _colorProgressSection: {fileID: 227006439}
   _calisliderView: {fileID: 1853562913}
+  textCrane2D: {fileID: 0}
+  textDisplacement: {fileID: 0}
+  textVAT: {fileID: 0}
+  textAlignment: {fileID: 0}
+  textWorth4DOT: {fileID: 0}
 --- !u!1 &1819547512
 GameObject:
   m_ObjectHideFlags: 0
