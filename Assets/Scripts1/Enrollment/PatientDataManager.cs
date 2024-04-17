@@ -14,7 +14,7 @@ using System.Linq;
 
 public static class PatientDataManager
 {
-    
+	static bool flag = true;
     public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
 		
@@ -64,7 +64,7 @@ public static class PatientDataManager
 	}
 	public static void AddPatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
-
+		
 		//Called when we click add on the home section or clinic section called 
         UnityEngine.Debug.Log("5)Add Patient called");
         if (pdata == null)
@@ -78,24 +78,26 @@ public static class PatientDataManager
 
 		}
 
-		if(pdata.place == THERAPPYPLACE.Clinic){
-			PatientMgr.AddPatientData(pdata);
-			string jsonstr = JsonConvert.SerializeObject(plist);
-			DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-			UpdateUserDataRequest request = new UpdateUserDataRequest();
-			request.Data = new Dictionary<string, string>();
-			request.Data.Add(DataKey.PATIENT, jsonstr);
-			request.Permission = UserDataPermission.Public;
+		if(pdata.place == THERAPPYPLACE.Clinic)
+		{
+			//PatientMgr.AddPatientData(pdata);
+			//string jsonstr = JsonConvert.SerializeObject(plist);
+			//DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+			//UpdateUserDataRequest request = new UpdateUserDataRequest();
+			//request.Data = new Dictionary<string, string>();
+			//request.Data.Add(DataKey.PATIENT, jsonstr);
+			//request.Permission = UserDataPermission.Public;
 
-			PlayFabClientAPI.UpdateUserData(request,
-				result => {
-					successAction.Invoke(pdata);
-				},
-				error => {
-					PatientMgr.RemovePatient(pdata.ID);
-					failAction.Invoke(error.ToString());
-			});
-			return;
+			//PlayFabClientAPI.UpdateUserData(request,
+				//result => {
+				//	successAction.Invoke(pdata);
+				//},
+				//error => {
+				//	PatientMgr.RemovePatient(pdata.ID);
+				//	failAction.Invoke(error.ToString());
+			//}
+			//	);
+			//return;
 		}
 
 		if(!GameState.IsOnline){
@@ -240,7 +242,12 @@ public static class PatientDataManager
 							result =>
 							{
 								UnityEngine.Debug.Log("UpdateUserData result 4 called");
-								successAction.Invoke(pdata);
+								UpdateHomeLimit();
+								if(flag)
+								{
+                                    successAction.Invoke(pdata);
+                                }
+								
 							},
 							error =>
 							{
@@ -306,7 +313,43 @@ public static class PatientDataManager
 		});
 	}
 
-	
+	public static void UpdateHomeLimit()
+	{
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                string homeLimit = result.Data["homeLimit"].Value;
+                int homeLimitInt = int.Parse(homeLimit);
+				if(homeLimitInt > 5)
+				{
+					flag = false;
+				}
+                homeLimitInt++;
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "homeLimit", homeLimitInt.ToString() } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added HomeLimmit data");
+
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added HomeLimit data");
+                     //UnityEngine.Debug.Log("Error fetching user data: " + error.GenerateErrorReport());
+                 });
+
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("homeLimit data GetUserData api called error");
+
+            });// Error callback
+}
 
 	public static void UpdatePatient(PatientData pdata, UnityAction<PatientData> successAction = null, UnityAction<string> failAction = null)
 	{
