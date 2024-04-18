@@ -125,4 +125,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/FlapNFly/Scenes/FlapNFly.unity
     guid: fef23bcac8c23c847b5cfb575dadc8bc
+  - enabled: 1
+    path: Assets/Scenes_snake/Snake.unity
+    guid: c9bcb0d243a5d47ef8cf898a0195a4ac
+  - enabled: 1
+    path: Assets/CSV/CSVFiles.unity
+    guid: f15654a8b57ca4f54a0b1221e0a09ade
   m_configObjects: {}

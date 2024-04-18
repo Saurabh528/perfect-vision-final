@@ -19,6 +19,8 @@ using PlayFab.Internal;
 using PlayFab.DataModels;
 using EntityKey = PlayFab.DataModels.EntityKey;
 
+using UnityEngine.SceneManagement;
+
 public class DotAlignmentController : GamePlayController {
 
 	public Text textScore;
@@ -40,16 +42,12 @@ public class DotAlignmentController : GamePlayController {
 	List<float> similarValueList = new List<float>();
 	
 	// Use this for initialization
-	public override void Start () {
+	public override void Start ()
+
+	{
 		tcp = GetComponent<TCPListener>();
 		spawnremainTime = spawnperiod;
 	}
-
-	
-
-	
-
-
 
 	public override void  Update () {
 		base.Update();
@@ -218,7 +216,14 @@ public class DotAlignmentController : GamePlayController {
 		_textInstruction.text = "Connecting to camera...";
 		tcp.InitTCP();
 		StartPythonAlignment();
+
+	
+
+
 	}
+
+	
+
 
 	public void OnTCPConnected()
 	{

@@ -7,6 +7,8 @@ using TMPro;
 using UnityEngine.UI;
 using PlayFab.ClientModels;
 
+using UnityEngine.SceneManagement;
+
 public class GamePlayController : MonoBehaviour
 {
 	public static GamePlayController Instance;
@@ -21,8 +23,10 @@ public class GamePlayController : MonoBehaviour
 	[SerializeField] Image imageBackButton;
 	[SerializeField] Sprite spritePause, spriteBack;
 	public TextMeshProUGUI textTime;
-	
-	
+
+	private string currentSceneName;
+
+
 	bool _isPlaying = false;
 	int _timeLeftInt;
 	protected int _score = 0;
@@ -52,6 +56,8 @@ public class GamePlayController : MonoBehaviour
 		}
 		else if(imageBackButton)
 			imageBackButton.sprite = spritePause;
+
+		
 	}
 
     // Update is called once per frame
@@ -106,6 +112,8 @@ public class GamePlayController : MonoBehaviour
 		if (_backAudio)
 			_backAudio.Play();
 
+		LoadNewScene();
+		
 		/*if(GameState.currentPatient != null && GameState.currentGamePlay != null)
 		{
 			string key = GetPatientGameDataKey();
@@ -113,6 +121,16 @@ public class GamePlayController : MonoBehaviour
 				SetInitialLevelAndScore(key, savedGameData[key]);
 		}*/
 	}
+
+	public void LoadNewScene()
+	{
+		SceneManager.LoadScene("Snake");
+	}
+
+	
+
+
+
 
 	public bool IsPlaying()
 	{
