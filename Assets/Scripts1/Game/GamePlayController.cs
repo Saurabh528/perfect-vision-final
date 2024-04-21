@@ -101,34 +101,31 @@ public class GamePlayController : MonoBehaviour
 			
 		}
     }
-	
+
 	public virtual void StartGamePlay()
 	{
 		SetPlayingState(true);
-		if(imageBackButton)
+		if (imageBackButton)
 			imageBackButton.sprite = spritePause;
 		_startTime = DateTime.Now;
 		helpPanel.SetActive(false);
 		if (_backAudio)
 			_backAudio.Play();
 
-		LoadNewScene();
-		
-		/*if(GameState.currentPatient != null && GameState.currentGamePlay != null)
-		{
-			string key = GetPatientGameDataKey();
-			if (savedGameData.ContainsKey(key))
-				SetInitialLevelAndScore(key, savedGameData[key]);
-		}*/
+		//StartCoroutine(DelayedLoadScene(3)); // Load scene after a delay
+	}
+
+	// Coroutine for delayed scene loading
+	private IEnumerator DelayedLoadScene(float delay)
+	{
+		yield return new WaitForSeconds(delay); // Wait for the specified delay
+		LoadNewScene(); // Load the scene after the delay
 	}
 
 	public void LoadNewScene()
 	{
 		SceneManager.LoadScene("Snake");
 	}
-
-	
-
 
 
 

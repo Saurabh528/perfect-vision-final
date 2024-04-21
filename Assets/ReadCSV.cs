@@ -4,12 +4,8 @@ using System.IO;
 
 public class CSVGridDisplay : MonoBehaviour
 {
-    // The panel that will hold the grid of text
     public GameObject gridPanel;
-
-    // The text prefab that will be used for each cell
     public GameObject textPrefab;
-
     private string filePath;
 
     void Start()
@@ -42,7 +38,19 @@ public class CSVGridDisplay : MonoBehaviour
             foreach (string cell in cells)
             {
                 GameObject newText = Instantiate(textPrefab, gridPanel.transform);
-                newText.GetComponent<Text>().text = cell.Trim();
+                Text cellText = newText.GetComponent<Text>();
+                float value;
+                // Check if the cell content is a number
+                if (float.TryParse(cell.Trim(), out value))
+                {
+                    // If it's a number, format it to two decimal places
+                    cellText.text = value.ToString("F2");
+                }
+                else
+                {
+                    // If it's not a number, display as is
+                    cellText.text = cell.Trim();
+                }
             }
         }
     }

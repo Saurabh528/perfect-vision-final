@@ -2290,9 +2290,6 @@ from collections import defaultdict
 import time
 from cv import process_video
 
-
-
-
 def play_sound(sound_file):
     # Initialize pygame
     pygame.init()
@@ -2389,8 +2386,6 @@ processing_thread = threading.Thread(target=process_metrics, args=(metrics_queue
 processing_thread.start()
 
 
-
-
 while True:
     
     for dot_number in range(9):
@@ -2428,6 +2423,4 @@ for dot_number, dot_metrics in metrics.items():
 df_metrics = pd.DataFrame(flat_metrics, columns=['Dot Number', 'Position', 'Metric1', 'Metric2', 'Metric3', 'Metric4'])
 df_metrics = df_metrics.groupby('Position').agg(['mean', 'std'])
 
-# Save the DataFrame to a file
-df_metrics.to_csv('C:\PROJECTS\perfect-vision-aman2\Python\collected_metrics.csv', index=False)
-
+df_metrics.to_csv('D:\PROJECTS\perfect-vision-aman2\Python\collected_metrics.csv', index=False)
