@@ -7,6 +7,8 @@ using TMPro;
 using UnityEngine.UI;
 using PlayFab.ClientModels;
 
+using UnityEngine.SceneManagement;
+
 public class GamePlayController : MonoBehaviour
 {
 	public static GamePlayController Instance;
@@ -21,8 +23,10 @@ public class GamePlayController : MonoBehaviour
 	[SerializeField] Image imageBackButton;
 	[SerializeField] Sprite spritePause, spriteBack;
 	public TextMeshProUGUI textTime;
-	
-	
+
+	private string currentSceneName;
+
+
 	bool _isPlaying = false;
 	int _timeLeftInt;
 	protected int _score = 0;
@@ -52,6 +56,8 @@ public class GamePlayController : MonoBehaviour
 		}
 		else if(imageBackButton)
 			imageBackButton.sprite = spritePause;
+
+		
 	}
 
     // Update is called once per frame
@@ -95,24 +101,33 @@ public class GamePlayController : MonoBehaviour
 			
 		}
     }
-	
+
 	public virtual void StartGamePlay()
 	{
 		SetPlayingState(true);
-		if(imageBackButton)
+		if (imageBackButton)
 			imageBackButton.sprite = spritePause;
 		_startTime = DateTime.Now;
 		helpPanel.SetActive(false);
 		if (_backAudio)
 			_backAudio.Play();
 
-		/*if(GameState.currentPatient != null && GameState.currentGamePlay != null)
-		{
-			string key = GetPatientGameDataKey();
-			if (savedGameData.ContainsKey(key))
-				SetInitialLevelAndScore(key, savedGameData[key]);
-		}*/
+		//StartCoroutine(DelayedLoadScene(3)); // Load scene after a delay
 	}
+
+	// Coroutine for delayed scene loading
+	private IEnumerator DelayedLoadScene(float delay)
+	{
+		yield return new WaitForSeconds(delay); // Wait for the specified delay
+		LoadNewScene(); // Load the scene after the delay
+	}
+
+	public void LoadNewScene()
+	{
+		SceneManager.LoadScene("Snake");
+	}
+
+
 
 	public bool IsPlaying()
 	{
