@@ -13,9 +13,10 @@
 # Python environment
 /Python/venv/
 /Python/.idea/
+/Python/PatientData/
 
 #vscode
-/.vscode/
+.vscode/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -34,10 +35,9 @@
 .vs/
 GameLauncher/obj/
 
-# Deploy
-Deploy/PerfectVision.zip
-Deploy/PerfectVision
-Deploy/PerfectVisionLauncher/PerfectVision/
+# Build
+WindowsBuild/
+WindowsBuild.zip
 
 # Gradle cache directory
 .gradle/
@@ -59,6 +59,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+Backup.bat
 
 # Unity3D generated meta files
 *.pidb.meta
