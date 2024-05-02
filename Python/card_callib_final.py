@@ -5,7 +5,47 @@ import numpy as np
 import math
 from datetime import datetime
 import time
+
+
 import os
+import sys
+
+from argparse import ArgumentParser
+parser = ArgumentParser()
+
+parser.add_argument("--connect", action="store_true",
+                    help="connect to unity",
+                    default=False)
+                    
+parser.add_argument("--quiet", action="store_true",
+                    help="hide window",
+                    default=False)
+
+parser.add_argument("--port", type=int, 
+                    help="specify the port of the connection to unity. Have to be the same as in Unity", 
+                    default=5066)
+
+parser.add_argument("--cameraindex", type=int, 
+                    help="specify the web camera index", 
+                    default=0)
+
+parser.add_argument("--patientname", type=str, 
+                    help="specify the patient name", 
+                    default="")
+
+args = parser.parse_args()
+from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
+    
+# Initialize TCP connection
+if args.connect:
+    socket = init_TCP(args.port)
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+data_dir = cur_dir
+if args.patientname != "":
+    data_dir = os.path.join(cur_dir, "PatientData/" + args.patientname)
+if not os.path.exists(data_dir):
+    os.makedirs(data_dir, exist_ok=True)
 
 font = cv2.FONT_HERSHEY_SIMPLEX 
   
@@ -21,15 +61,17 @@ color = (255, 0, 0)
 # Line thickness of 2 px 
 thickness = 2
 # Open the file 'focus_value.txt', read its content, and print the value it contains
-script_dir = os.path.dirname(__file__)
-# file_path = os.path.join(script_dir, '/ScreenCali/cv.txt')
-#file_path = "H:\Vpower2\perfect-vision\Python\ScreenCali\cv.txt"
-file_path = "D:\PROJECTS\perfect-vision-aman2\Python\ScreenCali\cv.txt"
+file_path = os.path.join(data_dir, 'focus_value.txt')  # Specify the file path
+if not (os.path.exists(file_path) and os.path.isfile(file_path)):
+    print(file_path + " does not exist.")
+    if args.connect:
+        send_message_to_unity("Please do screen distance callibration first.")
+    sys.exit()
 with open(file_path, 'r') as file:  # Open the file in read mode
     value = file.read().strip()  # Read the content and remove any leading/trailing whitespace
 
 focus = value # Print the value
-
+focus = int(float(focus))
 
 iris_right_horzn = [469,471]
 iris_right_vert = [470,472]
@@ -56,7 +98,7 @@ left_eyes_indices = get_unique(connections_left_eyes)
 
 connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
 right_eyes_indices = get_unique(connections_right_eyes)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(args.cameraindex)
 fps = cap.get(cv2.CAP_PROP_FPS)
 
 
@@ -144,7 +186,7 @@ def calculate_conversion_rates(calibration_data):
 
 
 points = []  # To store points selected by the user
-distances = [40, 45]  # Specified distances for calibration
+distances = [40, 45, 50, 55]  # Specified distances for calibration
 calibration_data = {}  # To store calibration points for each distance
 current_distance_index = 0  # Index to track the current calibration step
 
@@ -158,15 +200,16 @@ def select_point(event, x, y, flags, param):
 
 # Function to display instructions
 def display_instructions(img, distance):
-    instructions = f"Sit at {distance}cm from the screen. Press 'p' when ready, then double-click the 4 corners of the card."
-    cv2.putText(img, instructions, (50, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2, cv2.LINE_AA)
+    instructions = f"Sit at {distance}cm from the screen."
+    cv2.putText(img, instructions, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, "Press 'p' when ready, then double-click the 4 corners of the card.", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
 
 # Main function
 def run_callib():
     global points, current_distance_index, frame
 
     # Open the video camera
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(args.cameraindex)
 
     cv2.namedWindow("Frame")
     cv2.setMouseCallback("Frame", select_point)
@@ -225,7 +268,7 @@ run_callib()
 
 conv_rates = calculate_conversion_rates(calibration_data) 
 
-filename = 'conversion_rates.txt'
+filename = os.path.join(data_dir, 'conversion_rates.txt')
 with open(filename, "w") as file:
     for distance, rates in conv_rates.items():
         line = f"Distance {distance}: Width Rate = {rates[0]}, Height Rate = {rates[1]}\n"
