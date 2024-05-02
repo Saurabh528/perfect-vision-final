@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using iTextSharp.text.pdf.qrcode;
+using UnityEngine.UI;
 
 
 public abstract class UtilityFunc
@@ -30,13 +31,14 @@ public abstract class UtilityFunc
 		}
 	}
 
-	public static void DeleteAllSideTransforms(Transform trans)
+	public static void DeleteAllSideTransforms(Transform trans, bool nameInclude = true)
 	{
+		//if nameInclude = true, only delete items with name containing trans's name
 		if (trans == null || trans.parent == null)
 			return;
 		foreach(Transform t in trans.parent)
 		{
-			if (t != trans)
+			if (t != trans && (!nameInclude || t.name.Contains(trans.name)))
 				GameObject.Destroy(t.gameObject);
 		}
 	}
@@ -88,10 +90,20 @@ public abstract class UtilityFunc
 		Process.Start(psi);
 	}
 
-	public static Image Texture2Image(Texture2D texture)
+	public static System.Drawing.Image Texture2Image(Texture2D texture)
 	{
 		byte[] bytes = texture.EncodeToPNG();
-		return Image.FromStream(new MemoryStream(bytes));
+		return System.Drawing.Image.FromStream(new MemoryStream(bytes));
+	}
+
+	public static void SetRawImageFromFile(RawImage image, string fileName){
+		if(string.IsNullOrEmpty(fileName))
+			return;
+		Texture2D texture = new Texture2D(2, 2);
+		byte[] imageData = File.ReadAllBytes(fileName);
+        texture.LoadImage(imageData);
+		if(texture != null)
+			image.texture = texture;
 	}
 
 	public static string Base64Encode(string text)
@@ -103,5 +115,9 @@ public abstract class UtilityFunc
 	{
 		var base64Bytes = System.Convert.FromBase64String(base64);
 		return System.Text.Encoding.UTF8.GetString(base64Bytes);
+	}
+
+	public static string GetAbsolutePath(string projectrelative){
+		return $"{Application.dataPath}/../{projectrelative}";
 	}
 }

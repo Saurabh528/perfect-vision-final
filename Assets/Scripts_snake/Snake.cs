@@ -16,13 +16,12 @@ public class Snake : MonoBehaviour
     private List<Transform> segments = new List<Transform>();
     private Vector2Int input;
     private float nextUpdate;
-
     public Text infoText;
 
     private void Start()
     {
         ResetState();
-        StartCoroutine(EndGameRoutine());
+        //StartCoroutine(EndGameRoutine());
     }
 
     private void Update()
@@ -149,6 +148,12 @@ public class Snake : MonoBehaviour
         transform.position = position;
     }
 
+    public void EndGame(){
+        foreach(Transform trans in segments)
+            trans.gameObject.SetActive(false);
+        gameObject.SetActive(false);
+    }
+
 
     private System.Collections.IEnumerator EndGameRoutine()
     {
@@ -167,7 +172,7 @@ public class Snake : MonoBehaviour
         }
 
         // Load new scene
-        SceneManager.LoadScene("CSVFiles"); // Replace with your scene name
+        //SceneManager.LoadScene("CSVFiles"); // Replace with your scene name
     }
 
 }

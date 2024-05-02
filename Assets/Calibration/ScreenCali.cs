@@ -30,20 +30,18 @@ public class ScreenCali : MonoBehaviour
 			return;
 		}
 		UnityEngine.Debug.Log($"Camera Index: {camindex}");
-
+		string path = Application.dataPath + "/../Python";
 #if UNITY_EDITOR
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/Python/ScreenCali/distance_screening.py --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $"{path}/screen_distance_callibration.py --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		pythonProcess = Process.Start(_processStartInfo);
 #else
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "distance_screening.exe";
-		_processStartInfo.Arguments        = $"--{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.FileName         = "screen_distance_callibration.exe";
+		_processStartInfo.Arguments        = $"--{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
@@ -62,12 +60,20 @@ public class ScreenCali : MonoBehaviour
 		_finished = true;
 	}
 
+	private void OnDestroy()
+	{
+		if(pythonProcess != null && !pythonProcess.HasExited)
+		{
+			pythonProcess.Kill();
+		}
+	}
+
 
 	IEnumerator Routine_Finish()
 	{
 		_text.text = "Checking successful.";
 		yield return new WaitForSeconds(2);
-		ChangeScene.LoadScene(GameState.MODE_DOCTORTEST? "Diag_ForTest" : "Diagnostic");
+		ChangeScene.LoadScene("CardCalli");
 	}
 
 

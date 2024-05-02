@@ -209,7 +209,7 @@ public class Crane3DGameController : GamePlayController
 		int intervalDist = (int)VisualFactor.ScreenCMToArcSecond(VisualFactor.CanvasToCM(posRedCrane.y - posCyanCrane.y - (posRedBox.y - posCyanBox.y)));*/
 		_textResult.text = $"Depth distance: {depthDist}\r\nInterval distance: {intervalDist}\r\nPosition distance: {positionDist}";
 
-		SaveData(depthDist,intervalDist,positionDist);
+		//SaveData(depthDist,intervalDist,positionDist);
 
 		_textResult.gameObject.SetActive(true);
 		_objExplain.SetActive(true);

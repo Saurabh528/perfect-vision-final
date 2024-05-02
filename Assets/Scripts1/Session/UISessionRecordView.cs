@@ -61,11 +61,11 @@ public class UISessionRecordView : MonoBehaviour
 	{
 		Instance = this;
         //textCrane2D make it disable
-        textCrane2D.enabled = false;
+        /* textCrane2D.enabled = false;
 		textDisplacement.enabled = false;
 		textVAT.enabled = false;
 		textAlignment.enabled = false;
-		textWorth4DOT.enabled = false;
+		textWorth4DOT.enabled = false; */
 
     }
 	public void LoadSessionData()
@@ -101,7 +101,8 @@ public class UISessionRecordView : MonoBehaviour
 			GameObject.Destroy(btn.gameObject);
 		}
 		_ssReportButtons.Clear();
-		_reportView.gameObject.SetActive(false);
+		if(_reportView)
+			_reportView.gameObject.SetActive(false);
 
 		ClearProgressViews();
 	}
@@ -192,7 +193,7 @@ public class UISessionRecordView : MonoBehaviour
 			_progressViews.Add(view);
 		}
 		StartCoroutine(Routine_ScrollToProgression());
-        GetDataFunction();
+        //GetDataFunction();
     }
     void GetDataFunction()
     {
@@ -221,7 +222,7 @@ public class UISessionRecordView : MonoBehaviour
         prevJObject[sessions] = newSessionData;
         string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);*/
 
-        UnityEngine.Debug.Log("Get User Data called");
+        /* UnityEngine.Debug.Log("Get User Data called");
         textCrane2D.enabled = true;
 		textDisplacement.enabled = true;
 		textVAT.enabled = true;
@@ -232,7 +233,7 @@ public class UISessionRecordView : MonoBehaviour
 		textDisplacement.text = "Displacement: " + result.Data["Displacement"].Value;
         textVAT.text = "VAT: " + result.Data["VAT"].Value;
 		textAlignment.text = "Alignment: " + result.Data["Alignment"].Value;
-		textWorth4DOT.text = "Worth 4 DOT: " + result.Data["Worth4Dot"].Value;
+		textWorth4DOT.text = "Worth 4 DOT: " + result.Data["Worth4Dot"].Value; */
     },// Success callback
     error =>
     {
@@ -325,6 +326,7 @@ public class UISessionRecordView : MonoBehaviour
 		gameColors[SessionMgr.GetGameName(4)] = new BaseColor(103, 235, 184);
 		gameColors[SessionMgr.GetGameName(5)] = new BaseColor(181, 235, 145);
 		gameColors[SessionMgr.GetGameName(6)] = new BaseColor(255, 134, 47);
+		gameColors[SessionMgr.GetGameName(7)] = new BaseColor(255, 134, 47);
 		foreach (KeyValuePair<string, StatisData> pair in highdatas)
         {
 			PdfPCell cell = new PdfPCell(new Phrase(pair.Key, cellFont));

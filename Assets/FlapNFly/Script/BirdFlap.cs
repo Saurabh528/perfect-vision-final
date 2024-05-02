@@ -10,6 +10,7 @@ public class BirdFlap : MonoBehaviour
     SpriteRenderer sr;//getting access to the sprite rendere component.
     public Sprite[] sprites;//collection of sprites
     private int spriteIndex;//will keep track of which sprite in sprites array will be used in current frame
+    [SerializeField] CameraShake cameraShake;
 
     void Awake()
     {
@@ -23,13 +24,17 @@ public class BirdFlap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
-            direction = Vector3.up * strength;
+            Fly();
         }
 
         direction.y += gravity * Time.deltaTime; //we wnat our bird to go down as we had made bird kinematic thus no gravity works on it.
         transform.position += direction * Time.deltaTime;//changing the direction of bird frame wise.
+    }
+
+    public void Fly(){
+        direction = Vector3.up * strength;
     }
 
     public void Animate()
@@ -44,13 +49,23 @@ public class BirdFlap : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.tag == "Obstacle")
+        if (col.gameObject.tag == "Obstacle" || col.gameObject.tag == "DeadZone")
         {
-            FindObjectOfType<GameManager>().GameOver();
+            if (GameState.currentGamePlay == null){
+                GamePlayController.Instance.GameOver();
+            }
+            else
+            {
+                if(cameraShake != null)
+                    cameraShake.Shake();
+                GamePlayController.Instance.IncreaseScore(-3);
+                if(col.gameObject.tag == "DeadZone")
+                    Fly();
+            }
         }
         else if (col.gameObject.tag == "Scoring")
         {
-            FindObjectOfType<GameManager>().IncreaseScore();
+            GamePlayController.Instance.IncreaseScore();
         }
     }
 }

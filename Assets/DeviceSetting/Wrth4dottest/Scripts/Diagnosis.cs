@@ -125,7 +125,7 @@ public class Diagnosis : MonoBehaviour
             Nextquestion();
         }
 
-        SaveData(tempdiagnosis);
+        //SaveData(tempdiagnosis);
 
     }
 

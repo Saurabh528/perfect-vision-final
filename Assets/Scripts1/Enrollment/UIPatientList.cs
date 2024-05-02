@@ -24,10 +24,10 @@ public class UIPatientList : MonoBehaviour
 			OnLoadPatientDataSuccess(PatientMgr.GetPatientList());
 	}
 
-	void OnLoadPatientDataSuccess(Dictionary<Int32, PatientData> plist)
+	void OnLoadPatientDataSuccess(Dictionary<string, PatientData> plist)
 	{
 		PatientMgr.SetPatientList(plist);
-		Toggle toggle = FillWithPatientList(plist, GameState.currentPatient != null? GameState.currentPatient.ID: -1);
+		Toggle toggle = FillWithPatientList(plist, GameState.currentPatient != null? GameState.currentPatient.name: "");
 		if (toggle)
 			toggle.isOn = true;
 		else{
@@ -37,7 +37,7 @@ public class UIPatientList : MonoBehaviour
 
 
 
-	Toggle FillWithPatientList(Dictionary<Int32, PatientData> patientList, int selectID = 0)
+	Toggle FillWithPatientList(Dictionary<string, PatientData> patientList, string selectname = "")
 	{
 		if (patientList == null)
 			return null;
@@ -46,19 +46,18 @@ public class UIPatientList : MonoBehaviour
 		int count = 0;
 		RectTransform rt = _itemtmpl.GetComponent<RectTransform>();
 		Toggle selection = null;
-		foreach (KeyValuePair<Int32, PatientData> pair in patientList)
+		foreach (KeyValuePair<string, PatientData> pair in patientList)
 		{
-			PatientData data = pair.Value;
 			PatientItem newitem = Instantiate(_itemtmpl, rt);
-			newitem.name = data.name;
+			newitem.name = pair.Key;
 			RectTransform newrt = newitem.GetComponent<RectTransform>();
 			newrt.SetParent(rt.parent);
 			newrt.localPosition = rt.localPosition + new Vector3(0, -count * 100, 0);
 			newrt.localScale = rt.localScale;
 			count++;
-			newitem.SetPatientData(data);
+			newitem.SetPatientName(pair.Key);
 			newitem.gameObject.SetActive(true);
-			if (data.ID == selectID)
+			if (pair.Key == selectname)
 				selection = newitem.GetComponent<Toggle>();
 		}
 		return selection;
@@ -69,15 +68,15 @@ public class UIPatientList : MonoBehaviour
 		if (GameState.currentPatient == null)
 			return;
 		PopupUI.ShowQuestionBox($"Are you sure to delete {GameState.currentPatient.name}?", delegate{
-			PatientDataManager.DeletePatient(GameState.currentPatient, OnDeletePatientSuccess, ShowErrorMsg);
+			PatientDataManager.DeletePatient(GameState.currentPatient.name, OnDeletePatientSuccess, ShowErrorMsg);
 		});
 		//PatientDataManager.DeletePatient(GameState.currentPatient, OnDeletePatientSuccess, ShowErrorMsg);
 	}
 
-	void OnDeletePatientSuccess(PatientData pdata)
+	void OnDeletePatientSuccess(string name)
 	{
-		PatientMgr.RemovePatient(pdata.ID);
-		if(pdata == GameState.currentPatient) { 
+		PatientMgr.RemovePatient(name);
+		if(GameState.currentPatient != null && name == GameState.currentPatient.name) { 
 			GameState.currentPatient = null;
 			PatientView.Instance.ViewPatientData();
 			PatientDataMgr.ClearSessionData();
@@ -106,7 +105,7 @@ public class UIPatientList : MonoBehaviour
 
 	void FillAndSelectPatient(PatientData pdata)
 	{
-		Toggle selectable = FillWithPatientList(PatientMgr.GetPatientList(), pdata.ID);
+		Toggle selectable = FillWithPatientList(PatientMgr.GetPatientList(), pdata.name);
 		if (selectable)
 			selectable.isOn = true;
 		GameState.currentPatient = pdata;
@@ -116,13 +115,13 @@ public class UIPatientList : MonoBehaviour
 
 	public void OnSearchTextChanged(string value)
 	{
-		Dictionary<Int32, PatientData> list = new Dictionary<Int32, PatientData>();
-		Dictionary<Int32, PatientData> alllist = PatientMgr.GetPatientList();
-		foreach (KeyValuePair<Int32, PatientData> pair in alllist){
+		Dictionary<string, PatientData> list = new Dictionary<string, PatientData>();
+		Dictionary<string, PatientData> alllist = PatientMgr.GetPatientList();
+		foreach (KeyValuePair<string, PatientData> pair in alllist){
 			if (string.IsNullOrEmpty(value) || pair.Value.name.ToLower().Contains(value.ToLower()))
 				list[pair.Key] = pair.Value;
 		}
-		FillWithPatientList(list, -1);
+		FillWithPatientList(list, "");
 	}
 
 

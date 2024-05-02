@@ -26,18 +26,11 @@ public class ColorSwitchController : GamePlayController
 	int fallcount;
 
 
-	// Use this for initialization
-	public override void Start()
-	{
-		base.Start();
-	}
 
 	public override void StartGamePlay()
 	{
 		base.StartGamePlay();
-		base.StartGamePlay();
 		textScore.enabled = true;
-		textLevel.enabled = true;
 		textLevel.enabled = true;
 		EnableTime(true);
 		highScore = PlayerPrefs.GetInt(DataKey.GetPrefKeyName ("score"), 0);

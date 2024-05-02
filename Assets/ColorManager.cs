@@ -18,7 +18,7 @@ public class ColorManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FetchData();
+        //FetchData();
     }
 
     // Update is called once per frame

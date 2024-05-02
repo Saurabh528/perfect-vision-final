@@ -89,6 +89,9 @@ public class GamePlayController : MonoBehaviour
 							_backAudio.Stop();
 					}
 				}
+				else{
+					
+				}
 				
 			}
 			if ((int)_timeleft != _timeLeftInt)
@@ -254,6 +257,7 @@ public class GamePlayController : MonoBehaviour
 
 	public void StartNextGame()
 	{
+		Time.timeScale = 1;
 		SessionMgr.StartSessionGame(++GameState.currentSessionPlayIndex);
 	}
 
@@ -266,7 +270,7 @@ public class GamePlayController : MonoBehaviour
 	{
 		if (GameState.currentPatient == null || GameState.currentGamePlay == null)
 			return "";
-		return $"{GameState.currentPatient.ID}-{GameState.currentGamePlay.name}";
+		return GameState.currentPatient.name;
 	}
 
 

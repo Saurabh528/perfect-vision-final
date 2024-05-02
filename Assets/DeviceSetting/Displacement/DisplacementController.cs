@@ -107,9 +107,9 @@ public class DisplacementController : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		if (pythonProcess != null)
+		if(pythonProcess != null && !pythonProcess.HasExited)
 		{
-			pythonProcess.Dispose();
+			pythonProcess.Kill();
 		}
 		_tcp.StopTCP();
 	}
@@ -147,7 +147,7 @@ public class DisplacementController : MonoBehaviour
             string contents = System.IO.File.ReadAllText(filePath);
             // Set the text of your TextMeshProUGUI component
             textDisplay.text = contents;
-			SaveData(contents);
+			//SaveData(contents);
         }
         else
         {

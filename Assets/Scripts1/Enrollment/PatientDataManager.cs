@@ -14,349 +14,187 @@ using System.Linq;
 
 public static class PatientDataManager
 {
-	static bool flag = true;
-    public static void DeletePatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
+    public static void DeletePatient(string name, UnityAction<string> successAction, UnityAction<string> failAction)
 	{
 		
         UnityEngine.Debug.Log("Delete Patient called");
-		if (pdata == null)
-			return;
-		PatientData backuppatient = PatientMgr.FindPatient(pdata.ID);
-		if (backuppatient == null)
-		{
-			failAction.Invoke(@"Patient {pdata.name} does not exist.");
+		Dictionary<string, string> nameIDList = PatientMgr.GetNameIDList();
+		if (string.IsNullOrEmpty(name) || !nameIDList.ContainsKey(name)){
+			failAction.Invoke("Patient does not exist");
 			return;
 		}
+		string pfID = nameIDList[name];
+		PatientMgr.RemovePatient(name);
+		string jsonstr = JsonConvert.SerializeObject(nameIDList);
 		if (GameState.IsOnline) {
+			Dictionary<string, string> requestData = new Dictionary<string, string>() {{DataKey.PATIENT, jsonstr} };
+			if(pfID == GameConst.PLAYFABID_CLINIC)
+				requestData.Add(name, null);
 			PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
 			{
-				Data = new Dictionary<string, string>() { { pdata.name, null } }
+				Data = requestData
 			},
-			result => { }, error => { });
+			result => {
+				DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+				if(pfID == GameConst.PLAYFABID_CLINIC)
+					DataKey.DeletePrefsKey(name);
+				successAction.Invoke("Deleting success");
+			}, error => {
+				failAction.Invoke(error.ToString());
+			});
 		}
-		
-
-		PatientMgr.RemovePatient(pdata.ID);
-		Dictionary<Int32, PatientData> plist = PatientMgr.GetPatientList();
-		string jsonstr = JsonConvert.SerializeObject(plist);
-		DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-		DataKey.DeletePrefsKey(pdata.name);
-		if (!GameState.IsOnline)
-			successAction.Invoke(pdata);
-		else
-		{
-			UpdateUserDataRequest request = new UpdateUserDataRequest();
-			request.Data = new Dictionary<string, string>();
-			request.Data.Add(DataKey.PATIENT, jsonstr);
-			request.Permission = UserDataPermission.Public;
-			PlayFabClientAPI.UpdateUserData(request,
-				result =>
-				{
-					successAction.Invoke(pdata);
-				},
-				error =>
-				{
-					PatientMgr.AddPatientData(backuppatient);
-					failAction.Invoke(error.ToString());
-				});
+		else{
+			DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+			if(pfID == GameConst.PLAYFABID_CLINIC)
+				DataKey.DeletePrefsKey(name);
 		}
-		
 	}
+
+
 	public static void AddPatient(PatientData pdata, UnityAction<PatientData> successAction, UnityAction<string> failAction)
 	{
-		
-		//Called when we click add on the home section or clinic section called 
-        UnityEngine.Debug.Log("5)Add Patient called");
-        if (pdata == null)
+		if (pdata == null)
 			return;
-		Dictionary<Int32, PatientData> plist = PatientMgr.GetPatientList();
-		foreach(KeyValuePair<Int32, PatientData> pair in plist){
-			if(pair.Value.name == pdata.name || pdata.name == DataKey.PATIENT){
+		Dictionary<string, string> nameIDList = PatientMgr.GetNameIDList();
+		int cilinicCount = 0, homeCount = 0;
+		foreach(KeyValuePair<string, string> pair in nameIDList){
+			if(pair.Value == GameConst.PLAYFABID_CLINIC)
+				cilinicCount++;
+			else
+				homeCount++;
+		}
+		if(pdata.place == THERAPPYPLACE.Clinic && GameState.CilinicLimit <= cilinicCount){
+			if(GameState.CilinicLimit == 0)
+				failAction.Invoke($"You are not allowed to add clinic patients.");
+			else
+				failAction.Invoke($"You are not allowed to enroll over {GameState.CilinicLimit} clinic patients.");
+			return;
+		}
+		else if(pdata.place == THERAPPYPLACE.Home && GameState.HomeLimit <= homeCount){
+			if(GameState.HomeLimit == 0)
+				failAction.Invoke($"You are not allowed to add Home patients.");
+			else
+				failAction.Invoke($"You are not allowed to enroll over {GameState.HomeLimit} home patients.");
+			return;
+		}
+
+		foreach(KeyValuePair<string, string> pair in nameIDList){
+			if(pair.Key == pdata.name || pdata.name == DataKey.PATIENT){
 				failAction.Invoke($"{pdata.name} already exists.");
 				return;
 			}
 
 		}
 
-		if(pdata.place == THERAPPYPLACE.Clinic)
-		{
-			//PatientMgr.AddPatientData(pdata);
-			//string jsonstr = JsonConvert.SerializeObject(plist);
-			//DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-			//UpdateUserDataRequest request = new UpdateUserDataRequest();
-			//request.Data = new Dictionary<string, string>();
-			//request.Data.Add(DataKey.PATIENT, jsonstr);
-			//request.Permission = UserDataPermission.Public;
+		if(pdata.place == THERAPPYPLACE.Clinic){
+			PatientMgr.AddPatientData(pdata);
+			string jsonstr = JsonConvert.SerializeObject(PatientMgr.GetNameIDList());
 
-			//PlayFabClientAPI.UpdateUserData(request,
-				//result => {
-				//	successAction.Invoke(pdata);
-				//},
-				//error => {
-				//	PatientMgr.RemovePatient(pdata.ID);
-				//	failAction.Invoke(error.ToString());
-			//}
-			//	);
-			//return;
+			//update doctor record
+			UpdateUserDataRequest request = new UpdateUserDataRequest();
+			request.Data = new Dictionary<string, string>(){{DataKey.PATIENT, jsonstr}, {pdata.name, JsonConvert.SerializeObject(pdata)}};
+			request.Permission = UserDataPermission.Public;
+			PlayFabClientAPI.UpdateUserData(request,
+				result => {
+					DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+					DataKey.SetPrefsString(pdata.name, JsonConvert.SerializeObject(pdata));
+					successAction.Invoke(pdata);
+				},
+				error => {
+					PatientMgr.RemovePatient(pdata.name);
+					failAction.Invoke(error.ToString());
+			});
+
+			return;
 		}
 
 		if(!GameState.IsOnline){
 			failAction.Invoke($"Can not add patient in offline mode.");
 			return;
 		}
-		//string doctorID = GameState.playfabID;
-        //string licenseKey = UtilityFunc.ComputeSha256Hash(SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
-        //UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-        var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
-        UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-        //var licenseKey = new string(Enumerable.Range(0, 10).Select(_ => "0123456789ABCDEF"[UnityEngine.Random.Range(0, 16)]).ToArray());
-        //UnityEngine.Debug.Log("THE LICENSE KEY IS " + licenseKey);
-        pdata.licenseKey = licenseKey;
-		UIEditPatient.AddLicenseKey(licenseKey);
-		UIEditPatient.Instance.DisplayLicenseString();
-
-
-        PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
+		string doctorID = GameState.playfabID;
+		System.Random random = new System.Random();
+		var bytes = new Byte[5];
+		random.NextBytes(bytes);
+		var hexArray = Array.ConvertAll(bytes, x => x.ToString("X2"));
+		string licenseKey = String.Concat(hexArray);//UtilityFunc.ComputeSha256Hash (SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(100000, 1000000).ToString());
+		PlayFabClientAPI.LoginWithCustomID(new LoginWithCustomIDRequest()
         {
             TitleId = PlayFabSettings.TitleId,
             CustomId = licenseKey,
             CreateAccount = true
 			//, InfoRequestParameters = new GetPlayerCombinedInfoRequestParams(GetTitleData=True)
-        },result=>{
-			UnityEngine.Debug.Log("UpdateUserData result 0 called");
+        }, (result) => {
 			pdata.PFID = result.PlayFabId;
-
-            //UpdateUserDataRequest request = new UpdateUserDataRequest();
-            //request.Data = new Dictionary<string, string>();
-            //request.Data.Add(DataKey.DOCTORID, doctorID);
-
-			//result.PlayFabId gives the patient's id
-
-            var doctorID = GameState.playfabID;
-			UnityEngine.Debug.Log("Playfab id is " + doctorID);
-			UnityEngine.Debug.Log("Username is " + GameState.username);
-			UnityEngine.Debug.Log("Password is" + GameState.passwordhash);
-
-            string crane3Ddata = @"
-{
-    ""Session0"": {
-        ""x"": ""0"",
-        ""y"": ""0"",
-        ""z"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-
-
-            string crane2Ddata = @"
-{
-    ""Session0"": {
-        ""x"": ""0"",
-        ""y"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-
-            string VATData = @"
-{
-    ""Session0"": {
-        ""LeftScore"": ""0"",
-        ""RightScore"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-// Alignment , Displacement , Worth4test
-            string AlignmentData = @"
-{
-    ""Session0"": {
-        ""Placeholder"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-            string DisplacementData = @"
-{
-    ""Session0"": {
-        ""Result"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-            string Worth4DotData = @"
-{
-    ""Session0"": {
-        ""Placeholder"": ""0"",
-		""Date"":""yyyy-mm-dd""
-    }
-}";
-            var request = new UpdateUserDataRequest()
-            {
-                Data = new Dictionary<string, string> { { DataKey.DOCTORID, doctorID }, { DataKey.ROLE, USERROLE.PATIENT.ToString() } , { "CountLimit", "3" },
-                    { "COUNT","0" } ,{"DiagnosticCount","0"}, { "Crane2D",crane2Ddata},{ "VAT",VATData},{ "Alignment",AlignmentData},{"Displacement",DisplacementData },{"Worth4Dot",Worth4DotData } }, //{"Crane3D", crane3Ddata},
-                Permission = UserDataPermission.Public
-            };
-
-			//var request = new UpdateUserDataRequest
-			//{
-			//    Data = new Dictionary<string, string>
-			//{
-			//    { "DoctorID", GameState.playfabID } // Associate the current doctor's ID with the patient
-			//}
-			//};
+			UpdateUserDataRequest request = new UpdateUserDataRequest();
+			request.Data = new Dictionary<string, string>(){{DataKey.DOCTORID, doctorID}
+			, {DataKey.ROLE, USERROLE.PATIENT.ToString()}
+			, {DataKey.HOMEPATIENT, JsonConvert.SerializeObject(pdata)}
+			, {DataKey.EXPIREDATE, pdata.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME)}};
+			request.Permission = UserDataPermission.Public;
 			PlayFabClientAPI.UpdateUserData(request,
-			result =>
-			{
-				UnityEngine.Debug.Log("UpdateUserData result 1 called---working");
-				//request.Data = new Dictionary<string, string>();
-				//request.Data.Add(DataKey.DOCTORID, doctorID);
-				PlayFabClientAPI.UpdateUserData(request,
-				result =>
-				{
-					UnityEngine.Debug.Log("UpdateUserData result 2 called---working");
-
-					//----------------SOHAM-ADDITION-----------------
-					//pdata.licenseKey = licenseKey;
-					//PatientMgr.AddPatientData(pdata);
-					//string jsonstr = JsonConvert.SerializeObject(plist);
-					//DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-					//successAction.Invoke(pdata);
-					//---------------SOHAM-ADDITION-------------------
-					PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
-					{
-						TitleId = PlayFabSettings.TitleId,
-						Username = GameState.username,
-						Password = GameState.passwordhash,
-					}, result =>
-					{
-						UnityEngine.Debug.Log("UpdateUserData result 3 called");
-						pdata.licenseKey = licenseKey;
-						PatientMgr.AddPatientData(pdata);
-						string jsonstr = JsonConvert.SerializeObject(plist);
-                        string jsonstr2 = JsonConvert.SerializeObject(pdata);
-                        DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
-						UpdateUserDataRequest request = new UpdateUserDataRequest();
-						request.Data = new Dictionary<string, string>();
-                        request.Data.Add(DataKey.PATIENT, jsonstr);
-                        request.Data.Add(pdata.name, jsonstr2);
-						UnityEngine.Debug.Log("PatientName is" + pdata.name);
-                        request.Permission = UserDataPermission.Public;
-						PlayFabClientAPI.UpdateUserData(request,
-							result =>
-							{
-								UnityEngine.Debug.Log("UpdateUserData result 4 called");
-								UpdateHomeLimit();
-								if(flag)
-								{
-                                    successAction.Invoke(pdata);
-                                }
-								
-							},
-							error =>
-							{
-								UnityEngine.Debug.Log("UpdateUserData error 1 called");
-								PatientMgr.RemovePatient(pdata.ID);
-								failAction.Invoke(error.ToString());
-							});
-						return;
-					}, error =>
-					{
-						UnityEngine.Debug.Log("UpdateUserData error 2 called ---working");
-                        //failAction.Invoke(error.ToString());
-                        //Application.Quit();
-                        return;
-					});
-				},
-				error =>
-				{
-					UnityEngine.Debug.Log("UpdateUserData error 3 called");
-					PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
-					{
-						TitleId = PlayFabSettings.TitleId,
-						Username = GameState.username,
-						Password = GameState.passwordhash,
-					}, result =>
-					{
-						UnityEngine.Debug.Log("UpdateUserData result 5 called");
-						failAction.Invoke(error.ToString());
-					},
-					error =>
-					{
-						UnityEngine.Debug.Log("UpdateUserData error 4 called");
-						Application.Quit();
-					});
-					return;
-				});
-			},
-			error =>
-			{
-				UnityEngine.Debug.Log("UpdateUserData error 5 called");
+			result => {
 				PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 				{
 					TitleId = PlayFabSettings.TitleId,
 					Username = GameState.username,
-					Password = GameState.passwordhash,
+					Password = GameState.password,
 				}, result =>
 				{
-					UnityEngine.Debug.Log("UpdateUserData result 6 called");
+					pdata.licenseKey = licenseKey;
+					PatientMgr.AddPatientData(pdata);
+					string jsonstr = JsonConvert.SerializeObject(PatientMgr.GetNameIDList());
+					string jstrHomePatientData = JsonConvert.SerializeObject(PatientMgr.GetHomePatientDataList()[pdata.name]);
+					UpdateUserDataRequest request = new UpdateUserDataRequest();
+					request.Data = new Dictionary<string, string>(){{DataKey.PATIENT, jsonstr}
+					, {pdata.name, jstrHomePatientData}};
+					request.Permission = UserDataPermission.Public;
+					PlayFabClientAPI.UpdateUserData(request,
+					result => {
+						DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
+						DataKey.SetPrefsString(pdata.name, jstrHomePatientData);
+						successAction.Invoke(pdata);
+					},
+					error => {
+						PatientMgr.RemovePatient(pdata.name);
+						failAction.Invoke(error.ToString());
+					});
+					return;
+				}, error =>
+				{
+					Application.Quit();
+					return;
+				});
+			},
+			error => {
+				PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
+				{
+					TitleId = PlayFabSettings.TitleId,
+					Username = GameState.username,
+					Password = GameState.password,
+				}, result =>
+				{
 					failAction.Invoke(error.ToString());
 				},
-				error =>
-				{
-					UnityEngine.Debug.Log("UpdateUserData error 5 called");
+				error =>{
 					Application.Quit();
 				});
 				return;
 			});
-		},
-		error =>
-		{
-			UnityEngine.Debug.Log("UpdateUserData error 6 called");
-			failAction.Invoke(error.ToString());
-		});
+       	},
+		error => {
+            failAction.Invoke(error.ToString());
+        });		
 	}
 
-	public static void UpdateHomeLimit()
-	{
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
-            result =>
-            {
-                string homeLimit = result.Data["homeLimit"].Value;
-                int homeLimitInt = int.Parse(homeLimit);
-				if(homeLimitInt > 5)
-				{
-					flag = false;
-				}
-                homeLimitInt++;
-
-                var request = new UpdateUserDataRequest()
-                {
-                    Data = new Dictionary<string, string> { { "homeLimit", homeLimitInt.ToString() } },
-                    Permission = UserDataPermission.Public
-                };
-                PlayFabClientAPI.UpdateUserData(request,
-                 result =>
-                 {
-                     UnityEngine.Debug.Log("Successfully added HomeLimmit data");
-
-                 },
-                 error =>
-                 {
-                     UnityEngine.Debug.Log("Not added HomeLimit data");
-                     //UnityEngine.Debug.Log("Error fetching user data: " + error.GenerateErrorReport());
-                 });
-
-            },// Success callback
-            error =>
-            {
-                UnityEngine.Debug.Log("homeLimit data GetUserData api called error");
-
-            });// Error callback
-}
+	
 
 	public static void UpdatePatient(PatientData pdata, UnityAction<PatientData> successAction = null, UnityAction<string> failAction = null)
 	{
         UnityEngine.Debug.Log("Update Patient called");
         if (pdata == null)
 			return;
-		PatientData backuppatient = PatientMgr.FindPatient(pdata.ID);
+		PatientData backuppatient = PatientMgr.FindPatient(pdata.name);
 
 		if (backuppatient == null)
 		{
@@ -365,12 +203,18 @@ public static class PatientDataManager
 			return;
 		}
 		PatientMgr.UpdatePatientData(pdata);
-		Dictionary<Int32, PatientData> plist = PatientMgr.GetPatientList();
-		string jsonstr = JsonConvert.SerializeObject(plist);
-		DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
 		if(GameState.IsPatient() && pdata.IsHome()){
 			DataKey.SetPrefsString(DataKey.HOMECALIB, JsonConvert.SerializeObject(pdata.cali));
+			DataKey.SetPrefsString(DataKey.HOMEPATIENT, JsonConvert.SerializeObject(pdata));
 		}
+		else if(GameState.IsDoctor() && pdata.IsClinic()){
+			DataKey.SetPrefsString(pdata.name, JsonConvert.SerializeObject(pdata));
+		}
+		else if(GameState.IsDoctor() && pdata.IsHome()){
+			Dictionary<string, HomePatientData> homeDataList = PatientMgr.GetHomePatientDataList();
+			DataKey.SetPrefsString(pdata.name, JsonConvert.SerializeObject(homeDataList[pdata.name]));
+		}
+
 		if (!GameState.IsOnline)
 		{
 			if(successAction != null)
@@ -380,8 +224,7 @@ public static class PatientDataManager
 		{
 			if(GameState.IsPatient() && pdata.IsHome()){
 				UpdateUserDataRequest request = new UpdateUserDataRequest();
-				request.Data = new Dictionary<string, string>();
-				request.Data.Add(DataKey.HOMECALIB, JsonConvert.SerializeObject(pdata.cali));
+				request.Data = new Dictionary<string, string>(){{DataKey.HOMECALIB, JsonConvert.SerializeObject(pdata.cali)}, {DataKey.HOMEPATIENT, JsonConvert.SerializeObject(pdata)}};
 				request.Permission = UserDataPermission.Public;
 				PlayFabClientAPI.UpdateUserData(request,
 					result =>
@@ -396,86 +239,115 @@ public static class PatientDataManager
 							failAction.Invoke(error.ToString());
 				});
 			}
-			else{
+			else if(GameState.IsDoctor() && pdata.IsClinic()){
 				UpdateUserDataRequest request = new UpdateUserDataRequest();
-				request.Data = new Dictionary<string, string>();
-				request.Data.Add(DataKey.PATIENT, jsonstr);
+				request.Data = new Dictionary<string, string>(){{pdata.name, JsonConvert.SerializeObject(pdata)}};
 				request.Permission = UserDataPermission.Public;
 				PlayFabClientAPI.UpdateUserData(request,
-					result =>
-					{
-						if (successAction != null)
-							successAction.Invoke(pdata);
-					},
-					error =>
-					{
-						PatientMgr.UpdatePatientData(backuppatient);
-						if (failAction != null)
-							failAction.Invoke(error.ToString());
+				result =>
+				{
+					if (successAction != null)
+						successAction.Invoke(pdata);
+				},
+				error =>
+				{
+					PatientMgr.UpdatePatientData(backuppatient);
+					if (failAction != null)
+						failAction.Invoke(error.ToString());
+				});
+			}
+			else if(GameState.IsDoctor() && pdata.IsHome()){
+				UpdateUserDataRequest request = new UpdateUserDataRequest();
+				request.Data = new Dictionary<string, string>(){{pdata.name, JsonConvert.SerializeObject(PatientMgr.GetHomePatientDataList()[pdata.name])}};
+				request.Permission = UserDataPermission.Public;
+				PlayFabClientAPI.UpdateUserData(request,
+				result =>
+				{
+					if (successAction != null)
+						successAction.Invoke(pdata);
+				},
+				error =>
+				{
+					PatientMgr.UpdatePatientData(backuppatient);
+					if (failAction != null)
+						failAction.Invoke(error.ToString());
 				});
 			}
 		}
 	}
-	public static void LoadPatientData(UnityAction<Dictionary<Int32, PatientData>> successAction = null, UnityAction<string> failAction = null)
+	public static void LoadPatientData(UnityAction<Dictionary<string, PatientData>> successAction = null, UnityAction<string> failAction = null)
 	{
 		//This funcction is called first when clicked on Patient Enrollment
         UnityEngine.Debug.Log("1)LoadPatientData Patient called");
         if (GameState.IsOnline){
 			//online mode
-			GetUserDataRequest request = new GetUserDataRequest();
-			request.Keys = new List<string>();
-			request.Keys.Add(DataKey.PATIENT);
-			if(GameState.IsPatient())
-				request.PlayFabId = GameState.DoctorID;
-			PlayFabClientAPI.GetUserData(request,
+			
+			if(GameState.IsPatient()){
+				GetUserDataRequest request = new GetUserDataRequest();
+				request.Keys = new List<string>(){DataKey.HOMEPATIENT};
+				PlayFabClientAPI.GetUserData(request,
 				result =>
 				{
-					if(result.Data != null && result.Data.ContainsKey(DataKey.PATIENT))
-					{
-						string str = result.Data[DataKey.PATIENT].Value;
-						if(GameState.IsDoctor())
-							DataKey.SetPrefsString(DataKey.PATIENT, str);
-						Dictionary<Int32, PatientData> plist;
-						if(string.IsNullOrEmpty(str))
-							plist = new Dictionary<int, PatientData>();
-						else
-							plist = JsonConvert.DeserializeObject<Dictionary<Int32, PatientData>>(str);
-						if(GameState.IsPatient() && plist.Count > 1){
-							Dictionary<Int32, PatientData> plistMine = new Dictionary<int, PatientData>();
-							foreach(KeyValuePair<Int32, PatientData> pair in plist){
-								if(pair.Value.PFID == GameState.playfabID){
-									plistMine.Add(pair.Key, pair.Value);
-									break;
-								} 
-							}
-							plist = plistMine;
-							str = JsonConvert.SerializeObject(plist);
-							DataKey.SetPrefsString(DataKey.PATIENT, str);
-						}
-						if (successAction != null)
-							successAction.Invoke(plist);
+					if(result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
+						DataKey.SetPrefsString(DataKey.HOMEPATIENT, result.Data[DataKey.HOMEPATIENT].Value);
+						PatientData pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);
+						PatientMgr.ClearPatients();
+						PatientMgr.AddPatientData(pdata);
+						successAction.Invoke(PatientMgr.GetPatientList());
 					}
-					else if (failAction != null)
-						failAction.Invoke("Patient data does not exist.");
 				},
 				error =>
 				{
-					
-				}
-			);
+					failAction.Invoke(error.ToString());
+				});
+			}
+			else{
+				GetUserDataRequest request = new GetUserDataRequest();
+				request.Keys = new List<string>(){DataKey.PATIENT};
+				PlayFabClientAPI.GetUserData(request,
+				result =>
+				{
+					if(result.Data != null && result.Data.ContainsKey(DataKey.PATIENT)){
+						DataKey.SetPrefsString(DataKey.PATIENT, result.Data[DataKey.PATIENT].Value);
+						Dictionary<string, string> nameIDList = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Data[DataKey.PATIENT].Value);
+						PatientMgr.SetNameIDList(nameIDList);
+						Dictionary<string, PatientData> plist = new Dictionary<string, PatientData>();
+						foreach(KeyValuePair<string, string> pair in nameIDList)
+							plist[pair.Key] = null;
+						successAction.Invoke(plist);
+					}
+				},
+				error =>
+				{
+					failAction.Invoke(error.ToString());
+				});
+			}
 		}
 		else{
 			//offline mode
-			string str = DataKey.GetPrefsString(DataKey.PATIENT, "");
-			if (!string.IsNullOrEmpty(str))
-			{
-				Dictionary<Int32, PatientData> plist = JsonConvert.DeserializeObject<Dictionary<Int32, PatientData>>(str);
-				if(successAction != null)
+			if(GameState.IsPatient()){
+				string str = DataKey.GetPrefsString(DataKey.HOMEPATIENT, "");
+				if (!string.IsNullOrEmpty(str)){
+					PatientData pdata = JsonConvert.DeserializeObject<PatientData>(str);
+					Dictionary<string, PatientData> plist = new Dictionary<string, PatientData>();
+					plist[pdata.name] = pdata;
 					successAction.Invoke(plist);
-				return;
+				}
+				else
+					failAction.Invoke("Local data does not exist.");
 			}
-			else if (failAction != null)
-				failAction.Invoke("Failed to load local patient data.");
+			else{
+				string str = DataKey.GetPrefsString(DataKey.PATIENT, "");
+				if (!string.IsNullOrEmpty(str)){
+					Dictionary<string, string> nameIDPair = JsonConvert.DeserializeObject<Dictionary<string,string>>(str);
+					Dictionary<string, PatientData> plist = new Dictionary<string, PatientData>();
+					foreach(KeyValuePair<string, string> pair in nameIDPair)
+						plist[pair.Key] = null;
+					successAction.Invoke(plist);
+				}
+				else
+					failAction.Invoke("Failed to load local parent data.");
+			}
 		}
 	}
 
@@ -522,5 +394,82 @@ public static class PatientDataManager
 			successAction.Invoke(pd);
 	}
 
+	public static void GetPatientDataByName(string name, UnityAction<PatientData> successAction, UnityAction<string> failAction){
+		PatientData pdata= null;
+		Dictionary<string, string> nameIDList = PatientMgr.GetNameIDList();
+		if(!nameIDList.ContainsKey(name) || GameState.IsPatient())
+			return;
+		if(nameIDList[name] == GameConst.PLAYFABID_CLINIC){
+			if(GameState.IsOnline){
+				GetUserDataRequest request = new GetUserDataRequest();
+				request.Keys = new List<string>(){name};
+				PlayFabClientAPI.GetUserData(request,
+					result=>{
+						if(result.Data != null && result.Data.ContainsKey(name)){
+							pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[name].Value);
+							Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
+							DataKey.SetPrefsString(name, result.Data[name].Value);
+							plist[name] = pdata;
+							successAction.Invoke(pdata);
+						}
+					},
+					error=>{
+						failAction.Invoke(error.ToString());
+					}
+				);
+				return;
+			}
+			else{
+				string localStr = DataKey.GetPrefsString(name);
+				if(!string.IsNullOrEmpty(localStr)){
+					pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
+					PatientMgr.GetPatientList()[name] = pdata;
+					successAction.Invoke(pdata);
+				}
+				else
+					failAction.Invoke("Local patient data does not exist.");
+			}
+			
+		}
+		else{//Home patient
+			if(GameState.IsOnline){
+				GetUserDataRequest request = new GetUserDataRequest();
+				request.Keys = new List<string>(){DataKey.HOMEPATIENT};
+				request.PlayFabId = nameIDList[name];
+				PlayFabClientAPI.GetUserData(request,
+					result=>{
+						if(result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
+							pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);
+							Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
+							plist[name] = pdata;
+							request = new GetUserDataRequest();
+							request.Keys = new List<string>(){name};
+							PlayFabClientAPI.GetUserData(request,
+								result=>{
+									if(result.Data != null && result.Data.ContainsKey(name)){
+										HomePatientData hpdata = JsonConvert.DeserializeObject<HomePatientData>(result.Data[name].Value);
+										PatientMgr.GetHomePatientDataList()[name] = hpdata;
+										pdata.GetDataFromDoctorData(hpdata);
+										successAction.Invoke(pdata);
+									}
+									else
+										failAction.Invoke("Can not download local home patient data.");
+								},
+								error=>{
+									failAction.Invoke("Can not download local home patient data.");
+								}
+							);
+						}
+						else
+							failAction.Invoke("Can not download patient data.");
+					},
+					error=>{
+						failAction.Invoke(error.ToString());
+					}
+				);
+			}
+		}
+	}
+	
 	
 }

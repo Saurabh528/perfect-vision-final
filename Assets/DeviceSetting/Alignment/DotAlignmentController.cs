@@ -20,6 +20,26 @@ using PlayFab.DataModels;
 using EntityKey = PlayFab.DataModels.EntityKey;
 
 using UnityEngine.SceneManagement;
+using System.Runtime.InteropServices;
+
+public class AlignmentResultData{
+	public bool isValid = false;
+	public List<float[]> metricValues = new List<float[]>();
+	public AlignmentResultData(string filename){
+		if(!File.Exists(filename))
+			return;
+		string[] lines = File.ReadAllLines(filename);
+		for(int i = 2; i < lines.Length; i++)
+		{
+			float[] rowValues = new float[12];
+			string[] words = lines[i].Split(new char[] { ',' });
+			for(int j = 0; j < 12; j++)
+				rowValues[j] = float.Parse(words[j]);
+			metricValues.Add(rowValues);
+		}
+		isValid = true;
+	}
+}
 
 public class DotAlignmentController : GamePlayController {
 
@@ -32,15 +52,16 @@ public class DotAlignmentController : GamePlayController {
 	bool _finished = false;
 	bool _failed = false;
 	Process pythonProcess;
-	[SerializeField] GameObject _objOutput, _btnPrint, _btnHelp;
+	[SerializeField] GameObject _objOutput, _btnPrint, _btnHelp, /* _btnStart ,*/ _btnDownload;
 	[SerializeField] SimilarityTableRow _simTblRowTmpl;
+	[SerializeField] AlignmentTableRow _alignTblRowTmpl;
 	[SerializeField] SimilarityGraph _simGraphTmpl;
 	[SerializeField] Transform _dotParent;
 	int _curDotIndex = -1;
 	List<SimilarityResult> similarityResults = new List<SimilarityResult>();
 	List<IrisState> irisList = new List<IrisState>();
 	List<float> similarValueList = new List<float>();
-	
+	AlignmentResultData _resultData;
 	// Use this for initialization
 	public override void Start ()
 
@@ -51,8 +72,8 @@ public class DotAlignmentController : GamePlayController {
 
 	public override void  Update () {
 		base.Update();
-		if (GamePlayController.Instance.IsPlaying()) {
-			if(_curDotIndex != -1)
+		/*if (GamePlayController.Instance.IsPlaying()) {
+			 if(_curDotIndex != -1)
 			{
 				spawnremainTime -= Time.deltaTime;
 				if (spawnremainTime < 0)
@@ -60,9 +81,9 @@ public class DotAlignmentController : GamePlayController {
 					spawnremainTime += spawnperiod;
 					MoveDot();
 				}
-			}
+			} 
 			
-		}
+		}*/
 		if (_finished)
 		{
 			StopPlay();
@@ -98,19 +119,41 @@ public class DotAlignmentController : GamePlayController {
 		_textInstruction.text = "Checking finished.";
 		yield return new WaitForSeconds(2);
 		_textInstruction.text = "";
-		ShowResult();
-		
+		_resultData = new AlignmentResultData(PatientMgr.GetPatientDataDir() + "/collected_metrics.csv");
+		ShowResult(_resultData);
+		//_btnStart.SetActive(true);
+		_btnDownload.SetActive(true);
 	}
 
-	void ShowResult()
+
+
+	void ShowResult(AlignmentResultData resultData)
 	{
 		UnityEngine.Debug.Log("SHW RESULT CALLEDDDDDDDDDDDD");
-        UploadCSV("D:\\PROJECTS\\perfect-vision-aman2\\Python\\collected_metrics.csv");
+        UploadCSV(PatientMgr.GetPatientDataDir() + "/collected_metrics.csv");
         foreach (Transform child in _dotParent)
 		{
 			child.gameObject.SetActive(false);
 		}
-		//read similar values
+
+		if(!resultData.isValid)
+			return;
+		textLevel.gameObject.SetActive(false);
+		textScore.gameObject.SetActive(false);
+		textTime.gameObject.SetActive(false);
+		_objOutput.SetActive(true);
+		Canvas.ForceUpdateCanvases();
+		UtilityFunc.DeleteAllSideTransforms(_alignTblRowTmpl.transform);
+
+		foreach(float[] rowValues in resultData.metricValues)
+		{
+			AlignmentTableRow row = Instantiate(_alignTblRowTmpl, _alignTblRowTmpl.transform.position, _alignTblRowTmpl.transform.rotation);
+			row.transform.SetParent(_alignTblRowTmpl.transform.parent);
+			row.transform.localScale = _alignTblRowTmpl.transform.localScale;
+			row.gameObject.SetActive(true);
+			row.SetData(rowValues);
+		}
+		/* //read similar values
 		string outputPath = PatientMgr.GetPatientDataDir() + "/out_data.csv";
 		if (File.Exists(outputPath))
 		{
@@ -122,11 +165,7 @@ public class DotAlignmentController : GamePlayController {
 			}
 		}
 
-		textLevel.gameObject.SetActive(false);
-		textScore.gameObject.SetActive(false);
-		textTime.gameObject.SetActive(false);
-		_objOutput.SetActive(true);
-		Canvas.ForceUpdateCanvases();
+		
 		similarityResults.Clear();
 		irisList.Clear();
 		string groupPath = PatientMgr.GetPatientDataDir() + "/grouped_output.csv";
@@ -159,9 +198,9 @@ public class DotAlignmentController : GamePlayController {
 					row.SetData(++count, words[1], words[2], countValue == 0? 0: (sum / countValue));
 				}
 			}
-		}
+		} */
 
-		string similarityPath = PatientMgr.GetPatientDataDir() + "/out_data.csv";
+		/* string similarityPath = PatientMgr.GetPatientDataDir() + "/out_data.csv";
 		if (File.Exists(similarityPath))
 		{
 			string[] lines = File.ReadAllLines(similarityPath);
@@ -183,7 +222,7 @@ public class DotAlignmentController : GamePlayController {
 			_btnPrint.SetActive(true);
 			_btnHelp.SetActive(true);
 			_textStatus.gameObject.SetActive(false);
-		}
+		} */
         
     }
 
@@ -215,11 +254,10 @@ public class DotAlignmentController : GamePlayController {
 		base.StartGamePlay();
 		_textInstruction.text = "Connecting to camera...";
 		tcp.InitTCP();
+		_objOutput.SetActive(false);
+		//_btnStart.SetActive(false);
+		_btnDownload.SetActive(false);
 		StartPythonAlignment();
-
-	
-
-
 	}
 
 	
@@ -239,20 +277,19 @@ public class DotAlignmentController : GamePlayController {
 		}
 		UnityEngine.Debug.Log($"Cameraindex: {camindex}");
 
+		string path = Application.dataPath + "/../Python";
 #if UNITY_EDITOR
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/Python/Alignment/final_pos_sim.py --connect --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $"{path}/main.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #else
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "final_pos_sim.exe";
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.FileName         = "main.exe";
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
@@ -263,8 +300,10 @@ public class DotAlignmentController : GamePlayController {
 			UnityEngine.Debug.Log("PYTHON PROCESS IS NOT NULLLLLLl");
             
         }
-		else
+		else{
 			_textInstruction.text = "Checking failed. Try again.";
+			//_btnStart.SetActive(true);
+		}
 	}
 
 
@@ -291,15 +330,11 @@ public class DotAlignmentController : GamePlayController {
 			{
 				_failed = true;
 			}
-			else if (cmdstr == "EXIT")
+			else if (cmdstr.StartsWith("DotNumber:"))
 			{
-				//tcp.StopTCP();
-			}
-			else if (cmdstr == "START")
-			{
-				spawnremainTime = spawnperiod;
-				_curDotIndex = 4;
+				_curDotIndex = int.Parse(cmdstr.Substring(10));
 				ShowCurDot();
+				//tcp.StopTCP();
 			}
 		}
 		else if (message.StartsWith("MSG:"))
@@ -318,37 +353,87 @@ public class DotAlignmentController : GamePlayController {
 	{
 		base.StopPlay();
 		tcp.StopTCP();
-		GameObject[] eggs = GameObject.FindGameObjectsWithTag("Fruits");
-		foreach (GameObject go in eggs)
-			GameObject.Destroy(go);
 	}
 
 	private void OnDestroy()
 	{
-		if(pythonProcess != null)
+		if(pythonProcess != null && !pythonProcess.HasExited)
 		{
-			pythonProcess.Dispose();
+			pythonProcess.Kill();
 		}
 		tcp.StopTCP();
 	}
 
 	public void OnBtnPrintPDF()
 	{
-		string dir = PatientMgr.GetTherapyResultDir(); // If directory does not exist, create it.
+		if(_resultData == null || !_resultData.isValid)
+			return;
+		//_resultData = new AlignmentResultData(PatientMgr.GetPatientDataDir() + "/collected_metrics.csv");
+		PdfWriter writer;
+		Document document;
+		string dir = PatientMgr.GetDiagnoseResultDir(); // If directory does not exist, create it.
 		if (!Directory.Exists(dir))
 		{
 			Directory.CreateDirectory(dir);
 		}
 
-		string path = dir + PatientMgr.GetCurrentPatientName() + ".pdf";
-
-		PdfWriter writer;
-		Document document;
+		string path = dir + PatientMgr.GetCurrentPatientName() + "_DotAlignment.pdf";
 		if (!PDFUtil.CreatePDFHeader(path, out document, out writer))
 			return;
 		PDFUtil.AddSectionBar("Alignment Result", document);
 
-		//Similarity table
+		//collcted metrics table
+		PDFUtil.AddSubSection("Dot test Metrics Table", document);
+		PdfPTable table = new PdfPTable(11);
+		table.SetWidths(new float[]{200, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80});
+		table.WidthPercentage = 50000f / (document.PageSize.Width - document.RightMargin - document.LeftMargin);
+		iTextSharp.text.Font cellFont = new iTextSharp.text.Font(PDFUtil.bfntHead, 11, 1, iTextSharp.text.BaseColor.BLACK);
+		BaseColor cellcolor1 = new BaseColor(50, 190, 22);
+		BaseColor cellcolor2 = new BaseColor(114, 201, 108);
+		BaseColor headerColor = new BaseColor(255, 153, 217);
+		BaseColor meanStdColor = new BaseColor(230, 255, 153);
+
+		//header row
+		PdfPCell cell = new PdfPCell(new Phrase("Dot Position", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric1", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric1", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric2", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric2", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric3", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric3", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric4", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Metric4", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("IPD", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("IPD", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+
+		//scale row
+		cell = new PdfPCell(new Phrase("", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("mean", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("std", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("mean", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("std", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("mean", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("std", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("mean", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("std", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("mean", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("std", cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 30; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = meanStdColor; table.AddCell(cell);
+		
+		//value row
+		int count = 0;
+		foreach(float[] rowValues in _resultData.metricValues)
+		{
+			cell = new PdfPCell(new Phrase(AlignmentTableRow.GetDotPositionLabel ((int)rowValues[0]), cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 20; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = count % 2 == 0? cellcolor1: cellcolor2; table.AddCell(cell);
+
+			for(int j = 2; j < 12; j++){
+				cell = new PdfPCell(new Phrase(rowValues[j].ToString("F2"), cellFont)); cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = 20; cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = count % 2 == 0? cellcolor1: cellcolor2; table.AddCell(cell);
+			}
+			count++;
+		}
+
+		
+		document.Add(table);
+		/* //Similarity table
 		PDFUtil.AddSubSection("Similarity Table", document);
 		PdfPTable table = new PdfPTable(3);
 		table.WidthPercentage = 50000f / (document.PageSize.Width - document.RightMargin - document.LeftMargin);
@@ -416,7 +501,7 @@ public class DotAlignmentController : GamePlayController {
 		DrawSimilarityGraph(writer, irisList, Xpos, Ypos, sizeX, sizeY, IRISSIMCLASS.LELD);
 		DrawSimilarityGraph(writer, irisList, Xpos, Ypos, sizeX, sizeY, IRISSIMCLASS.LERD);
 		DrawSimilarityGraph(writer, irisList, Xpos, Ypos, sizeX, sizeY, IRISSIMCLASS.RELD);
-		DrawSimilarityGraph(writer, irisList, Xpos, Ypos, sizeX, sizeY, IRISSIMCLASS.RERD);
+		DrawSimilarityGraph(writer, irisList, Xpos, Ypos, sizeX, sizeY, IRISSIMCLASS.RERD); */
 
 		document.Close();
 		UtilityFunc.StartProcessByFile(path);
@@ -546,6 +631,8 @@ public class DotAlignmentController : GamePlayController {
             return;
         }
 
+		if(string.IsNullOrEmpty(GameState.playfabID))
+			return;
         byte[] fileContents = File.ReadAllBytes(filePath);
 
         PlayFabDataAPI.InitiateFileUploads(new InitiateFileUploadsRequest
@@ -641,5 +728,9 @@ public class DotAlignmentController : GamePlayController {
 
             });// Error callback
     }
+
+	public void OnBtnSnakeGameStart(){
+		ChangeScene.LoadScene("Snake");
+	}
 }
 

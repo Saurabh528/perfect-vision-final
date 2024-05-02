@@ -5,9 +5,9 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using System.Linq;
-using PlayFab.ClientModels;
+/* using PlayFab.ClientModels;
 using PlayFab;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; */
 
 public class UISessionMake : MonoBehaviour
 {
@@ -21,8 +21,8 @@ public class UISessionMake : MonoBehaviour
 	[SerializeField] Toggle _toggle2Min, _toggle5Min;
     const string PREFNAME_THERAPY_2MIN = "2MinTherapy";
 	int _timeMin;
-	private int count;
-	private int countLimit;
+	//private int count;
+	//private int countLimit;
 	private void Start()
 	{
 		
@@ -46,9 +46,9 @@ public class UISessionMake : MonoBehaviour
 		
 	}
 
-	void OnLoadPatientDataSuccess(Dictionary<Int32, PatientData> plist){
+	void OnLoadPatientDataSuccess(Dictionary<string, PatientData> plist){
 		PatientMgr.SetPatientList(plist);
-		Dictionary<int, PatientData> dic = PatientMgr.GetPatientList();
+		Dictionary<string, PatientData> dic = PatientMgr.GetPatientList();
 		if(dic.Count == 1){
 			PatientData pd = dic.ElementAt(0).Value;
 			if(GameState.IsPatient() || pd.IsHome())
@@ -130,35 +130,23 @@ public class UISessionMake : MonoBehaviour
 			EnrollmentManager.Instance.ShowMessage(error);
 	}
 
-    //public void OnBtnStartSession()
-    //{
-    //	++count;
-    //	Debug.Log(count);
-    //	if (GameState.currentPatient == null)
-    //	{
-    //		Debug.Log("If1 section of the OnBtnStartSession");
-    //		EnrollmentManager.Instance.ShowMessage("Please select patient.");
-    //	}
-    //	else if (SessionMgr.GetGameList().Count < 6)
-    //	{
-    //		if (GameState.IsDoctor())
-    //		{
-    //			Debug.Log("If2 section of the OnBtnStartSession");
-    //			EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
-    //		}
-    //		else
-    //		{
-    //			Debug.Log("Else1 section of the OnBtnStartSession");
-    //			EnrollmentManager.Instance.ShowMessage("6 games have to be selected by doctor.");
-    //		}
-    //	}
-    //	else
-    //	{
-    //		Debug.Log("Else2 section of the OnBtnStartSession  ");
-    //		SessionMgr.StartSession(_timeMin * 60);
-    //	}
-    //}
     public void OnBtnStartSession()
+	{
+		if (GameState.currentPatient == null)
+			EnrollmentManager.Instance.ShowMessage("Please select patient.");
+		else if (SessionMgr.GetGameList().Count < 6){
+			if(GameState.IsDoctor())
+				EnrollmentManager.Instance.ShowMessage("Please select at least 6 games.");
+			else
+				EnrollmentManager.Instance.ShowMessage("6 games have to be selected by doctor.");
+		}
+		else
+		{
+			
+			SessionMgr.StartSession(_timeMin * 60);
+		}
+	}
+    /*public void OnBtnStartSession()
     {
         PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
@@ -377,7 +365,7 @@ public class UISessionMake : MonoBehaviour
                 
   //          }
   //      }
-    }
+    }*/
 
     //private void RestartSession()
     //{

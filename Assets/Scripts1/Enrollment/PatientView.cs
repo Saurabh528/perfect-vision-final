@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class PatientView : MonoBehaviour
 {
@@ -35,12 +36,16 @@ public class PatientView : MonoBehaviour
 
 	void OnUpdatedPatientDataSuccess(PatientData data)
 	{
-		EnrollmentManager.Instance.ShowMessage(data.name + "'s data updated.");
+		ShowMessage(data.name + "'s data updated.");
 	}
 
 	void OnUpdatePatientDataFailed(string errstr)
 	{
-		EnrollmentManager.Instance.ShowMessage(errstr);
+		ShowMessage(errstr);
+	}
+
+	void ShowMessage(string text){
+		EnrollmentManager.Instance.ShowMessage(text);
 	}
 
 	public void Clear()
@@ -60,6 +65,8 @@ public class PatientView : MonoBehaviour
 		if (GameState.currentPatient == null)
 		{
 			Clear();
+			if(_btnDelete)
+				_btnDelete.SetActive(true);
 			return;
 		}
 		_name.text = GameState.currentPatient.name;
@@ -80,11 +87,26 @@ public class PatientView : MonoBehaviour
 		Toggle toggle = item.GetComponent<Toggle>();
 		if (toggle == null || !toggle.isOn)
 			return;
-		if(GameState.IsPatient() || item._pdata.IsHome()){
-			PatientDataManager.GetHomePatientCalib(item._pdata, SetCurrentPatient);
+		PatientData pdata = PatientMgr.GetPatientList()[item._pname];
+		if(pdata != GameState.currentPatient){
+			UISessionRecordView.Instance.Clear();
+			Clear();
 		}
+		if(pdata == null)
+			PatientDataManager.GetPatientDataByName(item._pname, OnPatientDataLoaded, ShowMessage);
 		else
-			SetCurrentPatient( item._pdata);
+			OnPatientDataLoaded(pdata);
+	}
+
+
+	public void OnPatientDataLoaded(PatientData pdata){
+		if(pdata != null){
+			if(GameState.IsPatient() || pdata.IsHome())
+				PatientDataManager.GetHomePatientCalib(pdata, SetCurrentPatient);
+			else
+				SetCurrentPatient( pdata);
+		}
+		
 	}
 
 	public void SetCurrentPatient(PatientData pd){

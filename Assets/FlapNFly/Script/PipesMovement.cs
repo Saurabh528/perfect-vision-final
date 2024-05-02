@@ -15,7 +15,8 @@ public class PipesMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position += Vector3.left * speed * Time.deltaTime;
+        float levelSpeed = GamePlayController.Instance == null?speed:(speed * GamePlayController.GetDifficultyValue(1, 1, 30, 3));
+        transform.position += Vector3.left * levelSpeed * Time.deltaTime;
         if (transform.position.x < leftEdge)
         {
             Destroy(gameObject);

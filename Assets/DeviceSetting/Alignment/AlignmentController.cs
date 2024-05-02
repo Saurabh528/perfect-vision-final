@@ -387,9 +387,9 @@ public class AlignmentController : GamePlayController {
 
 	private void OnDestroy()
 	{
-		if(pythonProcess != null)
+		if(pythonProcess != null && !pythonProcess.HasExited)
 		{
-			pythonProcess.Dispose();
+			pythonProcess.Kill();
 		}
 		tcp.StopTCP();
 	}

@@ -42,6 +42,11 @@ public abstract class DataKey
 	public const string PLAYFABID = "PlayfabID";
 	public const string HOMECALIB = "HomeCalib";
 	public const string WBCAMERANAME = "WebCameraName";
+	public const string CLINICLIMIT = "ClinicLimit";
+	public const string HOMELIMIT = "HomeLimit";
+	public const string FreeLicenseDay = "FreeLinceseLimit";
+	public const string HOMEPATIENT = "HomePatient";
+	public const string SF_SESSIONRECORD = "_SessionRecord";
 
 	public static string GetPrefKeyName(string orgkey){
 		if(string.IsNullOrEmpty(GameState.username)){
@@ -102,7 +107,6 @@ public abstract class DataKey
 
 public class PatientData
 {
-	public Int32 ID;
 	public  string name;
 	public byte age;
 	public string licenseKey;
@@ -113,9 +117,8 @@ public class PatientData
 	public List<byte> therapygames = new List<byte>();
 	public string PFID;
 	public DateTime ExpireDate;
-	public PatientData(Int32 id, string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate,string licensekey)
+	public PatientData(string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate,string licensekey)
 	{
-		ID = id;
 		name = nm;
 		age = ag;
 		gender = gen;
@@ -123,7 +126,9 @@ public class PatientData
 		place = plc;
 		ExpireDate = expireDate;
 		licenseKey = licensekey;
+		PFID = GameConst.PLAYFABID_CLINIC;
 	}
+	
 
 	public string ToJSONString()
 	{
@@ -137,7 +142,19 @@ public class PatientData
 	public bool IsClinic(){
 		return place == THERAPPYPLACE.Clinic;
 	}
+
+	public void GetDataFromDoctorData(HomePatientData hdata){
+		therapygames = hdata.therapygames;
+	}
+
+	public void PutDataToDoctorData(HomePatientData hdata){
+		hdata.therapygames = therapygames;
+	}
 	
+}
+
+public class HomePatientData{
+	public List<byte> therapygames = new List<byte>();
 }
 
 

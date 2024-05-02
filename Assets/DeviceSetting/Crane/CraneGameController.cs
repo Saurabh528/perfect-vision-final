@@ -179,7 +179,7 @@ public class CraneGameController : GamePlayController
 		int positionDist = (int)VisualFactor.ScreenCMToArcSecond(positionCM);*/
 		int depthDist = (int)(_boxDistHalf - _armDistHalf);
 		_textResult.text = $"Depth distance: {depthDist}\r\nPosition distance: {(int)_armBaseX}";
-        SaveData(depthDist, _armBaseX);
+        //SaveData(depthDist, _armBaseX);
         _textResult.gameObject.SetActive(true);
 		_objExplain.SetActive(true);
 

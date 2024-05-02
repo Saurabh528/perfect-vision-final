@@ -11,6 +11,8 @@ public abstract class GameConst
 	public const string PATIENTNAME_ANONYMOUS = "Anonymous";
 	public const string STRFORMAT_DATETIME = "yyyy-MM-dd";
 	public const string PYARG_CAMERAINDEX = "cameraindex";
+	public const string PYARG_PATIENTNAME = "patientname";
+	public const string PLAYFABID_CLINIC = "0000000000000000";
 }
 
 public enum ColorChannel
@@ -63,13 +65,14 @@ public abstract class GameState
         }
     }
 	//public string playfabID2 = ;
-	public static string passwordhash = "";
+	public static string password = "";
 	public static bool MODE_DOCTORTEST = false;
 	public static USERROLE userRole;
 	public static string DoctorID;
 	public static DateTime ExpireDate;
 	public static bool IsOnline;
-	
+	public static int CilinicLimit;//Count limit of cilinic patients enrollment
+	public static int HomeLimit;//Count limit of home patients enrollment
 
 	public static bool IsDoctor(){
 		return userRole == USERROLE.DOCTOR;
@@ -86,14 +89,30 @@ public abstract class GameState
 
 public abstract class PatientMgr
 {
-	static Dictionary<Int32, PatientData> patientList = new Dictionary<Int32, PatientData>();
+	static Dictionary<string, PatientData> patientList = new Dictionary<string, PatientData>();
+	static Dictionary<string, string> nameIDList = new Dictionary<string, string>();//<name, playfabID>
+	static Dictionary<string, HomePatientData> homePatientDataList = new Dictionary<string, HomePatientData>();//{name, HomePatientData}--updated by doctor
 
-	public static Dictionary<Int32, PatientData> GetPatientList()
+	public static Dictionary<string, PatientData> GetPatientList()
 	{
 		return patientList;
 	}
 
-	public static void SetPatientList(Dictionary<Int32, PatientData> plist)
+	public static void SetNameIDList(Dictionary<string, string> list){
+		nameIDList = list;
+	}
+
+	public static Dictionary<string, HomePatientData> GetHomePatientDataList(){
+		return homePatientDataList;
+	}
+
+
+
+	public static Dictionary<string, string> GetNameIDList(){
+		return nameIDList;
+	}
+
+	public static void SetPatientList(Dictionary<string, PatientData> plist)
 	{
 		if (patientList == plist)
 			return;
@@ -102,50 +121,48 @@ public abstract class PatientMgr
 		patientList = plist;
 	}
 
-	public static void RemovePatient(Int32 id)
+	public static void RemovePatient(string name)
 	{
-		if (patientList.ContainsKey(id))
-			patientList.Remove(id);
+		if (patientList.ContainsKey(name))
+			patientList.Remove(name);
+		if(nameIDList.ContainsKey(name))
+			nameIDList.Remove(name);
+		if(homePatientDataList.ContainsKey(name))
+			homePatientDataList.Remove(name);
 	}
 
-	public static Int32 GetFreePatientID()
-	{
-		Int32 newid = 0;
-		while (patientList.ContainsKey(newid))
-			newid++;
-		return newid;
+	public static void ClearPatients(){
+		patientList.Clear();
+		nameIDList.Clear();
+		homePatientDataList.Clear();
 	}
+
 
 	public static void AddPatientData(PatientData data)
 	{
-		patientList[data.ID] = data;
+		patientList[data.name] = data;
+		nameIDList[data.name] = data.PFID;
+		homePatientDataList[data.name] = new HomePatientData();
 	}
 
 	public static void UpdatePatientData(PatientData data)
 	{
-		if (!patientList.ContainsKey(data.ID))
+		if (!patientList.ContainsKey(data.name))
 			return;
-		patientList[data.ID] = data;
+		patientList[data.name] = data;
 	}
 
-	public static PatientData FindPatient(Int32 ID)
+	public static PatientData FindPatient(string name)
 	{
-		if (!patientList.ContainsKey(ID))
+		if (!patientList.ContainsKey(name))
 			return null;
-		return patientList[ID];
+		return patientList[name];
 	}
 
-	public static PatientData FindPatient(string name){
-		foreach(KeyValuePair<int, PatientData> pair in patientList){
-			if(pair.Value.name == name)
-				return pair.Value;
-		}
-		return null;
-	}
 
 	public static string GetPatientDataDir()
 	{
-		return Application.dataPath + "/../Python/" + GetCurrentPatientName();
+		return Application.dataPath + "/../Python/PatientData/" + GetCurrentPatientName();
 	}
 
 	public static string GetCurrentPatientName()
@@ -158,13 +175,18 @@ public abstract class PatientMgr
 		return Application.persistentDataPath + "/" + "TherapyReport/";
 	}
 
+	public static string GetDiagnoseResultDir()
+	{
+		return Application.persistentDataPath + "/DiagnoseReport/";
+	}
+
 }
 
 public abstract class SessionMgr
 {
 	static List<byte> gamelist = new List<byte>();
-	static string[] gamenames = new string[] { "Ballon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game"};
-	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D" };
+	static string[] gamenames = new string[] { "Ballon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly"};
+	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly"};
 	static SessionRecord sessionRecord;
 	public static int _timeSecond = 120;
 	public static bool AddGame(byte gameid, out string error)
@@ -231,6 +253,8 @@ public abstract class SessionMgr
 		List<byte> games = SessionMgr.GetGameList();
 		foreach (byte gameindex in games)
 			GameState.currentPatient.therapygames.Add(gameindex);
+		if(GameState.currentPatient.IsHome())
+			GameState.currentPatient.PutDataToDoctorData(PatientMgr.GetHomePatientDataList()[GameState.currentPatient.name]);
 		PatientDataManager.UpdatePatient(GameState.currentPatient);
 	}
 

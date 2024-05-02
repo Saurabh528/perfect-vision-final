@@ -4,16 +4,42 @@ using UnityEngine;
 using System.Diagnostics;
 using UnityEngine.UI;
 using System;
+using System.IO;
+using System.Text.RegularExpressions;
+
+
+public class CoverUncoverResultData{
+	public bool isValid = false;
+	public float leftMean, leftStd, rightMean, rightStd;
+	public CoverUncoverResultData(string filenmae){
+		if (!File.Exists(filenmae))
+			return;
+		string[] lines = File.ReadAllLines(filenmae);
+		if(lines.Length != 2)
+			return;
+		string pattern = @"Mean Value = (\d+\.\d+), Standard Deviation = (\d+\.\d+)";
+		// Match the pattern in the input string
+        Match matchLeft = Regex.Match(lines[0], pattern);
+        Match matchRight = Regex.Match(lines[1], pattern);
+        if (matchLeft.Success && matchRight.Success){
+			leftMean = float.Parse(matchLeft.Groups[1].Value);
+			leftStd = float.Parse(matchLeft.Groups[2].Value);
+			rightMean = float.Parse(matchRight.Groups[1].Value);
+			rightStd = float.Parse(matchRight.Groups[2].Value);
+		}
+		isValid = true;
+	}
+}
 
 public class CoverUncoverController : MonoBehaviour
 {
 	[SerializeField] TCPListener _tcp;
 	[SerializeField] GameObject _redPoint, _btnPrint, _btnHelp;
-	[SerializeField] Text _textHint;
+	[SerializeField] Text _textHint, _txtStatus;
 	[SerializeField] CoverResultView _resultView;
 	Process pythonProcess;
 	bool _finished = false;
-
+	CoverUncoverResultData _resultData;
 	// Start is called before the first frame update
 	void Start()
     {
@@ -39,20 +65,19 @@ public class CoverUncoverController : MonoBehaviour
 		UnityEngine.Debug.Log($"Camera Index: {camindex}");
 
 		_tcp.InitTCP();
+		string path = Application.dataPath + "/../Python";
 #if UNITY_EDITOR
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/Python/CoverUnCover/cover_uncover.py --connect --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $"{path}/cover_uncover.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #else
-		string path = Application.dataPath + "/..";
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "cover_uncover.exe";
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
@@ -83,13 +108,17 @@ public class CoverUncoverController : MonoBehaviour
 			if (_textHint)
 				_textHint.text = message.Substring(4);
 		}
+		else if (message.StartsWith("STS:")) {
+			if (_txtStatus)
+				_txtStatus.text = message.Substring(4);
+		}
 	}
 
 	private void OnDestroy()
 	{
-		if (pythonProcess != null)
+		if(pythonProcess != null && !pythonProcess.HasExited)
 		{
-			pythonProcess.Dispose();
+			pythonProcess.Kill();
 		}
 		_tcp.StopTCP();
 	}
@@ -102,17 +131,21 @@ public class CoverUncoverController : MonoBehaviour
 
 	IEnumerator Routine_Finish()
 	{
+		_redPoint.SetActive(false);
 		_textHint.text = "Checking successful.";
 		yield return new WaitForSeconds(2);
 		_textHint.text = "";
 		_resultView.gameObject.SetActive(true);
-		_resultView.ShowResult(PatientMgr.GetCurrentPatientName());
+		_resultData = null;
+		_resultData = new CoverUncoverResultData(PatientMgr.GetPatientDataDir() + "/eye_statistics.txt");
+		_resultView.ShowResult(_resultData);
 		_btnPrint.SetActive(true);
-		_btnHelp.SetActive(true);
+		//_btnHelp.SetActive(true);
 	}
 
 	public void OnBtnPrintPDF()
 	{
-		_resultView.PrintAndShowPDF(PatientMgr.GetCurrentPatientName());
+		_resultView.PrintAndShowPDF(_resultData);
 	}
+
 }

@@ -9,7 +9,6 @@ using PlayFab;
 using PlayFab.ClientModels;
 public class UISignIn : MonoBehaviour {
 
-	[SerializeField] TMP_InputField licenseKey;
 	[SerializeField] TMP_InputField eMail;
 	[SerializeField] TMP_InputField username;
 	[SerializeField] TMP_InputField password;

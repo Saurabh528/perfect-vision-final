@@ -12,7 +12,7 @@ public class TheraphHelpController : MonoBehaviour
 
 	private void Awake()
 	{
-        string hintstr = PlayerPrefs.GetString(PREFNAME_DONTSHOWHINT + SceneManager.GetActiveScene().name, "true");
+        string hintstr = PlayerPrefs.GetString(PREFNAME_DONTSHOWHINT + SceneManager.GetActiveScene().name, "false");
         if(hintstr == "true")
             StartCountDown();
 	}

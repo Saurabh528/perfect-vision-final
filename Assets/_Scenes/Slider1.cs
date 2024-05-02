@@ -136,62 +136,14 @@ public class Slider1 : MonoBehaviour
 
 	public void OnBtnComplete()
 	{
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
-    result =>
-    {
-        int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
-        count++;
-        var request = new UpdateUserDataRequest()
-        {
-            Data = new Dictionary<string, string> { { "DiagnosticCount", count.ToString() } },
-            Permission = UserDataPermission.Public
-        };
-        PlayFabClientAPI.UpdateUserData(request,
-         result =>
-         {
-             UnityEngine.Debug.Log("Successfully changed the DiagnostiCount");
-             if (GameState.currentPatient != null)
-             {
-                 PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
-                 string dpiFilename = DPICaculator.GetDPIPath();
-                 if (File.Exists(dpiFilename))
-                 {
-                     string[] lines = File.ReadAllLines(dpiFilename);
-                     if (lines.Length >= 2 && lines[0] == GameState.currentPatient.name)
-                     {
-                         Debug.Log("Device Setting 1");
-                         ChangeScene.LoadScene("DeviceSetting");
-                     }
-                     else
-                     {
-                         Debug.Log("DPICheck Scene 1");
-                         ChangeScene.LoadScene("DPICheck");
-                     }
-                 }
-                 else
-                 {
-                     Debug.Log("DPICheck Scene 2");
-                     ChangeScene.LoadScene("DPICheck");
-                 }
-             }
-             else
-             {
-                 Debug.Log("Device Setting 2");
-                 ChangeScene.LoadScene("DeviceSetting");
-             }
-         },
-         error =>
-         {
-             UnityEngine.Debug.Log("Not Successfully changed the DiagnostiCount");
-         });
-
-    },
-    error =>
-    {
-        UnityEngine.Debug.Log("Error in GetUserData request");
-
-    });
-        
+        if (GameState.currentPatient != null)
+			PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
+		if(!File.Exists(PatientMgr.GetPatientDataDir() + "/focus_value.txt"))
+			ChangeScene.LoadScene("ScreenDistance");
+		else if(!File.Exists(PatientMgr.GetPatientDataDir() + "/conversion_rates.txt"))
+			ChangeScene.LoadScene("CardCalli");
+		else
+			ChangeScene.LoadScene("DeviceSetting");        
 	}
 
 	public void OnSliderTransparent(Boolean value)

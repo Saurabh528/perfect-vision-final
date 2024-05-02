@@ -6,11 +6,11 @@ public class PatientItem : MonoBehaviour
 {
 	public Text _name;
 	[HideInInspector]
-	public PatientData _pdata;
+	public string _pname;
 
-	public void SetPatientData(PatientData pdata)
+	public void SetPatientName(string name)
 	{
-		_pdata = pdata;
-		_name.text = pdata.name;
+		_pname = name;
+		_name.text = name;
 	}
 }

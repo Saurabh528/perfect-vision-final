@@ -5,10 +5,11 @@ using UnityEngine;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Newtonsoft.Json;
-
+using TMPro;
 public class CoverResultView : MonoBehaviour
 {
     public CoverJSonResultView _viewtmpl;
+	[SerializeField] TextMeshProUGUI _leftMean, _leftStd, _rightMean, _rightStd;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,27 +22,14 @@ public class CoverResultView : MonoBehaviour
         
     }
 
-    public void ShowResult(string patientname)
+    public void ShowResult(CoverUncoverResultData resultdata)
     {
-        string dir = PatientMgr.GetPatientDataDir();
-
-		if (!Directory.Exists(dir))
-            return;
-        string filepathname = dir + "/beforeleft.json";
-        if (File.Exists(filepathname))
-            CreateTableFromFile("Before Diagnose (LEFT)", filepathname);
-
-		filepathname = dir + "/afterleft.json";
-		if (File.Exists(filepathname))
-			CreateTableFromFile("After Diagnose (LEFT)", filepathname);
-
-		filepathname = dir + "/beforeright.json";
-		if (File.Exists(filepathname))
-			CreateTableFromFile("Before Diagnose (RIGHT)", filepathname);
-
-		filepathname = dir + "/afterright.json";
-		if (File.Exists(filepathname))
-			CreateTableFromFile("After Diagnose (RIGHT)", filepathname);
+       	if(!resultdata.isValid)
+			return;
+			_leftMean.text = resultdata.leftMean.ToString();
+			_leftStd.text = resultdata.leftStd.ToString();
+			_rightMean.text = resultdata.rightMean.ToString();
+			_rightStd.text = resultdata.rightStd.ToString();
 
 	}
 
@@ -57,8 +45,10 @@ public class CoverResultView : MonoBehaviour
             tableView.ShowJSonContent(title, filepathname);
 	}
 
-    public void PrintAndShowPDF(string patientName)
+    public void PrintAndShowPDF(CoverUncoverResultData resultdata)
     {
+		if(resultdata == null || !resultdata.isValid)
+			return;
 		string dir = PatientMgr.GetTherapyResultDir(); // If directory does not exist, create it.
 		if (!Directory.Exists(dir))
 		{
@@ -72,13 +62,35 @@ public class CoverResultView : MonoBehaviour
 		if (!PDFUtil.CreatePDFHeader(path, out document, out writer))
 			return;
 		PDFUtil.AddSectionBar("CoverUncover Result", document);
-		DrawTableToPDF(document, "Before Diagnose (LEFT)", PatientMgr.GetPatientDataDir() + "/beforeleft.json");
+		
+		PDFUtil.AddSubSection("Eye statistics", document);
+		PdfPTable table = new PdfPTable(3);
+		table.WidthPercentage = 50000f / (document.PageSize.Width - document.RightMargin - document.LeftMargin);
+		iTextSharp.text.Font cellFont = new iTextSharp.text.Font(PDFUtil.bfntHead, 11, iTextSharp.text.Font.NORMAL, iTextSharp.text.BaseColor.BLACK);
+		iTextSharp.text.Font cellFontBold = new iTextSharp.text.Font(PDFUtil.bfntHead, 11, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLACK);
+		BaseColor headerColor = new BaseColor(230, 255, 253);
+		BaseColor valueColor = new BaseColor(189, 178, 253);
+		float cellheight = 20;
+		PdfPCell cell = new PdfPCell(new Phrase("Eye", cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Mean", cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase("Standard Deviation", cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = headerColor; table.AddCell(cell);
+
+		cell = new PdfPCell(new Phrase("Left Eye", cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase(resultdata.leftMean.ToString(), cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase(resultdata.leftStd.ToString(), cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+
+		cell = new PdfPCell(new Phrase("Right Eye", cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase(resultdata.rightMean.ToString(), cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+		cell = new PdfPCell(new Phrase(resultdata.rightStd.ToString(), cellFontBold));	cell.HorizontalAlignment = Element.ALIGN_CENTER; cell.FixedHeight = cellheight;	cell.VerticalAlignment = Element.ALIGN_MIDDLE; cell.BackgroundColor = valueColor; table.AddCell(cell);
+
+		document.Add(table);
+		/* DrawTableToPDF(document, "Before Diagnose (LEFT)", PatientMgr.GetPatientDataDir() + "/beforeleft.json");
 		document.NewPage();
 		DrawTableToPDF(document, "After Diagnose (LEFT)", PatientMgr.GetPatientDataDir() + "/afterleft.json");
 		document.NewPage();
 		DrawTableToPDF(document, "Before Diagnose (RIGHT)", PatientMgr.GetPatientDataDir() + "/beforeright.json");
 		document.NewPage();
-		DrawTableToPDF(document, "After Diagnose (RIGHT)", PatientMgr.GetPatientDataDir() + "/afterright.json");
+		DrawTableToPDF(document, "After Diagnose (RIGHT)", PatientMgr.GetPatientDataDir() + "/afterright.json"); */
 		document.Close();
 		UtilityFunc.StartProcessByFile(path);
 	}

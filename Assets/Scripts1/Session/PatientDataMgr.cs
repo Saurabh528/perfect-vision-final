@@ -79,7 +79,7 @@ public abstract class PatientDataMgr
 			return;
 		}
 		string jsonstr = JsonConvert.SerializeObject(patientRecord);
-		string keystr = GameState.currentPatient.name;
+		string keystr = GameState.currentPatient.name + DataKey.SF_SESSIONRECORD;
 		DataKey.SetPrefsString(keystr, jsonstr);
 		if (!GameState.IsOnline)
 			successAction.Invoke();
@@ -108,9 +108,10 @@ public abstract class PatientDataMgr
 			failAction.Invoke($"Can not find {patientname}'s data.");
 			return;
 		}
+		string keystr = patientname + DataKey.SF_SESSIONRECORD;
 		//offline mode
 		if(pd.place == THERAPPYPLACE.Clinic || GameState.IsPatient()){
-			string str = DataKey.GetPrefsString(patientname, "");
+			string str = DataKey.GetPrefsString(keystr, "");
 			if (!string.IsNullOrEmpty(str))
 			{
 				patientRecord = JsonConvert.DeserializeObject<PatientRecord>(str);
@@ -136,16 +137,16 @@ public abstract class PatientDataMgr
 				pfid = pd.PFID;
 			PlayFabClientAPI.GetUserData(new GetUserDataRequest()
 			{
-				Keys = new List<string>() { patientname },
+				Keys = new List<string>() { keystr },
 				PlayFabId = pfid
 			},
 		   result =>
 		   {
-			   if (result.Data != null && result.Data.ContainsKey(patientname))
+			   if (result.Data != null && result.Data.ContainsKey(keystr))
 			   {
-					string str = result.Data[patientname].Value;
+					string str = result.Data[keystr].Value;
 					if(pd.place == THERAPPYPLACE.Clinic || GameState.IsPatient())
-						PlayerPrefs.SetString(patientname, str);
+						PlayerPrefs.SetString(keystr, str);
 					if(string.IsNullOrEmpty(str))
 						patientRecord = new PatientRecord();
 					else
