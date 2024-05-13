@@ -338,4 +338,20 @@ public class GamePlayController : MonoBehaviour
 	public virtual float GetDifficultyValue(){
 		return 1;
 	}
+
+	/// <summary>
+	/// This function is called when the object becomes enabled and active.
+	/// </summary>
+	void OnEnable()
+	{
+		ExitUI.EnableShutdownButton(false);
+	}
+
+	/// <summary>
+	/// This function is called when the behaviour becomes disabled or inactive.
+	/// </summary>
+	void OnDisable()
+	{
+		ExitUI.EnableShutdownButton(true);
+	}
 }
