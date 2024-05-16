@@ -88,159 +88,159 @@ left_eyes_indices = get_unique(connections_left_eyes)
 connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
 right_eyes_indices = get_unique(connections_right_eyes)
 
-import os
+import os   
 
-def main():
+from argparse import ArgumentParser
+from utils import get_anonymous_directory, wait_for_camera
 
-    from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
-    
-    # Initialize TCP connection
-    if args.connect:
-        socket = init_TCP(args.port)
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = cur_dir
-    if args.patientname != "":
-        data_dir = os.path.join(cur_dir, "PatientData/" + args.patientname)
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir, exist_ok=True)
+parser = ArgumentParser()
+
+parser.add_argument("--connect", action="store_true",
+                    help="connect to unity",
+                    default=False)
+                    
+parser.add_argument("--quiet", action="store_true",
+                    help="hide window",
+                    default=False)
+
+parser.add_argument("--port", type=int, 
+                    help="specify the port of the connection to unity. Have to be the same as in Unity", 
+                    default=5066)
+
+parser.add_argument("--cameraindex", type=int, 
+                    help="specify the web camera index", 
+                    default=0)
+
+parser.add_argument("--datadir", type=str, 
+                    help="specify the data directory", 
+                    default=get_anonymous_directory())
+
+args = parser.parse_args()
+
+
+from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
+
+# Initialize TCP connection
+if args.connect:
+    socket = init_TCP(args.port)
+if not os.path.exists(args.datadir):
+    os.makedirs(args.datadir, exist_ok=True)
+print(args.datadir)
+if wait_for_camera(args.cameraindex):
     cap = cv2.VideoCapture(args.cameraindex)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    start_time = time.time()
-    focus = []
-    with mp_face_mesh.FaceMesh(
-        static_image_mode=True,
-        max_num_faces=2,
-        refine_landmarks=True,
-        min_detection_confidence=0.3) as face_mesh:
-        count = 0 
-        while cap.isOpened():
-            flag = 0
-            ret, frame = cap.read()
+else:
+    print("Could not initialize camera.")
+    exit()
+start_time = time.time()
+focus = []
+with mp_face_mesh.FaceMesh(
+    static_image_mode=True,
+    max_num_faces=2,
+    refine_landmarks=True,
+    min_detection_confidence=0.3) as face_mesh:
+    count = 0 
+    while cap.isOpened():
+        flag = 0
+        ret, frame = cap.read()
 
-            if not ret:
-                break
+        if not ret:
+            break
 
-            results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-            try:
-                for face_landmark in results.multi_face_landmarks:
-                    lms = face_landmark.landmark
-                    d= {}
-                    for index in iris_indices:
-                        x = int(lms[index].x*frame.shape[1])
-                        y = int(lms[index].y*frame.shape[0])
-                        d[index] = (x,y)
-                    black = np.zeros(frame.shape).astype("uint8")
-                    for index in iris_indices:
-                        #print(index)
-                        cv2.circle(frame,(d[index][0],d[index][1]),1,(0,255,0),-1)
-                    text = "Sit at 50 cms from the screen. press p 10 times in still position once comfortable"
-                    roll, yaw, pitch = calculate_head_orientation(face_landmark.landmark)
-                    fontScale = 0.7
-                    thickness = 2
-                    frame = cv2.putText(frame, f'Roll: {roll:.2f}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
-                    frame = cv2.putText(frame, f'Yaw: {yaw:.2f}', (50, 150), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
-                    frame = cv2.putText(frame, f'Pitch: {pitch:.2f}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
-                    frame = cv2.putText(frame, "Sit at 50 cms from the screen.", (50, 20), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
-                    frame = cv2.putText(frame, "Press p 10 times in still position once comfortable.", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
-                    
-                    
-                    centre_right_iris_x_1 = int((d[iris_right_horzn[0]][0] + d[iris_right_horzn[1]][0])/2)
-                    centre_right_iris_y_1 = int((d[iris_right_horzn[0]][1] + d[iris_right_horzn[1]][1])/2)
-                    
-                    centre_right_iris_x_2 = int((d[iris_right_vert[0]][0] + d[iris_right_vert[1]][0])/2)
-                    centre_right_iris_y_2 = int((d[iris_right_vert[0]][1] + d[iris_right_vert[1]][1])/2)
-                    
-                        
-                    centre_left_iris_x_1 = int((d[iris_left_horzn[0]][0] + d[iris_left_horzn[1]][0])/2)
-                    centre_left_iris_y_1 = int((d[iris_left_horzn[0]][1] + d[iris_left_horzn[1]][1])/2)
-                    
-                    centre_left_iris_x_2 = int((d[iris_left_vert[0]][0] + d[iris_left_vert[1]][0])/2)
-                    centre_left_iris_y_2 = int((d[iris_left_vert[0]][1] + d[iris_left_vert[1]][1])/2)
-                    
-                    centre_left_iris_x = int((centre_left_iris_x_1 + centre_left_iris_x_2)/2)
-                    centre_left_iris_y = int((centre_left_iris_y_1 + centre_left_iris_y_2)/2)
-                    
-                    centre_right_iris_x = int((centre_right_iris_x_1 + centre_right_iris_x_2)/2)
-                    centre_right_iris_y = int((centre_right_iris_y_1 + centre_right_iris_y_2)/2)
-                    
-                    cv2.circle(frame,(centre_right_iris_x,centre_right_iris_y),2,(0,255,0),-1)
-                    cv2.circle(frame,(centre_left_iris_x,centre_left_iris_y),2,(0,255,0),-1)
-                    
-                    w = ((centre_right_iris_x - centre_left_iris_x)**2 + (centre_right_iris_y - centre_left_iris_y)**2)**0.5
-                    
-                    W = 6.3
-                    
-                    d = 50
+        try:
+            for face_landmark in results.multi_face_landmarks:
+                lms = face_landmark.landmark
+                d= {}
+                for index in iris_indices:
+                    x = int(lms[index].x*frame.shape[1])
+                    y = int(lms[index].y*frame.shape[0])
+                    d[index] = (x,y)
+                black = np.zeros(frame.shape).astype("uint8")
+                for index in iris_indices:
+                    #print(index)
+                    cv2.circle(frame,(d[index][0],d[index][1]),1,(0,255,0),-1)
+                text = "Sit at 50 cms from the screen. press p 10 times in still position once comfortable"
+                roll, yaw, pitch = calculate_head_orientation(face_landmark.landmark)
+                fontScale = 0.7
+                thickness = 2
+                frame = cv2.putText(frame, f'Roll: {roll:.2f}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
+                frame = cv2.putText(frame, f'Yaw: {yaw:.2f}', (50, 150), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
+                frame = cv2.putText(frame, f'Pitch: {pitch:.2f}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
+                frame = cv2.putText(frame, "Sit at 50 cms from the screen.", (50, 20), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
+                frame = cv2.putText(frame, "Press p 10 times in still position once comfortable.", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 255, 0), thickness)
                 
-                    f = (w*d)/W
+                
+                centre_right_iris_x_1 = int((d[iris_right_horzn[0]][0] + d[iris_right_horzn[1]][0])/2)
+                centre_right_iris_y_1 = int((d[iris_right_horzn[0]][1] + d[iris_right_horzn[1]][1])/2)
+                
+                centre_right_iris_x_2 = int((d[iris_right_vert[0]][0] + d[iris_right_vert[1]][0])/2)
+                centre_right_iris_y_2 = int((d[iris_right_vert[0]][1] + d[iris_right_vert[1]][1])/2)
+                
                     
+                centre_left_iris_x_1 = int((d[iris_left_horzn[0]][0] + d[iris_left_horzn[1]][0])/2)
+                centre_left_iris_y_1 = int((d[iris_left_horzn[0]][1] + d[iris_left_horzn[1]][1])/2)
+                
+                centre_left_iris_x_2 = int((d[iris_left_vert[0]][0] + d[iris_left_vert[1]][0])/2)
+                centre_left_iris_y_2 = int((d[iris_left_vert[0]][1] + d[iris_left_vert[1]][1])/2)
+                
+                centre_left_iris_x = int((centre_left_iris_x_1 + centre_left_iris_x_2)/2)
+                centre_left_iris_y = int((centre_left_iris_y_1 + centre_left_iris_y_2)/2)
+                
+                centre_right_iris_x = int((centre_right_iris_x_1 + centre_right_iris_x_2)/2)
+                centre_right_iris_y = int((centre_right_iris_y_1 + centre_right_iris_y_2)/2)
+                
+                cv2.circle(frame,(centre_right_iris_x,centre_right_iris_y),2,(0,255,0),-1)
+                cv2.circle(frame,(centre_left_iris_x,centre_left_iris_y),2,(0,255,0),-1)
+                
+                w = ((centre_right_iris_x - centre_left_iris_x)**2 + (centre_right_iris_y - centre_left_iris_y)**2)**0.5
+                
+                W = 6.3
+                
+                d = 50
+            
+                f = (w*d)/W
+                
 
 
+                cv2.imshow("final", frame)
+                if cv2.waitKey(1) & 0xFF == ord('p'):
+                    focus.append(f)
+                    #frame = cv2.putText(frame, "Sit Still and press p 10 times", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                     cv2.imshow("final", frame)
-                    if cv2.waitKey(1) & 0xFF == ord('p'):
-                        focus.append(f)
-                        #frame = cv2.putText(frame, "Sit Still and press p 10 times", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        cv2.imshow("final", frame)
-                        if len(focus) >= 10:
-                            flag = 1
-                            break
+                    if len(focus) >= 10:
+                        flag = 1
+                        break
 
-            except Exception as e:
-                print(e)
+        except Exception as e:
+            print(e)
 
-            if flag == 1:
-                break
-        count = 0
+        if flag == 1:
+            break
+    count = 0
 
-    cap.release()
-    cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
 
 
     # In[12]:
 
-
+if len(focus) == 0:
+    final_focus = 0
+    print("Can not get focus value.")
+else:
     final_focus = sum(focus)/len(focus)
 
 
-    file_path = os.path.join(data_dir, 'focus_value.txt')
-    # Open the file in write mode ('w') and write the focus value to it
-    with open(file_path, 'w') as file:
-        # Write the single value followed by a newline character
-        file.write(f"{final_focus}\n")
+file_path = os.path.join(args.datadir, 'focus_value.txt')
+# Open the file in write mode ('w') and write the focus value to it
+with open(file_path, 'w') as file:
+    # Write the single value followed by a newline character
+    file.write(f"{final_focus}\n")
 
-    print(f"Focus value has been written to {file_path}")
+print(f"Focus value has been written to {file_path}")
     
 
 
-
-from argparse import ArgumentParser
-if __name__ == "__main__":
-
-    parser = ArgumentParser()
-
-    parser.add_argument("--connect", action="store_true",
-                        help="connect to unity",
-                        default=False)
-                        
-    parser.add_argument("--quiet", action="store_true",
-                        help="hide window",
-                        default=False)
-
-    parser.add_argument("--port", type=int, 
-                        help="specify the port of the connection to unity. Have to be the same as in Unity", 
-                        default=5066)
-    
-    parser.add_argument("--cameraindex", type=int, 
-                        help="specify the web camera index", 
-                        default=0)
-    
-    parser.add_argument("--patientname", type=str, 
-                        help="specify the patient name", 
-                        default="")
-
-    args = parser.parse_args()
-
-    # demo code
-    main()
 

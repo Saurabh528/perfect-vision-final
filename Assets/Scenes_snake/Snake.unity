@@ -7751,6 +7751,7 @@ GameObject:
   m_Component:
   - component: {fileID: 862941091}
   - component: {fileID: 862941092}
+  - component: {fileID: 862941093}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -7788,18 +7789,61 @@ MonoBehaviour:
   textLevel: {fileID: 1345293340}
   _textInstruction: {fileID: 1645598602}
   zoneObjects:
-  - {fileID: 1406060357}
   - {fileID: 596891132}
+  - {fileID: 8791851091651076918}
   - {fileID: 962302026}
   - {fileID: 1431457602}
   - {fileID: 1487117391}
-  - {fileID: 8791851091651076918}
   _objOutput: {fileID: 1288805035}
   _btnDownload: {fileID: 1740086293}
+  _food: {fileID: 1406060357}
   _alignTblRowTmpl: {fileID: 1293297169}
   _image4Plot: {fileID: 1908796684}
   _imageIPDPlot: {fileID: 684453224}
   snake: {fileID: 1161375264}
+--- !u!114 &862941093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862941085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cb611773f4d2e439cc0affa8a5457f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 5066
+  OnReceive:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 862941092}
+        m_TargetAssemblyTypeName: SnakeGameController, Assembly-CSharp
+        m_MethodName: OnRecvString
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnConnected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 862941092}
+        m_TargetAssemblyTypeName: SnakeGameController, Assembly-CSharp
+        m_MethodName: OnTCPConnected
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &864387894
 GameObject:
   m_ObjectHideFlags: 0
@@ -11111,8 +11155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7dda317b34c874cacd3b29b1313fb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dotNumber: {fileID: 1054353969}
-  _dotNumber_: {fileID: 258893859}
+  _dotPosition: {fileID: 0}
   _metric1: {fileID: 2039898668}
   _metric1_: {fileID: 521609587}
   _metric2: {fileID: 816228023}

@@ -249,11 +249,15 @@ font_scale = 1  # Font scale factor
 color = (255, 0, 0)  # Color in BGR (not RGB, be careful about this)
 thickness = 1  # Thickness of the lines used to draw the text
 
-
+from utils import wait_for_camera
 def process_video(video_path):
     face_detection = mp_face_detection.FaceDetection()
     face_mesh = mp_face_mesh.FaceMesh()
-    cap = cv2.VideoCapture(video_path)
+    if wait_for_camera(video_path):
+        cap = cv2.VideoCapture(video_path)
+    else:
+        print("Could not initialize camera.")
+        exit()
 
     with mp_face_mesh.FaceMesh(
     static_image_mode=True,

@@ -309,7 +309,7 @@ public class AlignmentController : GamePlayController {
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/Python/Alignment/final_pos_sim.py --connect --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $"{path}/Python/Alignment/final_pos_sim.py --connect --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #else
@@ -317,7 +317,7 @@ public class AlignmentController : GamePlayController {
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
 		_processStartInfo.FileName         = "final_pos_sim.exe";
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex}";
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif

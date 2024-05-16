@@ -11,7 +11,7 @@ public abstract class GameConst
 	public const string PATIENTNAME_ANONYMOUS = "Anonymous";
 	public const string STRFORMAT_DATETIME = "yyyy-MM-dd";
 	public const string PYARG_CAMERAINDEX = "cameraindex";
-	public const string PYARG_PATIENTNAME = "patientname";
+	public const string PYARG_DATADIR = "datadir";
 	public const string PLAYFABID_CLINIC = "0000000000000000";
 }
 
@@ -162,7 +162,7 @@ public abstract class PatientMgr
 
 	public static string GetPatientDataDir()
 	{
-		return Application.dataPath + "/../Python/PatientData/" + GetCurrentPatientName();
+		return Application.persistentDataPath + "/PatientData/" + GetCurrentPatientName();
 	}
 
 	public static string GetCurrentPatientName()

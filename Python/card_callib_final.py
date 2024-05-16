@@ -11,6 +11,7 @@ import os
 import sys
 
 from argparse import ArgumentParser
+from utils import get_anonymous_directory, wait_for_camera
 parser = ArgumentParser()
 
 parser.add_argument("--connect", action="store_true",
@@ -29,9 +30,9 @@ parser.add_argument("--cameraindex", type=int,
                     help="specify the web camera index", 
                     default=0)
 
-parser.add_argument("--patientname", type=str, 
-                    help="specify the patient name", 
-                    default="")
+parser.add_argument("--datadir", type=str, 
+                    help="specify the data directory", 
+                    default=get_anonymous_directory())
 
 args = parser.parse_args()
 from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
@@ -39,13 +40,8 @@ from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
 # Initialize TCP connection
 if args.connect:
     socket = init_TCP(args.port)
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-data_dir = cur_dir
-if args.patientname != "":
-    data_dir = os.path.join(cur_dir, "PatientData/" + args.patientname)
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir, exist_ok=True)
+if not os.path.exists(args.datadir):
+    os.makedirs(args.datadir, exist_ok=True)
 
 font = cv2.FONT_HERSHEY_SIMPLEX 
   
@@ -61,7 +57,7 @@ color = (255, 0, 0)
 # Line thickness of 2 px 
 thickness = 2
 # Open the file 'focus_value.txt', read its content, and print the value it contains
-file_path = os.path.join(data_dir, 'focus_value.txt')  # Specify the file path
+file_path = os.path.join(args.datadir, 'focus_value.txt')  # Specify the file path
 if not (os.path.exists(file_path) and os.path.isfile(file_path)):
     print(file_path + " does not exist.")
     if args.connect:
@@ -98,8 +94,12 @@ left_eyes_indices = get_unique(connections_left_eyes)
 
 connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
 right_eyes_indices = get_unique(connections_right_eyes)
-cap = cv2.VideoCapture(args.cameraindex)
-fps = cap.get(cv2.CAP_PROP_FPS)
+if wait_for_camera(args.cameraindex):
+    cap = cv2.VideoCapture(args.cameraindex)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+else:
+    print("Could not initialize camera.")
+    exit()
 
 
 
@@ -209,7 +209,11 @@ def run_callib():
     global points, current_distance_index, frame
 
     # Open the video camera
-    cap = cv2.VideoCapture(args.cameraindex)
+    if wait_for_camera(args.cameraindex):
+        cap = cv2.VideoCapture(args.cameraindex)
+    else:
+        print("Could not initialize camera.")
+        exit()
 
     cv2.namedWindow("Frame")
     cv2.setMouseCallback("Frame", select_point)
@@ -268,7 +272,7 @@ run_callib()
 
 conv_rates = calculate_conversion_rates(calibration_data) 
 
-filename = os.path.join(data_dir, 'conversion_rates.txt')
+filename = os.path.join(args.datadir, 'conversion_rates.txt')
 with open(filename, "w") as file:
     for distance, rates in conv_rates.items():
         line = f"Distance {distance}: Width Rate = {rates[0]}, Height Rate = {rates[1]}\n"

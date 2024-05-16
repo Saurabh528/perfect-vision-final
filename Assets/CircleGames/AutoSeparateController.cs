@@ -1,7 +1,7 @@
-// using UnityEngine;
+using UnityEngine;
 
-// public class AutoSeparateController : MonoBehaviour
-// {
+public class AutoSeparateController : MonoBehaviour
+{
 //     public CircularMotion_Circle circularMotionController;
 //     public float initialSeparation = 0.0f; // Set initial separation to 0
 //     public float totalTimeToReduceSeparation = 120.0f; // 2 minutes
@@ -52,4 +52,4 @@
 //             circularMotionController.separationMultiplier = Mathf.Lerp(initialSeparation, targetSeparation, progress);
 //         }
 //     }
-// }
+}

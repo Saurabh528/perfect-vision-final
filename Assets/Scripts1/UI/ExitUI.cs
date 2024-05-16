@@ -61,6 +61,8 @@ public class ExitUI : MonoBehaviour
     }
 
     public static void EnableShutdownButton(bool enable){
+        if(Instance == null)
+            return;
         Instance.btnShutdown.SetActive(enable);
     }
 

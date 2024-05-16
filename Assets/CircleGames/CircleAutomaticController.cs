@@ -1,11 +1,11 @@
-// using UnityEngine;
+using UnityEngine;
 // using UnityEngine.UI;
 // using System.Collections;
 // using System.ComponentModel;
 // using TMPro;
 
-// public class CircleAutomaticController : GamePlayController
-// {
+public class CircleAutomaticController : GamePlayController
+{
 
 // 	[SerializeField] TextMeshProUGUI textScore;
 // 	[SerializeField] TextMeshProUGUI textLevel;
@@ -97,5 +97,5 @@
 // 	}
 
 
-// }
+}
 

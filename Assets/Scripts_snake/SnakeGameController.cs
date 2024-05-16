@@ -11,15 +11,21 @@ public class SnakeGameController : MonoBehaviour
 {
     [SerializeField] Text textLevel, _textInstruction;
     [SerializeField] GameObject[] zoneObjects;
-    [SerializeField] GameObject _objOutput, _btnDownload;
+    [SerializeField] GameObject _objOutput, _btnDownload, _food;
     [SerializeField] AlignmentTableRow _alignTblRowTmpl;
 	[SerializeField] RawImage _image4Plot, _imageIPDPlot;
     Process pythonProcess;
     bool _finished = false, _failed = false;
     public Snake snake;
+	TCPListener tcp;
     // Start is called before the first frame update
     void Start()
     {
+		_textInstruction.text = "Please wait...";
+		snake.gameObject.SetActive(false);
+		_food.SetActive(false);
+		tcp = GetComponent<TCPListener>();
+		tcp.InitTCP();
         StartPythonProcess();
     }
 
@@ -45,24 +51,30 @@ public class SnakeGameController : MonoBehaviour
 		}
 		UnityEngine.Debug.Log($"Cameraindex: {camindex}");
 
-		string path = Application.dataPath + "/../Python";
+		string path =  UtilityFunc.GetFullDirFromApp("Python");
 #if UNITY_EDITOR
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/final_snake_game.py --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
-		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
+		_processStartInfo.FileName = UtilityFunc.GetPythonPath();
+		_processStartInfo.Arguments        = $"{path}/final_snake_game.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		pythonProcess = Process.Start(_processStartInfo);
 #else
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "final_snake_game.exe";
-		_processStartInfo.Arguments        = $" --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
+		string executablePath = Path.Combine(path, $"final_snake_game{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
+		if (!File.Exists(executablePath))
+		{
+			DebugUI.LogString($"Executable not found at {executablePath}");
+			return;  // Stop further execution if the file does not exist
+		}
+		_processStartInfo.FileName = executablePath;  // Use the full path
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
 		if (pythonProcess != null)
 		{
+			_textInstruction.text = "Loading...";
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
 			UnityEngine.Debug.Log("PYTHON PROCESS IS NOT NULLLLLLl");
@@ -89,6 +101,7 @@ public class SnakeGameController : MonoBehaviour
 		yield return new WaitForSeconds(3);
         foreach(GameObject obj in zoneObjects)
             obj.SetActive(false);
+		_food.SetActive(false);
 		_textInstruction.text = "";	
         ShowResult();
 		_btnDownload.SetActive(true);
@@ -100,6 +113,7 @@ public class SnakeGameController : MonoBehaviour
 		{
 			pythonProcess.Kill();
 		}
+		tcp.StopTCP();
 	}
 
    
@@ -147,5 +161,39 @@ public class SnakeGameController : MonoBehaviour
 		}
         document.Close();
 		UtilityFunc.StartProcessByFile(path);
+	}
+
+	public void OnTCPConnected()
+	{
+		if(!snake.gameObject.activeSelf)
+			_textInstruction.text = "Connecting to camera...";
+	}
+
+	public void OnRecvString(System.String message)
+	{
+		if (message.StartsWith("CMD:"))
+		{
+			string cmdstr = message.Substring(4);
+			if (cmdstr == "CAMERAREADY")
+			{
+				StartGame();
+			}
+		}
+		else if (message.StartsWith("MSG:"))
+		{
+			if (_textInstruction)
+				_textInstruction.text = message.Substring(4);
+		}
+		else if (message.StartsWith("STS:"))
+		{
+			/* if (_textStatus)
+				_textStatus.text = message.Substring(4); */
+		}
+	}
+
+	void StartGame(){
+		_textInstruction.text = "";
+		snake.gameObject.SetActive(true);
+		_food.SetActive(true);
 	}
 }

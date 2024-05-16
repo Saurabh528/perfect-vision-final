@@ -12,6 +12,11 @@
             "name": "Attach to Unity",
             "type": "vstuc",
             "request": "attach"
+        },
+        {
+            "name": "Unity Editor",
+            "type": "unity",
+            "request": "launch"
         }
     ]
 }

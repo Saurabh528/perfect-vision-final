@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18036056, g: 0.22579919, b: 0.30703527, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -411,16 +411,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c8b7c42b28344ddd98267439b374af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  separateButton: {fileID: 0}
-  reverseButton: {fileID: 0}
-  speed: 1
-  separationSpeed: 1
-  separationMultiplier: -2.5
-  bigCirclePrefab: {fileID: 6310771088119583558, guid: a8aef7ef2a94546e5a1fefec289a8b25, type: 3}
-  smallCirclePrefab: {fileID: 214009333422145298, guid: 74f11aed1d1c64179a3e86279a4fadc5, type: 3}
-  radius: 4
-  blinkInterval: 0.5
-  blueSmallCircleOffset: {x: 0.15, y: 0.15, z: 0.24}
+  object1: {fileID: 0}
+  object2: {fileID: 0}
+  moveSpeed: 1
+  maxDistance: 5
+  speedSlider: {fileID: 0}
+  pauseButton: {fileID: 0}
+  resumeButton: {fileID: 0}
+  circle: {fileID: 0}
+  square: {fileID: 0}
+  distanceText: {fileID: 0}
 --- !u!4 &219058464
 Transform:
   m_ObjectHideFlags: 0
@@ -1431,16 +1431,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c8b7c42b28344ddd98267439b374af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  separateButton: {fileID: 0}
-  reverseButton: {fileID: 0}
-  speed: 1
-  separationSpeed: 1
-  separationMultiplier: 0
-  bigCirclePrefab: {fileID: 1815993887143537654, guid: 99b1a257ef6f5431a9934e891b3765ed, type: 3}
-  smallCirclePrefab: {fileID: 1815993887143537654, guid: 20f776d4fbea14bc8979ecc097f2a65e, type: 3}
-  radius: 0
-  blinkInterval: 2.5
-  blueSmallCircleOffset: {x: 0, y: 0, z: 0}
+  object1: {fileID: 0}
+  object2: {fileID: 0}
+  moveSpeed: 1
+  maxDistance: 5
+  speedSlider: {fileID: 0}
+  pauseButton: {fileID: 0}
+  resumeButton: {fileID: 0}
+  circle: {fileID: 0}
+  square: {fileID: 0}
+  distanceText: {fileID: 0}
 --- !u!114 &633747625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2936,9 +2936,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2920852be308b4e37bd79a2ae4e9e80b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circularMotionController: {fileID: 219058463}
-  initialSeparation: 0
-  totalTimeToReduceSeparation: 120
 --- !u!4 &1302342952
 Transform:
   m_ObjectHideFlags: 0
@@ -2970,17 +2967,16 @@ MonoBehaviour:
   helpPanel: {fileID: 1043687366}
   gameOverPanel: {fileID: 892197891}
   nextGamePanel: {fileID: 554338309}
+  pausePanel: {fileID: 0}
   sessionFinishPanel: {fileID: 358804740}
   correctClip: {fileID: 0}
   wrongClip: {fileID: 0}
   effectSndSource: {fileID: 0}
+  imageBackButton: {fileID: 0}
+  spritePause: {fileID: 0}
+  spriteBack: {fileID: 0}
   textTime: {fileID: 897400712}
   _backAudio: {fileID: 0}
-  textScore: {fileID: 2019639945}
-  textLevel: {fileID: 620677230}
-  circularMotionController: {fileID: 219058463}
-  initialSeparation: 0
-  totalTimeToReduceSeparation: 120
 --- !u!1 &1477534255
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,6 +38,7 @@ public class UserAccountManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+		UtilityFunc.AppendToLog("---------------------------------Application Started------------------------------------------------");
     }
 
     private void Update()

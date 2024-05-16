@@ -65,27 +65,34 @@ public class CoverUncoverController : MonoBehaviour
 		UnityEngine.Debug.Log($"Camera Index: {camindex}");
 
 		_tcp.InitTCP();
-		string path = Application.dataPath + "/../Python";
+		
+		string path =  UtilityFunc.GetFullDirFromApp("Python");
+		_textHint.text = "Please wait...";
 #if UNITY_EDITOR
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/cover_uncover.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
-		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
+		_processStartInfo.FileName = UtilityFunc.GetPythonPath();
+		_processStartInfo.Arguments        = $"{path}/cover_uncover.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		pythonProcess = Process.Start(_processStartInfo);
 #else
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "cover_uncover.exe";
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
+		string executablePath = Path.Combine(path, $"cover_uncover{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
+		if (!File.Exists(executablePath))
+		{
+			DebugUI.LogString($"Executable not found at {executablePath}");
+			return;  // Stop further execution if the file does not exist
+		}
+		_processStartInfo.FileName = executablePath;  // Use the full path
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
+		UtilityFunc.AppendToLog("Cover/Uncover python process started.");
 #endif
 		if (pythonProcess != null)
 		{
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
-			_textHint.text = "Please wait...";
 		}
 		else
 			_textHint.text = "Checking failed. Try again.";
@@ -125,6 +132,7 @@ public class CoverUncoverController : MonoBehaviour
 
 	private void OnPythonProcessExited(object sender, EventArgs e)
 	{
+		
 		_finished = true;
 	}
 

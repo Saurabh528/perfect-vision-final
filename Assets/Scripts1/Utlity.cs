@@ -13,6 +13,7 @@ using UnityEngine.UI;
 
 public abstract class UtilityFunc
 {
+	static string logFilePath = Application.persistentDataPath + "/Application.log";
 	public static string ComputeSha256Hash(string rawData)
 	{
 		// Create a SHA256   
@@ -119,5 +120,43 @@ public abstract class UtilityFunc
 
 	public static string GetAbsolutePath(string projectrelative){
 		return $"{Application.dataPath}/../{projectrelative}";
+	}
+
+	public static string GetFullDirFromApp(string relative){
+		return System.IO.Path.GetFullPath((Application.platform == RuntimePlatform.OSXPlayer)?(Application.dataPath + "/../../" + relative):(Application.dataPath + "/../" + relative));
+	}
+
+	public static string GetPythonPath(){
+		if(Application.platform == RuntimePlatform.WindowsEditor)
+			return "python.exe";
+		else
+			return "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3";
+	}
+
+	public static string GetPlatformSpecificExecutableExtension(){
+		return (Application.platform == RuntimePlatform.WindowsEditor)?".exe":"";
+	}
+
+	public static void AppendToLog(string text)
+	{
+		try
+		{
+			// Ensure the directory exists
+			string directory = Path.GetDirectoryName(logFilePath);
+			if (!Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+
+			// Append text to the log file
+			using (StreamWriter sw = File.AppendText(logFilePath))
+			{
+				sw.WriteLine($"{System.DateTime.Now}: {text}");
+			}
+		}
+		catch (System.Exception ex)
+		{
+			UnityEngine.Debug.LogError("Failed to write to log file: " + ex.Message);
+		}
 	}
 }

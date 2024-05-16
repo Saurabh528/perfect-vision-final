@@ -14,6 +14,7 @@ import time
 
 #Read arguments
 from argparse import ArgumentParser
+from utils import get_anonymous_directory, append_to_log, wait_for_camera
 import os
 parser = ArgumentParser()
 
@@ -33,19 +34,16 @@ parser.add_argument("--cameraindex", type=int,
                     help="specify the web camera index", 
                     default=0)
 
-parser.add_argument("--patientname", type=str, 
-                    help="specify the patient name", 
-                    default="")
+parser.add_argument("--datadir", type=str, 
+                    help="specify the data directory", 
+                    default=get_anonymous_directory())
 
 args = parser.parse_args()
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-    
-data_dir = cur_dir
-if args.patientname != "":
-    data_dir = os.path.join(cur_dir, "PatientData/" + args.patientname)
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir, exist_ok=True)
+from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
+if args.connect:
+    socket = init_TCP(args.port)
+if not os.path.exists(args.datadir):
+    os.makedirs(args.datadir, exist_ok=True)
 
 # Read the dictionary from the file
 
@@ -100,7 +98,7 @@ def read_conversion_rates(filename):
     return width_rates, height_rates
 
 # Use the function to read the file
-filename = os.path.join(data_dir, 'conversion_rates.txt')  # Replace with the actual path
+filename = os.path.join(args.datadir, 'conversion_rates.txt')  # Replace with the actual path
 width_rates, height_rates = read_conversion_rates(filename)
 
 conversion_rates = width_rates
@@ -425,7 +423,13 @@ IPD_dist = []
 def process_video(video_path):
     face_detection = mp_face_detection.FaceDetection()
     face_mesh = mp_face_mesh.FaceMesh()
-    cap = cv2.VideoCapture(video_path)
+    if wait_for_camera(video_path):
+        cap = cv2.VideoCapture(video_path)
+    else:
+        print("Could not initialize camera.")
+        exit()
+    if args.connect:
+        send_command_to_unity(socket, "CAMERAREADY")
     start_time = time.time()
     with mp_face_mesh.FaceMesh(
     static_image_mode=True,
@@ -706,7 +710,7 @@ axs[1, 1].set_title('R1')
 fig.tight_layout()
 
 # Save the figure
-plt.savefig(os.path.join(data_dir, 'four_plots.png'))
+plt.savefig(os.path.join(args.datadir, 'four_plots.png'))
 
 # Show the plots
 if not args.quiet:
@@ -733,7 +737,7 @@ ax.set_ylabel('IPD (mm)')  # Set the y-axis label
 ax.legend()  # Add a legend
 
 # Save the figure
-plt.savefig(os.path.join(data_dir, 'ipd_plot.png'))  # Save as PNG file
+plt.savefig(os.path.join(args.datadir, 'ipd_plot.png'))  # Save as PNG file
 
 # Show the plot
 if not args.quiet:

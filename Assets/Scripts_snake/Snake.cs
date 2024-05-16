@@ -148,6 +148,7 @@ public class Snake : MonoBehaviour
         transform.position = position;
     }
 
+
     public void EndGame(){
         foreach(Transform trans in segments)
             trans.gameObject.SetActive(false);

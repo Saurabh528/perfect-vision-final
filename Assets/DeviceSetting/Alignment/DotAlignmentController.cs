@@ -252,7 +252,7 @@ public class DotAlignmentController : GamePlayController {
 	public override void StartGamePlay()
 	{
 		base.StartGamePlay();
-		_textInstruction.text = "Connecting to camera...";
+		_textInstruction.text = "Please wait...";
 		tcp.InitTCP();
 		_objOutput.SetActive(false);
 		//_btnStart.SetActive(false);
@@ -265,7 +265,7 @@ public class DotAlignmentController : GamePlayController {
 
 	public void OnTCPConnected()
 	{
-		_textInstruction.text = "";
+		_textInstruction.text = "Connecting to camera...";
 	}
 
 	void StartPythonAlignment()
@@ -277,26 +277,33 @@ public class DotAlignmentController : GamePlayController {
 		}
 		UnityEngine.Debug.Log($"Cameraindex: {camindex}");
 
-		string path = Application.dataPath + "/../Python";
+		string path =  UtilityFunc.GetFullDirFromApp("Python");
 #if UNITY_EDITOR
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "python.exe";
-		_processStartInfo.Arguments        = $"{path}/main.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
-		//_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
+		_processStartInfo.FileName         = UtilityFunc.GetPythonPath();
+		_processStartInfo.Arguments        = $"{path}/main.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		pythonProcess = Process.Start(_processStartInfo);
 #else
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		_processStartInfo.FileName         = "main.exe";
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_PATIENTNAME}={PatientMgr.GetCurrentPatientName()}";
+		string executablePath = Path.Combine(path, $"main{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
+		if (!File.Exists(executablePath))
+		{
+			DebugUI.LogString($"Executable not found at {executablePath}");
+			return;  // Stop further execution if the file does not exist
+		}
+		_processStartInfo.FileName = executablePath;  // Use the full path
+		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
+
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
 		if (pythonProcess != null)
 		{
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
+			_textInstruction.text = "Loading";
 			UnityEngine.Debug.Log("PYTHON PROCESS IS NOT NULLLLLLl");
             
         }
@@ -333,8 +340,14 @@ public class DotAlignmentController : GamePlayController {
 			else if (cmdstr.StartsWith("DotNumber:"))
 			{
 				_curDotIndex = int.Parse(cmdstr.Substring(10));
+				if(!string.IsNullOrEmpty(_textInstruction.text))
+					_textInstruction.text = "";
 				ShowCurDot();
 				//tcp.StopTCP();
+			}
+			else if (cmdstr == "CAMERAREADY")
+			{
+				_textInstruction.text = "";
 			}
 		}
 		else if (message.StartsWith("MSG:"))
