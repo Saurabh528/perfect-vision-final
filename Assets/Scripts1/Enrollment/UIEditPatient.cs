@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using GoogleMobileAds.Api;
 using System;
+using iTextSharp.xmp;
 
 public class UIEditPatient : MonoBehaviour
 {
@@ -13,14 +14,32 @@ public class UIEditPatient : MonoBehaviour
 	[SerializeField] TMP_Dropdown _gender, _place;
 	[SerializeField] TextMeshProUGUI _msg;
 	[SerializeField] TextMeshProUGUI _lblButton;
+	[SerializeField] GameObject AddButton;
 	public float _msgTime = 3;
 	float _msgexpiretime;
 	List<PatientData> _plist;
 	PatientData _curdata;
+	static string licenseKey;
+	string displayLicenseString;
 
 
+    public static UIEditPatient Instance { get; private set; }
 
-	private void Update()
+    private void Awake()
+    {
+		AddButton.SetActive(false);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Update()
 	{
 		if(_msgexpiretime > 0)
 		{
@@ -32,6 +51,7 @@ public class UIEditPatient : MonoBehaviour
 
 	void ShowMessage(string txt)
 	{
+		Debug.Log("ShowMessage function called.");
 		_msg.text = txt;
 		_msg.enabled = true;
 		_msgexpiretime = _msgTime;
@@ -39,6 +59,9 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnBtnAddPatient()
 	{
+		//1st Called when click on Add Patient
+		//Called 2nd when click on Add
+		Debug.Log("2) Button Add Patient called.");
 		_curdata = null;
 		_name.text = _age.text = _expireDate.text = "";
 		
@@ -54,6 +77,7 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnBtnEditPatient()
 	{
+		Debug.Log("On Button Edit Patient Called");
 		if (GameState.currentPatient == null)
 			return;
 		_curdata = GameState.currentPatient;
@@ -75,8 +99,12 @@ public class UIEditPatient : MonoBehaviour
 
 	public void AddOrEdit()
 	{
-		DateTime ExpDatetime = new DateTime();
-		if(string.IsNullOrEmpty(_name.text))
+		//AUTO GENERATED LICENSE KEY.
+		//Called when we press add on the home section or clinci section 
+		Debug.Log("4)AddOrEdit Function called");
+		//ExpDatetime = new DateTime();
+        DateTime ExpDatetime = new DateTime();
+        if (string.IsNullOrEmpty(_name.text))
 		{
 			ShowMessage("Please input name.");
 			return;
@@ -100,9 +128,11 @@ public class UIEditPatient : MonoBehaviour
 			ShowMessage("Invalid expiring date format");
 			return;
 		}
+
+
 		if (_curdata == null)
 		{
-			PatientData pdata = new PatientData(PatientMgr.GetFreePatientID(), _name.text, byte.Parse(_age.text), (GENDER)_gender.value, _detail.text, (THERAPPYPLACE)_place.value, ExpDatetime);
+			PatientData pdata = new PatientData(PatientMgr.GetFreePatientID(), _name.text, byte.Parse(_age.text), (GENDER)_gender.value, _detail.text, (THERAPPYPLACE)_place.value, ExpDatetime,licenseKey);
 			PatientDataManager.AddPatient(pdata, OnAddPatientSuccess, ShowMessage);
 		}
 		else
@@ -114,11 +144,22 @@ public class UIEditPatient : MonoBehaviour
 			_curdata.ExpireDate = ExpDatetime;
 			PatientDataManager.UpdatePatient(_curdata, OnUpdatePatientSuccess, ShowMessage);
 		}
+    }
 
-	}
-
-	void OnAddPatientSuccess(PatientData pdata)
+    public static void AddLicenseKey(string licenseString)
+    {
+        //Debug.Log("Add License Key " + licenseString);
+		licenseKey = licenseString;
+    }
+    public void DisplayLicenseString(){
+		displayLicenseString = UIEditPatient.licenseKey;
+		Debug.Log("Display License String is" + displayLicenseString);
+		_licenseKey.text = displayLicenseString;
+    }
+    void OnAddPatientSuccess(PatientData pdata)
 	{
+		//This when we succesfully adding the patient
+		Debug.Log("6)On Add Patient Success called");
 		UIPatientList.Instance.AddPatientData(pdata);
 		if((THERAPPYPLACE)_place.value == THERAPPYPLACE.Clinic){
 			gameObject.SetActive(false);
@@ -128,21 +169,26 @@ public class UIEditPatient : MonoBehaviour
 	}
 
 
-	void OnUpdatePatientSuccess(PatientData pdata)
+    void OnUpdatePatientSuccess(PatientData pdata)
 	{
+		Debug.Log("On Update Patient Success called");
 		gameObject.SetActive(false);
 		UIPatientList.Instance.UpdatePatientData(pdata);
 	}
 
 	public void OnPlaceChanged(int value){
+		//Called when clicked on Add patient or when changed the dropdown from Clinic to home
+		Debug.Log("3)On Place Changed function called");
 		THERAPPYPLACE place = (THERAPPYPLACE)value;
 		if(place == THERAPPYPLACE.Clinic){
 			_licenseKey.text = "";
 			_expireDate.gameObject.SetActive(false);
 			_licenseKey.gameObject.SetActive(false);
+			AddButton.SetActive(false);
 		}
 		else{
-			_expireDate.gameObject.SetActive(true);
+             AddButton.SetActive(true);
+            _expireDate.gameObject.SetActive(true);
 			_licenseKey.gameObject.SetActive(true);
 		}
 	}

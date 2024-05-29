@@ -103,7 +103,7 @@ public abstract class DataKey
 public class PatientData
 {
 	public Int32 ID;
-	public string name;
+	public  string name;
 	public byte age;
 	public string licenseKey;
 	public GENDER gender;
@@ -113,7 +113,7 @@ public class PatientData
 	public List<byte> therapygames = new List<byte>();
 	public string PFID;
 	public DateTime ExpireDate;
-	public PatientData(Int32 id, string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate)
+	public PatientData(Int32 id, string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate,string licensekey)
 	{
 		ID = id;
 		name = nm;
@@ -122,6 +122,7 @@ public class PatientData
 		details = dt;
 		place = plc;
 		ExpireDate = expireDate;
+		licenseKey = licensekey;
 	}
 
 	public string ToJSONString()
@@ -138,6 +139,10 @@ public class PatientData
 	}
 	
 }
+
+
+
+
 
 /* public class HomePatientData{
 	public CalibraionDetails cali = new CalibraionDetails();

@@ -4,6 +4,9 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using PlayFab;
+using PlayFab.ClientModels;
+using Newtonsoft.Json.Linq;
 
 public class Diagnosis : MonoBehaviour
 {
@@ -122,7 +125,7 @@ public class Diagnosis : MonoBehaviour
             Nextquestion();
         }
 
-
+        SaveData(tempdiagnosis);
 
     }
 
@@ -132,5 +135,49 @@ public class Diagnosis : MonoBehaviour
         _image6M.SetActive(!value);
 	}
 
+    void SaveData(string finalAns)
+    {
+        Debug.Log("Save Data called");
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                var prevJson = result.Data["Worth4Dot"].Value;
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                newSessionData["Diagnosis"] = finalAns;
+                newSessionData["Date"] = dateCurrent;
+
+                string sessions = "Session" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "Worth4Dot", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added Worth4Dot data");
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added Worth4Dot data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("Worth4Dot data GetUserData api called error");
+
+            });// Error callback
+    }
 
 }

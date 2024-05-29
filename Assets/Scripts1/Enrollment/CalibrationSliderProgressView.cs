@@ -26,6 +26,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 	}
 	public void Draw(ColorChannel channel)
     {
+		Debug.Log("Draw(callib) called");
         Dictionary<DateTime, uint> valuelist = UISessionRecordView.GetSessionColorList(channel);
 
 		_title.text = UtilityFunc.ColorChannelToName(channel) + " Slider RGB Values Over Time";
@@ -35,6 +36,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	public void DrawAnylysData(Dictionary<DateTime, uint> timeColorlist)
 	{
+		Debug.Log("DrawAnalysys called");
 		startTime = timeColorlist.First().Key;
 		RectTransform rt = graph.GetComponent<RectTransform>();
 		width = rt.rect.width;
@@ -52,6 +54,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	void DrawAxis(Dictionary<DateTime, uint> timeValuelist)
 	{
+		Debug.Log("Draw Axis called");
 		graph.SetFontSize(30);
 		graph.TextOut("0", -rulerSize, -rulerSize, TextAnchor.LowerRight, FontStyle.Bold);
 		DrawHorScale(timeValuelist);
@@ -62,7 +65,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	void DrawHorScale(Dictionary<DateTime, uint> timeValuelist)
 	{
-
+		Debug.Log("DrawHOrScale called");
 		int maxCount = 8;
 		Dictionary<DateTime, uint> reducedList = new Dictionary<DateTime, uint>();
 		KeyValuePair<DateTime, uint> firstpair = timeValuelist.First();
@@ -93,6 +96,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	void DrawBoundRect()
 	{
+		Debug.Log("DrawBoundRect called");
 		graph.MoveTo(0, 0);
 		graph.LineTo(width, 0);
 		graph.LineTo(width, height);
@@ -102,6 +106,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	void DrawVerticalScale(bool showgrid = false)
 	{
+		Debug.Log("DrawVerticalScale called");
 		int verstepCount = 5;
 		float valueStep = 50;
 		heightPerV = height / 270;
@@ -145,6 +150,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	void DrawGraph(Dictionary<DateTime, uint> timeValuelist)
 	{
+		Debug.Log("DrawGrapgh(callib) called");
 		int count = 0;
 		graph.SetColor(Color.red);
 		foreach (KeyValuePair<DateTime, uint> pair in timeValuelist)
@@ -187,6 +193,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 
 	public void OnCalibrationProgressionChannelChange(Int32 index)
 	{
+		Debug.Log("ONCallibration called");
 		if (index == 0)
 			Draw(ColorChannel.CC_Red);
 		else if (index == 1)

@@ -22,6 +22,7 @@ public class UIDisplaceView : MonoBehaviour
 
     public void ShowWithTwoColumn()
     {
+		Debug.Log("ShowWithTwoColumn called");
         if(GameState.currentPatient == null)
         {
             
@@ -52,7 +53,7 @@ public class UIDisplaceView : MonoBehaviour
 
 	public void ShowWithOneColumnCSV(string title, string pathname)
 	{
-		
+		Debug.Log("ShowWithOneColumnCSV called");
 		if (!File.Exists(pathname))
 		{
 			gameObject.SetActive(false);

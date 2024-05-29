@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using PlayFab;
+using PlayFab.ClientModels;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class ChangeScene : MonoBehaviour {
 	public const string SCENENAME_GAMEPANEL = "GamePanel";
 	public const string SCENENAME_MODEPANEL = "ModePanel";
-
+	//After Color Calibiration directly move to DPI scene
 
 	public void SceneChanger(int sceneName)
     {
@@ -16,8 +19,8 @@ public class ChangeScene : MonoBehaviour {
 
 	public static void LoadScene(string scenename)
 	{
-		SceneManager.LoadScene(scenename);
-	}
+        SceneManager.LoadScene(scenename);
+    }
 	
 	public static void RestartScene()
 	{

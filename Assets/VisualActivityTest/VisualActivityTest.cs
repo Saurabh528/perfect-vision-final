@@ -5,6 +5,12 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
 public class VisualActivityTest : MonoBehaviour
 {
     public enum SYMBOLTYPE{
@@ -190,19 +196,89 @@ public class VisualActivityTest : MonoBehaviour
         Panel_Result.SetActive(true);
         Panel_Result.transform.Find("LeftEye").GetComponent<TextMeshProUGUI>().text = $"Left eye: \t~20/{LeftScore}";
         Panel_Result.transform.Find("RightEye").GetComponent<TextMeshProUGUI>().text = $"Right eye:\t~20/{RightScore}";
+        
+        SaveData(LeftScore, RightScore);
+
         CountText.gameObject.SetActive(false);
         ScoreText.gameObject.SetActive(false);
     }
 
+    void SaveData(int L,int R)
+    {
+        //string filePath = Directory.GetCurrentDirectory() + "\\Python\\VAT.txt";
+        //UnityEngine.Debug.Log("Path is " + filePath);
+
+        //try
+        //{
+        //    // Convert the integer to a string since WriteAllText expects string data.
+        //    File.WriteAllText(filePath, "");
+        //    File.AppendAllText(filePath, L.ToString());
+        //    File.AppendAllText(filePath, " ");
+        //    File.AppendAllText(filePath, R.ToString());
+        //    UnityEngine.Debug.Log("This is LeftEye" + L);
+        //    UnityEngine.Debug.Log("This is RightEye" + R);
+
+        //}
+        //catch (Exception ex)
+        //{
+        //    // If something goes wrong, this will print the error message.
+        //    UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        //}
+
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+            {
+                var prevJson = result.Data["VAT"].Value;
+                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
+                //var prevJson = result.Data["VAT"].Value;
+                //int count = Int32.Parse(result.Data["COUNT"].Value);
+                //count++;
+                DateTime now = DateTime.Now;
+                string dateCurrent = now.ToShortDateString();
+
+                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+                JObject prevJObject = JObject.Parse(prevJson);
+                JObject newSessionData = new JObject();
+                
+                newSessionData["LeftScore"] = "~20/"+L.ToString();
+                newSessionData["RightScore"] = "~20/"+R.ToString();
+                newSessionData["Date"] = dateCurrent;
+                string sessions = "Session" + count.ToString();
+                prevJObject[sessions] = newSessionData;
+                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                var request = new UpdateUserDataRequest()
+                {
+                    Data = new Dictionary<string, string> { { "VAT", updatedJson } },
+                    Permission = UserDataPermission.Public
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                 result =>
+                 {
+                     UnityEngine.Debug.Log("Successfully added VAT data");
+
+                 },
+                 error =>
+                 {
+                     UnityEngine.Debug.Log("Not added VAT data");
+
+                 });
+            },// Success callback
+            error =>
+            {
+                UnityEngine.Debug.Log("VAT data GetUserData api called error");
+
+            });// Error callback
+    }
     IEnumerator Routine_SpawnRandomSymbol(){
         TryCount++;
         RandomImg.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.5f);
         if(SymbolType == SYMBOLTYPE.SPRITE){
-            RandomImg.sprite = SpritePatterns[Random.Range(0, SpritePatterns.Length)];
+            RandomImg.sprite = SpritePatterns[UnityEngine.Random.Range(0, SpritePatterns.Length)];
         }
         else{
-            RandomImg.transform.rotation = Quaternion.Euler(0, 0, 45 * Random.Range(0, 8));
+            RandomImg.transform.rotation = Quaternion.Euler(0, 0, 45 * UnityEngine.Random.Range(0, 8));
             RandomImg.sprite = SpriteRing;
         }
         float zoom = (float)(MAX_TRYCOUNT - TryCount + 1) / MAX_TRYCOUNT;

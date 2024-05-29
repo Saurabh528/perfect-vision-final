@@ -9,7 +9,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using TouchControlsKit;
-
+using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PlayFab.ClientModels;
+using PlayFab;
 
 public class CraneCheckResult
 {
@@ -38,6 +42,9 @@ public class Crane3DGameController : GamePlayController
 	
 	List<CraneCheckResult>	_checkResult = new List<CraneCheckResult>();
 	// Start is called before the first frame update
+
+	
+
 	public override void Start()
     {
 		_orgArmPivotY = _rtArmPivot.localPosition.y;
@@ -136,18 +143,18 @@ public class Crane3DGameController : GamePlayController
 		float maxBaseX = 0.5f;
 		if (!IsDiagnosticMode())
 			maxBaseX = GamePlayController.GetDifficultyValue(1, maxBaseX / 5, 10, maxBaseX, _checkResult.Count + 1);
-		_armBaseX = Random.Range(-maxBaseX, maxBaseX);
+		_armBaseX = UnityEngine.Random.Range(-maxBaseX, maxBaseX);
         UpdateArmPibot();
 
 		float maxDistHalf = 0.02f;
 		if (!IsDiagnosticMode())
 			maxDistHalf = GamePlayController.GetDifficultyValue(1, maxDistHalf / 5, 10, maxDistHalf, _checkResult.Count + 1);
-		_armDistHalf = Random.Range(maxDistHalf, maxDistHalf * 2) * (Random.value > 0.5f ? -1 : 1);
-		_armIntervalHalf = Random.Range(-0.05f, 0.05f);
+		_armDistHalf = UnityEngine.Random.Range(maxDistHalf, maxDistHalf * 2) * (UnityEngine.Random.value > 0.5f ? -1 : 1);
+		_armIntervalHalf = UnityEngine.Random.Range(-0.05f, 0.05f);
 		UpdateArms();
 
-		_boxDistHalf = Random.Range(-0.05f, 0.05f);
-		_boxIntervalHalf = Random.Range(-0.05f, 0.05f);
+		_boxDistHalf = UnityEngine.Random.Range(-0.05f, 0.05f);
+		_boxIntervalHalf = UnityEngine.Random.Range(-0.05f, 0.05f);
 		
 		_rtBoxblue.localPosition = new Vector3(_boxDistHalf, 0.0001f, _boxIntervalHalf);
 		_rtBoxred.localPosition = new Vector3(-_boxDistHalf, 0, -_boxIntervalHalf);
@@ -201,6 +208,9 @@ public class Crane3DGameController : GamePlayController
 		int depthDist = (int)VisualFactor.ScreenCMToArcSecond(VisualFactor.CanvasToCM(posRedCrane.x - posCyanCrane.x - (posRedBox.x - posCyanBox.x)));
 		int intervalDist = (int)VisualFactor.ScreenCMToArcSecond(VisualFactor.CanvasToCM(posRedCrane.y - posCyanCrane.y - (posRedBox.y - posCyanBox.y)));*/
 		_textResult.text = $"Depth distance: {depthDist}\r\nInterval distance: {intervalDist}\r\nPosition distance: {positionDist}";
+
+		SaveData(depthDist,intervalDist,positionDist);
+
 		_textResult.gameObject.SetActive(true);
 		_objExplain.SetActive(true);
 		if (!IsDiagnosticMode())
@@ -213,6 +223,88 @@ public class Crane3DGameController : GamePlayController
 		
 	}
 
+	void SaveData(int x,int y,int z)
+	{
+		//int numberToSave = 123; // This is the integer you want to save.
+		//string filePath = "D:\\PROJECTS\\perfect-vision-aman2\\Python\\crane3d.txt"; // The path to the file where you want to save the integer.
+		// string filePath = Directory.GetCurrentDirectory() + "\\Python\\crane3d.txt";
+		// UnityEngine.Debug.Log("Path is "+filePath);
+		// var res = new {x,y,z};
+		
+		//var request = new GetUserDataRequest { PlayFabId = pdata.PFID};
+		PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
+            result =>
+			{
+//				if (result.Data != null && result.Data.ContainsKey("Crane3D"))
+  //              {
+					var prevJson = result.Data["Crane3D"].Value;
+					int count = Int32.Parse(result.Data["DiagnosticCount"].Value); //THIS COUNT HAS TO BE CHANGE AND MADE GLOBALLY from PLAYFAB
+                                                                                   //count++
+					DateTime now = DateTime.Now;
+					string dateCurrent = now.ToShortDateString();
+
+					UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
+					JObject prevJObject = JObject.Parse(prevJson);
+					JObject newSessionData = new JObject();
+                    newSessionData["x"] = x.ToString();
+        			newSessionData["y"] = y.ToString();
+        			newSessionData["z"] = z.ToString();
+					newSessionData["Date"] = dateCurrent;
+					string sessions = "Sessions" + count.ToString();
+					prevJObject[sessions] = newSessionData;
+					string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
+
+					var request = new UpdateUserDataRequest()
+                    {
+                			Data = new Dictionary<string, string> { {"Crane3D",updatedJson} },
+                			Permission = UserDataPermission.Public
+            		};
+				PlayFabClientAPI.UpdateUserData(request,
+				 result =>
+				 {
+					 UnityEngine.Debug.Log("Successfully added crane3D data");
+
+
+				 },
+				 error =>
+				 {
+					 UnityEngine.Debug.Log("Not added crane3D data");
+
+				 });
+
+//                }
+
+
+
+			} ,// Success callback
+            error => 
+			{
+				UnityEngine.Debug.Log("Crane3D data GetUserData api called error");
+
+			} );// Error callback
+		
+
+		
+        // try
+        // {
+		// 	// Convert the integer to a string since WriteAllText expects string data.
+		// 	// File.WriteAllText(filePath, "");
+        //     // File.AppendAllText(filePath, x.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // File.AppendAllText(filePath, y.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // File.AppendAllText(filePath, z.ToString());
+        //     // File.AppendAllText(filePath, " ");
+        //     // UnityEngine.Debug.Log("This is x" + x);
+        //     // UnityEngine.Debug.Log("This is y" + y);
+        //     // UnityEngine.Debug.Log("This is z" + z);
+        // }
+        // catch (Exception ex)
+        // {
+        //     // If something goes wrong, this will print the error message.
+        //     UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        // }
+    }
 	int GetScoreIncrease(int depDist, int posDist, int intDest)
 	{
 		if (Mathf.Abs(depDist) <= 5 && Mathf.Abs(posDist) <= 5 && Mathf.Abs(intDest) <= 5)
