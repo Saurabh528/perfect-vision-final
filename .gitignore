@@ -88,6 +88,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 .DS_Store
 Python/__pycache__/
-/.vscode/launch.json
-/.vscode/settings.json
 /.DS_Store

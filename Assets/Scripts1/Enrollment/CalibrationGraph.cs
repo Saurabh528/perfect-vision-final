@@ -26,14 +26,16 @@ public class CalibrationGraph : MonoBehaviour
         int count = 0;
         foreach(KeyValuePair<DateTime, UInt32> pair in colorlist)
         {
-			CalibInfoUI calibInfoUI = Instantiate(_infoSlotTmpl, _infoSlotTmpl.transform.position, _infoSlotTmpl.transform.rotation);
-            calibInfoUI.gameObject.SetActive(true);
+			GameObject newobj = Instantiate(_infoSlotTmpl.gameObject, _infoSlotTmpl.transform.position, _infoSlotTmpl.transform.rotation);
+            newobj.SetActive(true);
+            CalibInfoUI calibInfoUI = newobj.GetComponent<CalibInfoUI>();
             RectTransform rt = calibInfoUI.GetComponent<RectTransform>();
 			RectTransform rtsrc = _infoSlotTmpl.GetComponent<RectTransform>();
 			rt.SetParent(rtsrc.parent);
-            rt.localScale = rtsrc.localScale;
-            rt.offsetMin = rtsrc.offsetMin + new Vector2(slotwidth * count, 0);
-			rt.offsetMax = new Vector3(rtsrc.offsetMin.x + slotwidth * (count + 1), rtsrc.offsetMax.y);
+            UtilityFunc.CopyRectTransform(rtsrc, rt);
+            rt.Translate(new Vector3(slotwidth * count, 0, 0));
+            //rt.localPosition = rtsrc.localPosition + new Vector3(slotwidth * count, 0, 0);
+			//rt.offsetMax = new Vector3(rtsrc.offsetMin.x + slotwidth * (count + 1), rtsrc.offsetMax.y);
 			calibInfoUI.name = pair.Key.ToString();
             calibInfoUI.SetInfo(pair.Key, pair.Value);
             count++;

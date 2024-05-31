@@ -1,0 +1,7 @@
+Assesses binocular vision and presence of suppression or diplopia
+How many lights are you seeing?; ;4 lights: 1 red, 2 green, and 1 mixed color;Normal response indicating proper binocular vision
+What is the position of the lights?; ;The lights are horizontally displaced, seen separately by each eye;Normal response indicating proper alignment
+Are the lights from the right eye on the right side?; ;The 2 red lights from the right eye are seen on the right side;Normal response indicating no suppression
+Are the lights from the left eye on the right side?; ;The 3 green lights from the left eye are seen on the left side;Normal response indicating no suppression
+Are the green lights on top of the red lights?; ;The green lights (left eye) are on top of the red lights (right eye);Normal response indicating proper alignment
+How many green and red lights are you seeing?; ;3 green and 1 red;Normal response indicating proper binocular vision

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3578082c316eefa44b0b0c61d6fed9ac, type: 3}
+  m_Name: Questions
+  m_EditorClassIdentifier: 
+  questionText: {fileID: 0}
+  answerButtons: []
+  question:
+  - question: How many lights are you seeing?
+    options:
+    - '4 lights: 1 red, 2 green, and 1 mixed color'
+    - '5 lights: 2 red and 3 green'
+    - 3 Green lights (from the Left eye)
+    - 2 Red lights (from the Right eye)
+    - 2 Red lights OR 3 Green lights (Alternating between the two responses)
+    Diagonis:
+    - Normal Retinal Correspondence (BSV) or ARC (with manifest deviation)
+    - 1
+    - Suppression (R Supp.)
+    - Suppression (L Supp.)
+    - Alternating Suppression (Alt. Supp.)
+  - question: What is the position of the lights?
+    options:
+    - The lights are horizontally displaced, seen side by side
+    - The lights are vertically displaced in relation to one another
+    Diagonis:
+    - 1
+    - 3
+  - question: Are the lights from the right eye on the right or left side?
+    options:
+    - The 2 red lights from the right eye are seen on the right side
+    - The 2 red lights from the right eye are seen on the left side
+    - None
+    Diagonis:
+    - Esotropia (ET)
+    - Exotropia (XT)
+    - 1
+  - question: Are the lights from the left eye on the right or left side?
+    options:
+    - The 3 green lights from the left eye are seen on the left side
+    - The 3 green lights from the left eye are seen on the right side
+    - None
+    Diagonis:
+    - Esotropia (ET)
+    - Exotropia (XT)
+    - 1
+  - question: Are the green lights on top of the red lights or vice versa?
+    options:
+    - The green lights (left eye) are on top of the red lights (right eye)
+    - The red lights (right eye) are on top of the green lights (left eye)
+    - None
+    Diagonis:
+    - R Hypertropia or L Hypotropia
+    - R Hypotropia or L Hypertropia
+    - Esotropia (ET) or Exotropia (XT) or Hypotropia or Hypertropia
+  - question: Do you see the lights flashing?
+    options:
+    - Yes
+    - No
+    Diagonis:
+    - Flashing lights can indicate intermittent suppression or difficulty maintaining
+      fusion
+    - None

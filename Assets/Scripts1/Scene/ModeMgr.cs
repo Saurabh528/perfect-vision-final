@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class ModeMgr : MonoBehaviour
 {
+    const bool  onlyDiagnose = false;
     [SerializeField] GlobalSettingUI SettingUI;
-    [SerializeField] GameObject btnEnrollment, btnHomeTherapy;
+    [SerializeField] GameObject btnEnrollment, btnHomeTherapy, btnGamePlay;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,8 +14,9 @@ public class ModeMgr : MonoBehaviour
 		GameState.currentGamePlay = null;
 		GameState.currentPatient = null;
         VisualFactor.LoadFactor();
-        btnEnrollment.SetActive(GameState.IsDoctor());
-        btnHomeTherapy.SetActive(GameState.IsPatient());
+        btnEnrollment.SetActive(!onlyDiagnose && GameState.IsDoctor());
+        btnHomeTherapy.SetActive(!onlyDiagnose && GameState.IsPatient());
+        btnGamePlay.SetActive(!onlyDiagnose);
     }
 
 

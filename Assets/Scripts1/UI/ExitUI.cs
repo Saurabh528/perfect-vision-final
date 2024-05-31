@@ -16,6 +16,7 @@ public class ExitUI : MonoBehaviour
 
     void OnApplicationQuit(){
         if(!IsShowingExitPanel()){
+            
             Application.CancelQuit();
             HideCursorOnResume = !Cursor.visible;
             Cursor.visible = true;

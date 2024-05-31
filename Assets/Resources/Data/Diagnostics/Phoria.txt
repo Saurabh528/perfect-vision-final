@@ -1,0 +1,15 @@
+Normal ranges indicate proper alignment
+Left Eye Horizontal Deviation Value;△;0 to 2;Normal if within 0-2 △, higher values need further evaluation
+Left Eye Horizontal Deviation (Eso/Exo); ;esophoria or exophoria;Normal if esophoria or exophoria is within the normal range
+Left Eye Vertical Deviation Value;△;0 to 0.5;Normal if within 0-0.5 △, higher values need further evaluation
+Left Eye Vertical Deviation (Hyper/Hypo); ;hyperphoria or hypophoria;Normal if hyperphoria or hypophoria is within the normal range
+Left Eye Combined Deviation Value;△;0 to 2.5;Normal if within 0-2.5 △, higher values need further evaluation
+Left Eye Combined Deviation (Eso/Exo + Hyper/Hypo); ;combined deviation;Normal if combined deviation is within the normal range
+Left Eye Degree;°;0 to 5 degrees;Normal if within 0-5°, higher values need further evaluation
+Right Eye Horizontal Deviation Value;△;0 to 2;Normal if within 0-2 △, higher values need further evaluation
+Right Eye Horizontal Deviation (Eso/Exo); ;esophoria or exophoria;Normal if esophoria or exophoria is within the normal range
+Right Eye Vertical Deviation Value;△;0 to 0.5;Normal if within 0-0.5 △, higher values need further evaluation
+Right Eye Vertical Deviation (Hyper/Hypo); ;hyperphoria or hypophoria;Normal if hyperphoria or hypophoria is within the normal range
+Right Eye Combined Deviation Value;△;0 to 2.5;Normal if within 0-2.5 △, higher values need further evaluation
+Right Eye Combined Deviation (Eso/Exo + Hyper/Hypo); ;combined deviation;Normal if combined deviation is within the normal range
+Right Eye Degree;°;0 to 5 degrees;Normal if within 0-5°, higher values need further evaluation

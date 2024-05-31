@@ -1,0 +1,3 @@
+Measures the clarity or sharpness of vision
+Left Eye Visual Acuity;Snellen Fraction;20/20 or better;Normal if 20/20 or better, lower values indicate vision impairment
+Right Eye Visual Acuity;Snellen Fraction;20/20 or better;Normal if 20/20 or better, lower values indicate vision impairment

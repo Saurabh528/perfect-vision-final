@@ -1,17 +1,27 @@
+# final_snake_game.spec
+
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+import os
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
 block_cipher = None
 
+# Define pathex to include your Python environment path if necessary
+pathex = ['F:\\Work\\Unity\\PerfectVisionProject\\perfect-vision-final\\Python', sys.exec_prefix]
+
+# Collect all submodules and data files for pywin32
+hiddenimports = collect_submodules('win32com') + collect_submodules('win32com.shell')
+datas = collect_data_files('win32com') + [('c:\\Users\\KRAJ\\AppData\\Roaming\\Python\\Python311\\site-packages\\mediapipe\\modules', 'mediapipe\\modules')]
 
 a = Analysis(
     ['final_snake_game.py'],
-    pathex=[],
+    pathex=pathex,
     binaries=[],
-    datas=[('c:\\Users\\KRAJ\\AppData\\Roaming\\Python\\Python311\\site-packages\\mediapipe\\modules', 'mediapipe\\modules'),],
-    hiddenimports=[],
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
-    hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
@@ -19,6 +29,7 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
@@ -32,12 +43,8 @@ exe = EXE(
     strip=False,
     upx=True,
     console=True,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
 )
+
 coll = COLLECT(
     exe,
     a.binaries,

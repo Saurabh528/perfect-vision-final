@@ -1,0 +1,5 @@
+Indicates if there is any eye movement when one eye is covered and then uncovered
+Left Eye Mean Value;D;0 to 1;Normal if within 0-1 D, higher values need further evaluation
+Left Eye Deviation;△;0 to 2;Normal if within 0-2 △, higher values need further evaluation
+Right Eye Mean Value;D;0 to 1;Normal if within 0-1 D, higher values need further evaluation
+Right Eye Deviation;△;0 to 2;Normal if within 0-2 △, higher values need further evaluation

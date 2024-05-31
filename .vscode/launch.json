@@ -2,21 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Unity Editor",
+            "type": "unity",
+            "path": "${workspaceFolder}/Library/EditorInstance.json",
+            "request": "launch"
+        },
+        {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["--datadir=c:/Users/KRAJ/AppData/LocalLow/Jatin/PerfectVision/PatientData/Anonymous"]
         },
         {
             "name": "Attach to Unity",
             "type": "vstuc",
             "request": "attach"
-        },
-        {
-            "name": "Unity Editor",
-            "type": "unity",
-            "request": "launch"
         }
     ]
 }

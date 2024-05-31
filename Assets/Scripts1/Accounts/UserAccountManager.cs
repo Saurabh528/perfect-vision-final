@@ -123,34 +123,38 @@ public class UserAccountManager : MonoBehaviour
 						DataKey.SetPrefsString(DataKey.CLINICLIMIT, GameState.CilinicLimit.ToString());
 						DataKey.SetPrefsString(DataKey.HOMELIMIT, GameState.HomeLimit.ToString());
 						//Upload local data
-						string jsonstr = DataKey.GetPrefsString(DataKey.PATIENT);
-						if(string.IsNullOrEmpty(jsonstr))
-							successAction.Invoke();
-						else{
-							UpdateUserDataRequest request = new UpdateUserDataRequest();
-							request.Data = new Dictionary<string, string>();
-							request.Permission = UserDataPermission.Public;
-							request.Data.Add(DataKey.PATIENT, jsonstr);
-							Dictionary<string, string> nameIDHash = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonstr);
-							foreach(KeyValuePair<string, string>pair in nameIDHash){
-								if(pair.Value == GameConst.PLAYFABID_CLINIC){
-									string localPatientString = DataKey.GetPrefsString(pair.Key);
-									if(string.IsNullOrEmpty(localPatientString))
-										request.Data.Add(pair.Key, "{}");
-									else
-										request.Data.Add(pair.Key, localPatientString);
+						if(PlayerPrefs.GetString(LocalKey.LASTONLINE, "True").ToLower() == "false"){
+							string jsonstr = DataKey.GetPrefsString(DataKey.PATIENT);
+							if(string.IsNullOrEmpty(jsonstr))
+								successAction.Invoke();
+							else{
+								UpdateUserDataRequest request = new UpdateUserDataRequest();
+								request.Data = new Dictionary<string, string>();
+								request.Permission = UserDataPermission.Public;
+								request.Data.Add(DataKey.PATIENT, jsonstr);
+								Dictionary<string, string> nameIDHash = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonstr);
+								foreach(KeyValuePair<string, string>pair in nameIDHash){
+									if(pair.Value == GameConst.PLAYFABID_CLINIC){
+										string localPatientString = DataKey.GetPrefsString(pair.Key);
+										if(string.IsNullOrEmpty(localPatientString))
+											request.Data.Add(pair.Key, "{}");
+										else
+											request.Data.Add(pair.Key, localPatientString);
+									}
 								}
+								PlayFabClientAPI.UpdateUserData(request,
+									result => {
+										
+										successAction.Invoke();
+									},
+									error =>{
+										successAction.Invoke();
+									}
+								);
 							}
-							PlayFabClientAPI.UpdateUserData(request,
-								result => {
-									
-									successAction.Invoke();
-								},
-								error =>{
-									successAction.Invoke();
-								}
-							);
 						}
+						else
+							successAction.Invoke();
 					}
 					catch(Exception ex){
 						failedAction.Invoke($"Cilinic enrollment limit error.\n{ex.ToString()}");
@@ -319,12 +323,11 @@ public class UserAccountManager : MonoBehaviour
 						//try connect
 	
 						string host = "playfab.com";  
-						bool result = false;  
 						System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();  
 						try  
 						{  
 							PingReply reply = p.Send(host, 3000);  
-							//System.Net.NetworkInformation.GetIsNetworkAvailable();
+							PlayerPrefs.SetString(LocalKey.LASTONLINE, reply.Status == IPStatus.Success?"True": "False");
 							if (reply.Status == IPStatus.Success){
 								Debug.Log("Internet is available.");
 								//connected to internet
@@ -872,7 +875,7 @@ public class UserAccountManager : MonoBehaviour
         });
     }
 
-    public void GetLeaderboardDelayed(string statistic)
+    /*public void GetLeaderboardDelayed(string statistic)
     {
         StartCoroutine(CheckLeaderboardDelay(statistic));
     }
@@ -916,7 +919,7 @@ public class UserAccountManager : MonoBehaviour
         
     }
 
-    /* void UploadUserData()
+     void UploadUserData()
     {
         // if(!GameState.IsOnline || GameState.IsPatient())
         // 	return;

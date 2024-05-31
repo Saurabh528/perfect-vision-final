@@ -6,13 +6,67 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using PlayFab;
 using PlayFab.ClientModels;
+using Org.BouncyCastle.Asn1.Mozilla;
+using System.Runtime.Serialization;
 
-
+[JsonObject(MemberSerialization.Fields)]
 public class SessionRecord
 {
 	public List<GamePlay> games = new List<GamePlay>();
 	public DateTime time;
 	public ColorSet cali = new ColorSet();
+
+	[OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if (games == null)
+        {
+            games = new List<GamePlay>();
+        }
+    }
+}
+[JsonObject(MemberSerialization.Fields)]
+public class DiagnoseTestItem{//diagnose test item for one diagnostics game
+	public int version;
+	public List<string> strings = new List<string>();
+	public DiagnoseTestItem(){
+		version = GameVersion.DIAGNOSTICS;
+	}
+
+	[OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if (strings == null)
+        {
+            strings = new List<string>();
+        }
+    }
+
+	public void Clear(){
+		strings.Clear();
+	}
+
+	public void AddValue(string str){
+		strings.Add(str);
+	}
+}
+[JsonObject(MemberSerialization.Fields)]
+public class DiagnoseRecord{
+	Dictionary<string, DiagnoseTestItem> diagnoseTestItems = new Dictionary<string, DiagnoseTestItem>();//key: test name
+	public void AddTestItem(string testname, DiagnoseTestItem item){
+		diagnoseTestItems[testname] = item;
+	}
+
+	[OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if (diagnoseTestItems == null)
+        {
+            diagnoseTestItems = new Dictionary<string, DiagnoseTestItem>();
+        }
+    }
+
+	public Dictionary<string, DiagnoseTestItem> GetTestItems(){return diagnoseTestItems;}
 }
 public class DisplacementRecord
 {
@@ -25,21 +79,52 @@ public class DisplacementRecord
 		this.aver_displace_right=aver_displace_right;
 		this.datetime=DateTime.Now;
 	}
+	
 }
 [JsonObject(MemberSerialization.Fields)]
 public class PatientRecord
 {
 	public List<SessionRecord> sessionlist = new List<SessionRecord>();
 	public List<DisplacementRecord> displacementRecords = new List<DisplacementRecord>();
+	public Dictionary<string, DiagnoseRecord> diagnoseRecords = new Dictionary<string, DiagnoseRecord>();//with date string
+
+	 [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if(sessionlist == null)
+			sessionlist = new List<SessionRecord>();
+		if(displacementRecords == null)
+			displacementRecords = new List<DisplacementRecord>();
+		if(diagnoseRecords == null)
+			diagnoseRecords = new Dictionary<string, DiagnoseRecord>();
+    }
 	public void AddSessionRecord(SessionRecord record)
 	{
 		sessionlist.Add(record);
+	}
+
+	public void AddDiagnosRecord(string testname, DiagnoseTestItem diagnos){
+		DateTime now = DateTime.Now;
+		string datestr = now.ToString(GameConst.STRFORMAT_DATETIME);
+		DiagnoseRecord record = null;
+		if(diagnoseRecords.ContainsKey(datestr))
+			record = diagnoseRecords[datestr];
+		else{
+			record = new DiagnoseRecord();
+			diagnoseRecords[datestr] = record;
+		}
+		record.AddTestItem(testname, diagnos);
 	}
 
 	public List<SessionRecord> GetSessionRecordList()
 	{
 		return sessionlist;
 	}
+
+	public Dictionary<string, DiagnoseRecord> GetDiagnoseRecords(){
+		return diagnoseRecords;
+	}
+
 
 	public void AddDisplacementRecord(DisplacementRecord record)
 	{
@@ -50,6 +135,7 @@ public class PatientRecord
 	{
 		return displacementRecords;
 	}
+
 }
 public abstract class PatientDataMgr
 {
@@ -67,13 +153,9 @@ public abstract class PatientDataMgr
 	{
 		patientRecord.AddDisplacementRecord(record);
 	}
-	public static void SavePatientData(UnityAction successAction, UnityAction<string> failAction)
+	public static void SavePatientData(UnityAction successAction = null, UnityAction<string> failAction = null)
 	{
-		if (GameState.currentPatient == null || GameState.currentGameMode == GAMEMODE.SingleGame)
-		{
-			failAction.Invoke("There is no session data to record.");
-			return;
-		}
+		
 		if(GameState.currentPatient.place == THERAPPYPLACE.Home && GameState.IsDoctor()){
 			Debug.LogError("Can not save Home patient data.");
 			return;
@@ -81,8 +163,10 @@ public abstract class PatientDataMgr
 		string jsonstr = JsonConvert.SerializeObject(patientRecord);
 		string keystr = GameState.currentPatient.name + DataKey.SF_SESSIONRECORD;
 		DataKey.SetPrefsString(keystr, jsonstr);
-		if (!GameState.IsOnline)
-			successAction.Invoke();
+		if (!GameState.IsOnline){
+			if(successAction != null)
+				successAction.Invoke();
+		}
 		else
 		{
 			PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
@@ -92,11 +176,13 @@ public abstract class PatientDataMgr
 			},
 			result =>
 			{
-				successAction.Invoke();
+				if(successAction != null)
+					successAction.Invoke();
 			},
 			error =>
 			{
-				failAction.Invoke(error.ToString());
+				if(failAction != null)
+					failAction.Invoke(error.ToString());
 			});
 		}
 	}
@@ -115,13 +201,11 @@ public abstract class PatientDataMgr
 			if (!string.IsNullOrEmpty(str))
 			{
 				patientRecord = JsonConvert.DeserializeObject<PatientRecord>(str);
-				if (patientRecord.displacementRecords == null)
-					patientRecord.displacementRecords = new List<DisplacementRecord>();
-				if (patientRecord.sessionlist == null)
-					patientRecord.sessionlist = new List<SessionRecord>();
-				if(successAction != null)
-					successAction.Invoke();
-				return;
+				if(!GameState.IsOnline){
+					if(successAction != null)
+						successAction.Invoke();
+					return;
+				}
 			}
 		}
 		
@@ -151,10 +235,6 @@ public abstract class PatientDataMgr
 						patientRecord = new PatientRecord();
 					else
 						patientRecord = JsonConvert.DeserializeObject<PatientRecord>(str);
-					if (patientRecord.displacementRecords == null)
-						patientRecord.displacementRecords = new List<DisplacementRecord>();
-					if (patientRecord.sessionlist == null)
-						patientRecord.sessionlist = new List<SessionRecord>();
 					if (successAction != null)
 						successAction.Invoke();
 			   }

@@ -31,7 +31,7 @@ public abstract class ColorCalibration
 		{
 			if (redcolor == Color.black)
 			{
-				redcolor = GetRedColor(GameState.currentPatient == null? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName(ColorCalibration.PrefName_Red), 0.5f): GameState.currentPatient.cali.rd);
+				redcolor = GetRedColor(GameState.currentPatient == null? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName(ColorCalibration.PrefName_Red), 0): GameState.currentPatient.cali.rd);
 				return redcolor;
 			}
 			else
@@ -49,7 +49,7 @@ public abstract class ColorCalibration
 		{
 			if (cyancolor == Color.black)
 			{
-				cyancolor = GetCyanColor(GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName(ColorCalibration.PrefName_Cyan), 0.5f) : GameState.currentPatient.cali.cy);
+				cyancolor = GetCyanColor(GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName(ColorCalibration.PrefName_Cyan), 1) : GameState.currentPatient.cali.cy);
 				return cyancolor;
 			}
 			else

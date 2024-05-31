@@ -73,7 +73,7 @@ public class GlobalSettingUI : MonoBehaviour
         _ddCamera.options.Clear();
         _camList.Clear();
         int value = -1;
-        string curname = PlayerPrefs.GetString(DataKey.WBCAMERANAME);
+        string curname = PlayerPrefs.GetString(LocalKey.WBCAMERANAME);
         for(int i = 0; i < devices.Length; i++){
             string name = devices[i].name;
             _camList.Add(name);
@@ -89,7 +89,7 @@ public class GlobalSettingUI : MonoBehaviour
         WebCamDevice[] devices = WebCamTexture.devices;
         if(devices.Length == 0)
             return -1;
-        string curname = PlayerPrefs.GetString(DataKey.WBCAMERANAME);
+        string curname = PlayerPrefs.GetString(LocalKey.WBCAMERANAME);
         for(int i = 0; i < devices.Length; i++){
             if(devices[i].name == curname)
                 return i;
@@ -100,7 +100,7 @@ public class GlobalSettingUI : MonoBehaviour
     public void OnCameraChanged(int value){
         if(value == -1)
             return;
-        PlayerPrefs.SetString(DataKey.WBCAMERANAME, _ddCamera.options[value].text);
+        PlayerPrefs.SetString(LocalKey.WBCAMERANAME, _ddCamera.options[value].text);
     }
 
     public void SetAudioSFX(string value){

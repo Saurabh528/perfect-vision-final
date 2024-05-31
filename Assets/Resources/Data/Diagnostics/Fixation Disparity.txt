@@ -1,0 +1,7 @@
+Normal ranges indicate proper alignment
+Horizontal Disparity Value;△;0 to 2;Normal if within 0-2 △, higher values need further evaluation
+Horizontal Disparity (Eso/Exo); ;esophoria or exophoria;Normal if esophoria or exophoria is within the normal range
+Horizontal Prism;△;0 to 2.5;Normal if within 0-2.5 △, higher values need further evaluation
+Vertical Disparity Value;△;0 to 0.5;Normal if within 0-0.5 △, higher values need further evaluation
+Vertical Disparity (Hyper/Hypo); ;hyperphoria or hypophoria;Normal if hyperphoria or hypophoria is within the normal range
+Vertical Prism;△;0 to 2.5;Normal if within 0-2.5 △, higher values need further evaluation
