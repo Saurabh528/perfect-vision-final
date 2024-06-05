@@ -12,6 +12,8 @@ public class SpriteColorCalibrate : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
+		if(materials == null)
+			materials = new Material[0];//In case of adding componet from script at runtime.
 		Color color = Color.white;
 		if (_ColorChannel == ColorChannel.CC_Background)
 			color = ColorCalibration.BackColor;
@@ -71,12 +73,17 @@ public class SpriteColorCalibrate : MonoBehaviour
 
 	private void Update()
 	{
-		switchRemainTime -= Time.deltaTime;
-		if(switchRemainTime < 0)
-		{
-			switchRemainTime = changePeriod + Random.value * randomPeriod;
-			Color color = (Random.value > 0.5f) ? ColorCalibration.RedColor : ColorCalibration.CyanColor;
-			SetColor(color);
+		if(switchRemainTime != 0){
+			switchRemainTime -= Time.deltaTime;
+			if(switchRemainTime < 0)
+			{
+				switchRemainTime = changePeriod + Random.value * randomPeriod;
+				if(switchRemainTime == 0)
+					switchRemainTime = 0.1f;
+				Color color = (Random.value > 0.5f) ? ColorCalibration.RedColor : ColorCalibration.CyanColor;
+				SetColor(color);
+			}
 		}
+		
 	}
 }

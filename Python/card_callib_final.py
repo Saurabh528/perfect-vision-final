@@ -32,11 +32,16 @@ parser.add_argument("--cameraindex", type=int,
 
 parser.add_argument("--datadir", type=str, 
                     help="specify the data directory", 
-                    default=get_anonymous_directory())
+                    default=get_anonymous_directory(),
+                    )
+
 
 args = parser.parse_args()
-from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity
-    
+from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity, send_status_to_unity
+
+if args.datadir == "":
+    print("missing data directory")
+    sys.exit()
 # Initialize TCP connection
 if args.connect:
     socket = init_TCP(args.port)
@@ -94,12 +99,12 @@ left_eyes_indices = get_unique(connections_left_eyes)
 
 connections_right_eyes =  mp_face_mesh.FACEMESH_RIGHT_EYE
 right_eyes_indices = get_unique(connections_right_eyes)
-if wait_for_camera(args.cameraindex):
+""" if wait_for_camera(args.cameraindex):
     cap = cv2.VideoCapture(args.cameraindex)
     fps = cap.get(cv2.CAP_PROP_FPS)
 else:
     print("Could not initialize camera.")
-    exit()
+    exit() """
 
 
 
@@ -111,10 +116,10 @@ def live_distance(results):
             x = int(lms[index].x*frame.shape[1])
             y = int(lms[index].y*frame.shape[0])
             d[index] = (x,y)
-        black = np.zeros(frame.shape).astype("uint8")
-        for index in iris_indices:
+        #black = np.zeros(frame.shape).astype("uint8")
+        """ for index in iris_indices:
             #print(index)
-            cv2.circle(frame,(d[index][0],d[index][1]),2,(0,255,0),-1)
+            cv2.circle(frame,(d[index][0],d[index][1]),2,(0,255,0),-1) """
         
         
         centre_right_iris_x_1 = int((d[iris_right_horzn[0]][0] + d[iris_right_horzn[1]][0])/2)
@@ -136,8 +141,8 @@ def live_distance(results):
         centre_right_iris_x = int((centre_right_iris_x_1 + centre_right_iris_x_2)/2)
         centre_right_iris_y = int((centre_right_iris_y_1 + centre_right_iris_y_2)/2)
         
-        cv2.circle(frame,(centre_right_iris_x,centre_right_iris_y),2,(0,255,0),-1)
-        cv2.circle(frame,(centre_left_iris_x,centre_left_iris_y),2,(0,255,0),-1)
+        """ cv2.circle(frame,(centre_right_iris_x,centre_right_iris_y),2,(0,255,0),-1)
+        cv2.circle(frame,(centre_left_iris_x,centre_left_iris_y),2,(0,255,0),-1) """
         
         w = ((centre_right_iris_x - centre_left_iris_x)**2 + (centre_right_iris_y - centre_left_iris_y)**2)**0.5
         
@@ -191,35 +196,75 @@ calibration_data = {}  # To store calibration points for each distance
 current_distance_index = 0  # Index to track the current calibration step
 
 # Function to handle mouse clicks
-def select_point(event, x, y, flags, param):
+""" def select_point(event, x, y, flags, param):
     global points, frame
     if event == cv2.EVENT_LBUTTONDOWN:  # Double left click
         points.append((x, y))
         cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)  # Show selected point
-        cv2.imshow("Frame", frame)
+        cv2.imshow("Frame", frame) """
 
 # Function to display instructions
-def display_instructions(img, distance):
+""" def display_instructions(img, distance):
     instructions = f"Sit at {distance}cm from the screen."
     cv2.putText(img, instructions, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
-    cv2.putText(img, "Press 'p' when ready, then double-click the 4 corners of the card.", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, "Press 'p' when ready, then double-click the 4 corners of the card.", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA) """
+
+import re
+
+def string_to_point_array(s):
+    # Find all pairs of numbers in the string
+    matches = re.findall(r'\(([^)]+)\)', s)
+    # Convert each pair to a tuple of floats
+    allpts = [tuple(map(float, pair.split(','))) for pair in matches]
+    return allpts
 
 # Main function
 def run_callib():
     global points, current_distance_index, frame
 
     # Open the video camera
-    if wait_for_camera(args.cameraindex):
+    """ if wait_for_camera(args.cameraindex):
         cap = cv2.VideoCapture(args.cameraindex)
     else:
         print("Could not initialize camera.")
         exit()
 
     cv2.namedWindow("Frame")
-    cv2.setMouseCallback("Frame", select_point)
+    cv2.setMouseCallback("Frame", select_point) """
+    
+    face_mesh = mp_face_mesh.FaceMesh(
+        static_image_mode=True,
+        max_num_faces=2,
+        refine_landmarks=True,
+        min_detection_confidence=0.3)
+    while(1):
+        pointpath = os.path.join(args.datadir, 'points.txt')
+        if os.path.isfile(pointpath):
+            with open(pointpath, 'r') as file:  # Open the file in read mode
+                pointstext = file.read().strip()  # Read the content and remove any leading/trailing whitespace
+                allpoints = string_to_point_array(pointstext)
+                for current_distance_index in range(len(distances)):
+                    calibration_data[distances[current_distance_index]] = allpoints[current_distance_index * 4: (current_distance_index + 1) * 4]
+            os.remove(pointpath)
+            break
+        else:
+            recordpath = os.path.join(args.datadir, 'record.png')
+            if os.path.isfile(recordpath):
+                frame = cv2.imread(recordpath)
+                os.remove(recordpath)
+                results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                try:
+                    distance = live_distance(results)
+                    if args.connect:
+                        send_status_to_unity(socket, f"Distance: {int(distance)}cm")
+                except Exception as e:
+                    print(e)
+            else:
+                time.sleep(0.01)
+    
 
-    while True:
-        ret, frame = cap.read()
+    
+        """ ret, frame = cap.read()
         if not ret:
             print("Failed to grab frame")
             break
@@ -264,7 +309,8 @@ def run_callib():
 
     cap.release()
     cv2.destroyAllWindows()
-
+"""
+        
     # Optionally, save or process the calibration_data here
     print("Calibration Data:", calibration_data)
 

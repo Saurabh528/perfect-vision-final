@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PlayFab.ClientModels;
 using PlayFab;
-public class VisualActivityTest : MonoBehaviour
+public class VisualActivityTest : DiagnosticController
 {
     public enum SYMBOLTYPE{
         RING = 0,
@@ -197,79 +197,12 @@ public class VisualActivityTest : MonoBehaviour
         Panel_Result.transform.Find("LeftEye").GetComponent<TextMeshProUGUI>().text = $"Left eye: \t~20/{LeftScore}";
         Panel_Result.transform.Find("RightEye").GetComponent<TextMeshProUGUI>().text = $"Right eye:\t~20/{RightScore}";
         
-        //SaveData(LeftScore, RightScore);
 
         CountText.gameObject.SetActive(false);
         ScoreText.gameObject.SetActive(false);
     }
 
-    void SaveData(int L,int R)
-    {
-        //string filePath = Directory.GetCurrentDirectory() + "\\Python\\VAT.txt";
-        //UnityEngine.Debug.Log("Path is " + filePath);
-
-        //try
-        //{
-        //    // Convert the integer to a string since WriteAllText expects string data.
-        //    File.WriteAllText(filePath, "");
-        //    File.AppendAllText(filePath, L.ToString());
-        //    File.AppendAllText(filePath, " ");
-        //    File.AppendAllText(filePath, R.ToString());
-        //    UnityEngine.Debug.Log("This is LeftEye" + L);
-        //    UnityEngine.Debug.Log("This is RightEye" + R);
-
-        //}
-        //catch (Exception ex)
-        //{
-        //    // If something goes wrong, this will print the error message.
-        //    UnityEngine.Debug.Log("An error occurred: " + ex.Message);
-        //}
-
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
-            result =>
-            {
-                var prevJson = result.Data["VAT"].Value;
-                int count = Int32.Parse(result.Data["DiagnosticCount"].Value);
-                //var prevJson = result.Data["VAT"].Value;
-                //int count = Int32.Parse(result.Data["COUNT"].Value);
-                //count++;
-                DateTime now = DateTime.Now;
-                string dateCurrent = now.ToShortDateString();
-
-                UnityEngine.Debug.Log("DiagnosticCount VARIABLE IS" + count);
-                JObject prevJObject = JObject.Parse(prevJson);
-                JObject newSessionData = new JObject();
-                
-                newSessionData["LeftScore"] = "~20/"+L.ToString();
-                newSessionData["RightScore"] = "~20/"+R.ToString();
-                newSessionData["Date"] = dateCurrent;
-                string sessions = "Session" + count.ToString();
-                prevJObject[sessions] = newSessionData;
-                string updatedJson = prevJObject.ToString(Newtonsoft.Json.Formatting.Indented);
-
-                var request = new UpdateUserDataRequest()
-                {
-                    Data = new Dictionary<string, string> { { "VAT", updatedJson } },
-                    Permission = UserDataPermission.Public
-                };
-                PlayFabClientAPI.UpdateUserData(request,
-                 result =>
-                 {
-                     UnityEngine.Debug.Log("Successfully added VAT data");
-
-                 },
-                 error =>
-                 {
-                     UnityEngine.Debug.Log("Not added VAT data");
-
-                 });
-            },// Success callback
-            error =>
-            {
-                UnityEngine.Debug.Log("VAT data GetUserData api called error");
-
-            });// Error callback
-    }
+    
     IEnumerator Routine_SpawnRandomSymbol(){
         TryCount++;
         RandomImg.gameObject.SetActive(false);
@@ -298,7 +231,20 @@ public class VisualActivityTest : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    
+
+	public override void AddResults(){
+        PatientRecord pr = PatientDataMgr.GetPatientRecord();
+        DiagnoseTestItem dti = new DiagnoseTestItem();
+        dti.AddValue($"~20/{LeftScore}");
+        dti.AddValue($"~20/{RightScore}");
+        pr.AddDiagnosRecord("Visual Acuity", dti) ;
+    }
+
+	public override bool ResultExist(){
+        if(!base.ResultExist())
+            return false;
+        return State == VATSTATE.SHOW_RESULT;;
+    }
 
     
 }

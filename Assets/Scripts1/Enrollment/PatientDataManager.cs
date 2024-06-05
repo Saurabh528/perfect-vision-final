@@ -278,7 +278,6 @@ public static class PatientDataManager
 	public static void LoadPatientData(UnityAction<Dictionary<string, PatientData>> successAction = null, UnityAction<string> failAction = null)
 	{
 		//This funcction is called first when clicked on Patient Enrollment
-        UnityEngine.Debug.Log("1)LoadPatientData Patient called");
         if (GameState.IsOnline){
 			//online mode
 			

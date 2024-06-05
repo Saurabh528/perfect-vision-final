@@ -14,7 +14,6 @@ public class PatientView : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _details;
 	[SerializeField] GameObject _btnDelete, _btnStart;
 	[SerializeField] UISessionMake _sessionmakeview;
-	[SerializeField] GameObject _btnExportPDF;
     [SerializeField] GameObject _btnSetting, _btnProAnylysis, _btnDiagnose;
 
 	private void Awake()
@@ -54,7 +53,7 @@ public class PatientView : MonoBehaviour
 		if(_btnDelete)
 			_btnDelete.SetActive(false);
 		_btnStart.SetActive(false);
-        _btnExportPDF.SetActive(false);
+        
         _btnSetting.SetActive(false);
 		_btnDiagnose.SetActive(false);
 		_btnProAnylysis.SetActive(false);
@@ -76,9 +75,9 @@ public class PatientView : MonoBehaviour
 		if(_btnDelete)
 			_btnDelete.SetActive(true);
 		_btnStart.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
-        _btnExportPDF.SetActive(true);
+        
         _btnSetting.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
-		_btnDiagnose.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
+		_btnDiagnose.SetActive(true);
 		_btnProAnylysis.SetActive(true);
 	}
 

@@ -35,11 +35,15 @@ GameLauncher/obj/
 
 
 # Build
-WindowsBuild/
-WindowsBuild.zip
-MacBuild/
+Deploy/WindowsBuild/
+Deploy/WindowsBuild.zip
+Deploy/MacBuild/
 Python/build/
 Python/dist/
+
+#deploy
+Deploy/PerfectVision-cache/
+Deploy/PerfectVisionSetup.exe
 
 # Gradle cache directory
 .gradle/
@@ -88,5 +92,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 .DS_Store
 Python/__pycache__/
-.vscode/launch.json
-.DS_Store
+/.DS_Store

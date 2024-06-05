@@ -63,7 +63,7 @@ public abstract class UtilityFunc
 		return "";
 	}
 
-	public static UInt32 Color2Int(UnityEngine.Color c)
+	public static UInt32 Color2Int(UnityEngine.Color c)//0xrrggbbaa
 	{
 		Color32 c32 = c;
 		return (UInt32)(c32[0] << 24) +
@@ -78,6 +78,12 @@ public abstract class UtilityFunc
 		g = (byte)((color32 >> 16) & 0xff);
 		b = (byte)((color32 >> 8) & 0xff);
 		a = (byte)(color32 & 0xff);
+	}
+
+	public static UnityEngine.Color UInt2Color(uint color32){//0xrrggbbaa
+		byte r, g, b, a;
+		UInt2RGB(color32, out r, out g, out b, out a);
+		return new UnityEngine.Color((float)r / 255, (float)g / 255, (float)b / 255, (float)a / 255);
 	}
 
 	public static void StartProcessByFile(string fileName)
@@ -134,7 +140,7 @@ public abstract class UtilityFunc
 	}
 
 	public static string GetPlatformSpecificExecutableExtension(){
-		return (Application.platform == RuntimePlatform.WindowsEditor)?".exe":"";
+		return (Application.platform == RuntimePlatform.WindowsPlayer)?".exe":"";
 	}
 
 	public static void AppendToLog(string text)
@@ -159,4 +165,35 @@ public abstract class UtilityFunc
 			UnityEngine.Debug.LogError("Failed to write to log file: " + ex.Message);
 		}
 	}
+
+	public static void CopyRectTransform(RectTransform source, RectTransform target)
+    {
+        if (source == null || target == null)
+        {
+            return;
+        }
+
+        // Copy anchors
+        target.anchorMin = source.anchorMin;
+        target.anchorMax = source.anchorMax;
+
+        // Copy pivot
+        target.pivot = source.pivot;
+
+        // Copy anchored position
+        target.anchoredPosition = source.anchoredPosition;
+
+        // Copy size delta
+        target.sizeDelta = source.sizeDelta;
+
+        // Copy local scale
+        target.localScale = source.localScale;
+
+        // Copy rotation
+        target.localRotation = source.localRotation;
+
+        // Optionally, you can copy other properties such as offsets
+        target.offsetMin = source.offsetMin;
+        target.offsetMax = source.offsetMax;
+    }
 }

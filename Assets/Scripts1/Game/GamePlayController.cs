@@ -108,7 +108,7 @@ public class GamePlayController : MonoBehaviour
 	public virtual void StartGamePlay()
 	{
 		SetPlayingState(true);
-		if (imageBackButton)
+		if (imageBackButton && !IsDiagnosticMode())
 			imageBackButton.sprite = spritePause;
 		_startTime = DateTime.Now;
 		helpPanel.SetActive(false);
@@ -223,12 +223,16 @@ public class GamePlayController : MonoBehaviour
 		Time.timeScale = 1;
 	}
 
-	public void EndGame()
+	public virtual void EndGame()
 	{
 		Cursor.visible = true;
 		Time.timeScale = 1;
-		if (GameState.currentGamePlay == null)
-			ChangeScene.LoadScene("GamePanel");
+		if (GameState.currentGamePlay == null){
+			if(IsDiagnosticMode())
+				ChangeScene.LoadScene("Diagnostic");
+			else
+				ChangeScene.LoadScene("GamePanel");
+		}
 		else
 		{
 			if (_startTime.Ticks == 0)

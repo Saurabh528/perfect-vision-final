@@ -21,8 +21,11 @@ public class EnrollmentManager : MonoBehaviour
 	{
 		if(SessionMgr.NeedToAddSessionRecord())
 		{
-			SessionMgr.AddSessionRecordToData();
-			PatientDataMgr.SavePatientData(SaveSessionDataSuccess, SaveSessionDataFailed);
+			if (GameState.currentPatient != null && GameState.currentGameMode == GAMEMODE.SessionGame)
+			{
+				SessionMgr.AddSessionRecordToData();
+				PatientDataMgr.SavePatientData(SaveSessionDataSuccess, SaveSessionDataFailed);
+			}
 		}
 		UISessionRecordView.Instance.ShowPatientSessionData();
 	}

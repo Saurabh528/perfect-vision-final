@@ -4,17 +4,18 @@
 public class Paddle : MonoBehaviour
 {
     public static float speed = 4f;
-    public new Rigidbody2D rigidbody { get; private set; }
+    [HideInInspector]
+    public Rigidbody2D rigid;
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigid = GetComponent<Rigidbody2D>();
     }
 
     public void ResetPosition()
     {
-        rigidbody.velocity = Vector2.zero;
-        rigidbody.position = new Vector2(rigidbody.position.x, 0f);
+        rigid.velocity = Vector2.zero;
+        rigid.position = new Vector2(rigid.position.x, 0f);
     }
 
 }

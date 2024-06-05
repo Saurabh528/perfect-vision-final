@@ -14,9 +14,11 @@ public class UISignIn : MonoBehaviour {
 	[SerializeField] TMP_InputField password;
 	[SerializeField] GameObject canvas;
 	public static bool levelstarted = false;
+
+	
 	private void Start()
 	{
-#if UNITY_EDITOR_
+#if UNITY_EDITOR
 		levelstarted = true;
 		username.text = "Akuete";
 		password.text = "123456";

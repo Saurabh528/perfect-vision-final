@@ -10,8 +10,6 @@ using iTextSharp.text.pdf.parser;
 using System.Diagnostics;
 using System.Linq;
 using System.Drawing;
-using Org.BouncyCastle.Asn1.BC;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using System.Drawing.Imaging;
 using PlayFab;
@@ -38,7 +36,7 @@ public class MyPdfPageEventHandler : PdfPageEventHelper
 public class UISessionRecordView : MonoBehaviour
 {
 	public static UISessionRecordView Instance;
-	public UISessionReportView _reportView;
+	public UISessionReportView _reportViewTmpl;
 	public UISessionReportButton _ssReportButtonTmpl;
 	[SerializeField] UIProgressView _progressViewTmpl;
 	List<UIProgressView> _progressViews = new List<UIProgressView>();
@@ -50,16 +48,25 @@ public class UISessionRecordView : MonoBehaviour
 	[SerializeField] UIDisplacementProgressView _disProgressViewTmpl;
 	[SerializeField] ColorCalibrationProgressView _colorCalibProgViewTmpl;
 	[SerializeField] ColorCalibrationProgressView _colorCaliProgView;
-	[SerializeField] GameObject _disProgressSection, _sessionProgressSection, _colorProgressSection;
+	[SerializeField] GameObject _disProgressSection, _sessionProgressSection, _colorProgressSection, _btnExportPDF, diagGraphSection, diagGraphRow,
+	objSpectacles_Exercises, obj_Summary_Suggestion, obj_DiagAnalysTable;
 	[SerializeField] CalibrationSliderProgressView _calisliderView;
+	[SerializeField] Text textDiagDate;
+	[SerializeField] UIDiagnosticReportView diagnosticReportView;
 	public TextMeshProUGUI textCrane2D;
     public TextMeshProUGUI textDisplacement;
     public TextMeshProUGUI textVAT;
     public TextMeshProUGUI textAlignment;
     public TextMeshProUGUI textWorth4DOT;
+    private ScrollRect parentScrollRect;
+    private Vector2 initialPointerPosition;
+    private Vector2 initialScrollPosition;
+
+
     private void Awake()
 	{
 		Instance = this;
+		parentScrollRect = GetComponentInParent<ScrollRect>();
         //textCrane2D make it disable
         /* textCrane2D.enabled = false;
 		textDisplacement.enabled = false;
@@ -68,6 +75,39 @@ public class UISessionRecordView : MonoBehaviour
 		textWorth4DOT.enabled = false; */
 
     }
+
+	void Update(){
+		if(Input.GetKeyDown(KeyCode.D))
+			UnityEngine.Debug.Log($"ScrollPos position:{_scrollRect.verticalNormalizedPosition}");
+	}
+
+	void LateUpdate(){
+		if ( Input.touchCount > 1 ) {
+
+			Vector2 totalMove = Vector2.zero;
+
+			foreach (Touch thisTouch in Input.touches ) {
+				totalMove += thisTouch.deltaPosition;
+			}
+
+			/* calculate average movement for each touch */
+
+			Vector2 panMove    =  totalMove / Input.touchCount;
+			if(panMove.y != 0){
+				float position = Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + panMove.y / Screen.height * Time.deltaTime);
+				_scrollRect.verticalNormalizedPosition = position;
+			}
+			
+		}
+		else{
+			float Vertical = Input.GetAxis("Vertical");
+			if(Vertical != 0){
+				float position = Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + Vertical * 0.1f * Time.deltaTime);
+				_scrollRect.verticalNormalizedPosition = position;
+			}
+				
+		}
+	}
 	public void LoadSessionData()
 	{
 		UnityEngine.Debug.Log("Load Session Data called");
@@ -94,36 +134,49 @@ public class UISessionRecordView : MonoBehaviour
 
 	public void Clear()
 	{
-		//2 called,4th time called
-		UnityEngine.Debug.Log("Clear Called");
 		foreach (UISessionReportButton btn in _ssReportButtons)
 		{
-			GameObject.Destroy(btn.gameObject);
+			if(btn.gameObject != null)
+				GameObject.Destroy(btn.gameObject);
 		}
 		_ssReportButtons.Clear();
-		if(_reportView)
-			_reportView.gameObject.SetActive(false);
-
+		UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
+		diagnosticReportView.gameObject.SetActive(false);
 		ClearProgressViews();
 	}
+
+
 
 	public void ShowPatientSessionData()
 	{
 		
 		//1st called,3rd time called
-		UnityEngine.Debug.Log("Show Patient Session Data called");
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
 		Clear();
+		List<string> datelist = new List<string>();
 		List<SessionRecord> sessionlist = record.GetSessionRecordList();
+		foreach(SessionRecord session in sessionlist){
+			DateTime dt = session.time;
+			string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
+			if(!datelist.Contains(datestr))
+				datelist.Add(datestr);
+		}
+
+		Dictionary<string, DiagnoseRecord> diagnoslist = record.GetDiagnoseRecords();
+		foreach(KeyValuePair<string, DiagnoseRecord> pair in diagnoslist){
+			if(!datelist.Contains(pair.Key))
+				datelist.Add(pair.Key);
+		}
+
 		int siblingIndex = _ssReportButtonTmpl.transform.GetSiblingIndex();
-		foreach (SessionRecord ssrecord in sessionlist){
+		foreach (string datestr in datelist){
 			UISessionReportButton btn = Instantiate(_ssReportButtonTmpl, _ssReportButtonTmpl.transform.position, _ssReportButtonTmpl.transform.rotation);
-			btn.SetSessionRecord(ssrecord);
 			btn.transform.SetParent(_ssReportButtonTmpl.transform.parent);
 			btn.transform.localScale = _ssReportButtonTmpl.transform.localScale;
-			btn.name = ssrecord.time.ToString();
+			btn.name = datestr;
 			btn.gameObject.SetActive(true);
-			btn.transform.SetSiblingIndex(siblingIndex++);
+			btn.transform.SetSiblingIndex(++siblingIndex);
+			btn.SetDateStr(datestr);
 			_ssReportButtons.Add(btn);
 		}
         
@@ -132,11 +185,34 @@ public class UISessionRecordView : MonoBehaviour
 	
 	public void ShowSessionReport(UISessionReportButton button)
 	{
-        UnityEngine.Debug.Log("Show Session Report called");
-        _reportView.ViewRecord(button._ssRecord);
-		_reportView.transform.SetSiblingIndex(button.transform.GetSiblingIndex() + 1);
-		_reportView.transform.SetSiblingIndex(button.transform.GetSiblingIndex() + 1);
-		_reportView.gameObject.SetActive(true);
+		UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
+		diagnosticReportView.gameObject.SetActive(false);
+		PatientRecord record = PatientDataMgr.GetPatientRecord();
+		List<SessionRecord> sessionlist = record.GetSessionRecordList();
+		int siblingIndex = button.transform.GetSiblingIndex() + 1;
+		foreach(SessionRecord session in sessionlist){
+			DateTime dt = session.time;
+			string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
+			if(datestr == button.name){
+				UISessionReportView newview = Instantiate(_reportViewTmpl, _reportViewTmpl.transform.position, _reportViewTmpl.transform.rotation);
+				newview.transform.SetParent(_reportViewTmpl.transform.parent);
+				newview.transform.localScale = _reportViewTmpl.transform.localScale;
+				newview.ViewRecord(session);
+				newview.transform.SetSiblingIndex(siblingIndex++);
+				newview.gameObject.SetActive(true);
+			}
+		}
+        
+		Dictionary<string, DiagnoseRecord> diagnoRecords = record.GetDiagnoseRecords();
+		foreach(KeyValuePair<string, DiagnoseRecord> pair in diagnoRecords){
+			if(pair.Key == button.name){
+				diagnosticReportView.gameObject.SetActive(true);
+				diagnosticReportView.transform.SetSiblingIndex(siblingIndex);
+				diagnosticReportView.ShowRecord(pair.Value, $"Diagnostic Report - {pair.Key}");
+				break;
+			}
+		}
+		StartCoroutine(ScrollToTarget(button.GetComponent<RectTransform>()));
 	}
 
 
@@ -182,9 +258,11 @@ public class UISessionRecordView : MonoBehaviour
 
 		List<string> gamenames = GetRecodedGames();
 		_sessionProgressSection.SetActive(gamenames.Count > 0);
+		int siblingIndex = _progressViewTmpl.transform.GetSiblingIndex();
 		foreach (string gamename in gamenames){
 			UIProgressView view = Instantiate(_progressViewTmpl, _progressViewTmpl.transform.position, _progressViewTmpl.transform.rotation);
 			view.transform.SetParent(_progressViewTmpl.transform.parent);
+			view.transform.SetSiblingIndex(++siblingIndex);
 			view.transform.localScale = _progressViewTmpl.transform.localScale;
 			view.name = gamename;
 			view.gameObject.SetActive(true);
@@ -192,9 +270,55 @@ public class UISessionRecordView : MonoBehaviour
 			view.ViewDateScoreProgression(gamename);//show score/date
 			_progressViews.Add(view);
 		}
-		StartCoroutine(Routine_ScrollToProgression());
+		_btnExportPDF.SetActive(true);
+		StartCoroutine(ScrollToTarget(_highcoreView.GetComponent<RectTransform>()));
         //GetDataFunction();
     }
+
+	public void OnBtnDiagnosticReport(){
+		/*diagGraphSection.SetActive(true);
+		textDiagDate.text = DateTime.Now.ToString("dd/MM/yyyy");
+		DiagGraphItemData[] datas = new DiagGraphItemData[]{
+			new DiagGraphItemData("Visual Acuity", 1),
+			new DiagGraphItemData("Binocular Acuity", 0),
+			new DiagGraphItemData("Stereo Acuity", 1),
+			new DiagGraphItemData("Subjective Refraction", 1),
+			new DiagGraphItemData("Positive Accommodation", 5),
+			new DiagGraphItemData("Negative Accommodation", 3),
+			new DiagGraphItemData("Accommodation Reserve", 4),
+			new DiagGraphItemData("Accommodation Lag", 2),
+			new DiagGraphItemData("Accommodation Flexibility", 1),
+			new DiagGraphItemData("Phoria (H)", 4),
+			new DiagGraphItemData("Phoria (V)", 5),
+			new DiagGraphItemData("Fixation Disparity (H)", 5),
+			new DiagGraphItemData("Fixation Disparity (V)", 5),
+			new DiagGraphItemData("Fusional Reserves", 1)
+		};
+		UtilityFunc.DeleteAllSideTransforms(diagGraphRow.transform, false);
+		RectTransform rt = diagGraphSection.GetComponent<RectTransform>();
+		Vector2 sizeDelta = rt.sizeDelta;
+		int rowheight = 107;
+        sizeDelta.y = datas.Length * rowheight + 258;
+        rt.sizeDelta = sizeDelta;
+		for(int i = 0; i < datas.Length; i++){
+			GameObject newrow = Instantiate(diagGraphRow, diagGraphRow.transform.position, diagGraphRow.transform.rotation);
+			newrow.name = datas[i].name;
+			newrow.transform.SetParent(diagGraphRow.transform.parent);
+			newrow.transform.localScale = diagGraphRow.transform.localScale;
+			newrow.GetComponent<RectTransform>().anchoredPosition = diagGraphRow.GetComponent<RectTransform>().anchoredPosition - new Vector2(0, i * rowheight);
+			newrow.SetActive(true);
+			newrow.transform.Find("Name").GetComponent<Text>().text = datas[i].name;
+			newrow.transform.Find("Bar").GetComponent<UnityEngine.UI.Image>().color = DiagGraphItemData.colorByValue[datas[i].value];
+			rt = newrow.transform.Find("Bar").GetComponent<RectTransform>();
+			sizeDelta = rt.sizeDelta;
+			sizeDelta.x = 250 * datas[i].value;
+			rt.sizeDelta = sizeDelta;
+		}*/
+		//objSpectacles_Exercises.SetActive(true);
+		//obj_Summary_Suggestion.SetActive(true);
+		obj_DiagAnalysTable.SetActive(true);
+		StartCoroutine(ScrollToTarget(obj_DiagAnalysTable.GetComponent<RectTransform>()));
+	}
     void GetDataFunction()
     {
         PlayFabClientAPI.GetUserData(new GetUserDataRequest() { },
@@ -243,34 +367,8 @@ public class UISessionRecordView : MonoBehaviour
     }
 
 
-    IEnumerator Routine_ScrollToProgression()
-	{
-
-		//if(_scrollRect.content.sizeDelta.y < 2000)
-		{
-			//yield return new WaitForSeconds(0.1f);
-			Canvas.ForceUpdateCanvases();
-			float curPos = _scrollRect.verticalNormalizedPosition;
-			float tgtPos = Mathf.Clamp01(curPos - 1100f / _scrollRect.content.sizeDelta.y);
-			int count = 10;
-			for (int i = 0; i < count; i++)
-			{
-				yield return new WaitForSeconds(0.05f);
-				_scrollRect.verticalNormalizedPosition = Mathf.Lerp(curPos, tgtPos, (float)i / count);
-			}
-		}
-		
-		/*while (true)
-		{
-			yield return new WaitForSeconds(0.5f);
-			UnityEngine.Debug.Log(_scrollRect.verticalNormalizedPosition);
-		}*/
-	}
-
 	public void ClearProgressViews()
 	{
-		//3rd called,
-		UnityEngine.Debug.Log("Clear Progress Views called");
 		_disProgressSection.SetActive(false);
 		_sessionProgressSection.SetActive(false);
 		_colorProgressSection.SetActive(false);
@@ -286,6 +384,11 @@ public class UISessionRecordView : MonoBehaviour
 		_highcoreView.gameObject.SetActive(false);
 		_calisliderView.Clear();
 		_calisliderView.gameObject.SetActive(false);
+		diagGraphSection.SetActive(false);
+		objSpectacles_Exercises.SetActive(false);
+		obj_Summary_Suggestion.SetActive(false);
+		obj_DiagAnalysTable.SetActive(false);
+		_btnExportPDF.SetActive(false);
 	}
 
 	public void OnBtnExportPDF()
@@ -879,4 +982,21 @@ public class UISessionRecordView : MonoBehaviour
 		view.DrawGraph(axisName, records, color, side);
 		_DispprogressViews.Add(view);
 	}
+
+	IEnumerator ScrollToTarget(RectTransform target)
+    {
+		Canvas.ForceUpdateCanvases();
+		float curPos = _scrollRect.verticalNormalizedPosition;
+		float pivotAdjustment = target.rect.height * target.pivot.y;
+		float localYTopLeft = target.localPosition.y + (target.rect.height - pivotAdjustment);
+
+		float tgtPos = Mathf.Clamp01(1 - (-localYTopLeft) / (_scrollRect.content.rect.height - _scrollRect.viewport.rect.height));
+		int count = 10;
+		for (int i = 1; i <= count; i++)
+		{
+			yield return new WaitForSeconds(0.05f);
+			_scrollRect.verticalNormalizedPosition = Mathf.Lerp(curPos, tgtPos, (float)i / count);
+		}
+    }
+
 }

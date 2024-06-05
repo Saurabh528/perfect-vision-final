@@ -1,0 +1,55 @@
+Normal ranges indicate proper alignment
+LEye Hor Dev at Primary position;△; ;?
+LEye Ver Dev at Primary position;△; ;?
+LEye Combined at Primary position;△; ;?
+REye Hor Dev at Primary position;△; ;?
+REye Ver Dev at Primary position;△; ;?
+REye Combined at Primary position;△; ;?
+LEye Hor Dev at Dextrodepression;△; ;?
+LEye Ver Dev at Dextrodepression;△; ;?
+LEye Combined at Dextrodepression;△; ;?
+REye Hor Dev at Dextrodepression;△; ;?
+REye Ver Dev at Dextrodepression;△; ;?
+REye Combined at Dextrodepression;△; ;?
+LEye Hor Dev at Dextroversion;△; ;?
+LEye Ver Dev at Dextroversion;△; ;?
+LEye Combined at Dextroversion;△; ;?
+REye Hor Dev at Dextroversion;△; ;?
+REye Ver Dev at Dextroversion;△; ;?
+REye Combined at Dextroversion;△; ;?
+LEye Hor Dev at Dextroelevation;△; ;?
+LEye Ver Dev at Dextroelevation;△; ;?
+LEye Combined at Dextroelevation;△; ;?
+REye Hor Dev at Dextroelevation;△; ;?
+REye Ver Dev at Dextroelevation;△; ;?
+REye Combined at Dextroelevation;△; ;?
+LEye Hor Dev at Elevation;△; ;?
+LEye Ver Dev at Elevation;△; ;?
+LEye Combined at Elevation;△; ;?
+REye Hor Dev at Elevation;△; ;?
+REye Ver Dev at Elevation;△; ;?
+REye Combined at Elevation;△; ;?
+LEye Hor Dev at Levoelevation;△; ;?
+LEye Ver Dev at Levoelevation;△; ;?
+LEye Combined at Levoelevation;△; ;?
+REye Hor Dev at Levoelevation;△; ;?
+REye Ver Dev at Levoelevation;△; ;?
+REye Combined at Levoelevation;△; ;?
+LEye Hor Dev at Levoversion;△; ;?
+LEye Ver Dev at Levoversion;△; ;?
+LEye Combined at Levoversion;△; ;?
+REye Hor Dev at Levoversion;△; ;?
+REye Ver Dev at Levoversion;△; ;?
+REye Combined at Levoversion;△; ;?
+LEye Hor Dev at Levodepression;△; ;?
+LEye Ver Dev at Levodepression;△; ;?
+LEye Combined at Levodepression;△; ;?
+REye Hor Dev at Levodepression;△; ;?
+REye Ver Dev at Levodepression;△; ;?
+REye Combined at Levodepression;△; ;?
+LEye Hor Dev at Depression;△; ;?
+LEye Ver Dev at Depression;△; ;?
+LEye Combined at Depression;△; ;?
+REye Hor Dev at Depression;△; ;?
+REye Ver Dev at Depression;△; ;?
+REye Combined at Depression;△; ;?

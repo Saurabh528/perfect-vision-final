@@ -63,6 +63,15 @@ def create_instruction_frame(frame, text, distance_text=''):
     
     return instruction_frame
 
+triggered = False
+def on_data_received(data):
+    global triggered
+    # This function will be called when data is received by the client
+    print(f"Callback function called with data: {data.decode('utf-8')}")
+    # Process the received data here
+    if data.decode('utf-8') == 'p':
+        triggered = True
+    
 from argparse import ArgumentParser
 from utils import get_anonymous_directory, wait_for_camera, append_to_log
 
@@ -90,11 +99,14 @@ parser.add_argument("--datadir", type=str,
 
 args = parser.parse_args()
 
-from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity, send_status_to_unity
+import unitysocket
 soc = []
 # Initialize TCP connection
 if args.connect:
-    soc = init_TCP(args.port)
+    #soc = init_TCP(args.port)
+    soc = unitysocket.start_connection(args.port, on_data_received)
+    # Get the selector from the client module
+    sel = unitysocket.get_selector()
 if not os.path.exists(args.datadir):
     os.makedirs(args.datadir, exist_ok=True)
 
@@ -234,7 +246,6 @@ LELD =[]
 LERD =[]
 RERD=[]
 RELD=[]
-
 # Start video capture
 calculation_started = False
 if wait_for_camera(args.cameraindex):
@@ -306,24 +317,33 @@ min_detection_confidence=0.5) as face_mesh:
                 
 
                 if not distance_set:
-                    frame = cv2.putText(frame, f"{dist:.2f}", org, font,  
+                    """ frame = cv2.putText(frame, f"{dist:.2f}", org, font,  
                     fontScale, color, thickness, cv2.LINE_AA)
                     text = "Sit at a distance of 40 cms and press p"
                     frame = cv2.putText(frame, text, org1, font,  
                     fontScale, color, thickness, cv2.LINE_AA)
-                    cv2.imshow("final", frame)
-                
+                    cv2.imshow("final", frame) """
+                    unitysocket.send_status_to_unity(soc, f"Distance: {int(dist)}cm")
+                    
+                    if args.connect:
+                        events = sel.select(timeout=1)
+                        if events:
+                            for key, mask in events:
+                                unitysocket.service_connection(key, mask)
+                        if not sel.get_map():
+                            break
                     if cv2.waitKey(1) & 0xFF == ord('p'):
+                        triggered = True
+                    if triggered:
                         distance_set = True
-                        if args.quiet:
-                            cv2.destroyWindow("final")
+                        #if args.quiet:
+                            #cv2.destroyWindow("final")
                         if args.connect:
                             if not soc:
                                 print("soc is invalid.")
                             else:
-                                send_status_to_unity(soc, "Distance: " + f"{dist:.2f}")
                                 time.sleep(0.1)
-                                send_command_to_unity(soc, "SHOWPOINT")
+                                unitysocket.send_command_to_unity(soc, "SHOWPOINT")
 
 
                 else:
@@ -356,7 +376,7 @@ min_detection_confidence=0.5) as face_mesh:
                                     if elapsed_time > 5:
                                         flag = 1
                                         if args.connect:
-                                            send_message_to_unity(soc, instruction_text)
+                                            unitysocket.send_message_to_unity(soc, instruction_text)
                                         speak_thread = threading.Thread(target=speak, args=(instruction_text,))
                                         speak_thread.start()
                                         #speak(instruction_text)   

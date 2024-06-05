@@ -30,7 +30,13 @@ public enum GAMEMODE
 public enum EYESIDE
 {
 	LEFT = 0,
-	RIGHT
+	RIGHT,
+	INVALID
+}
+
+public abstract class LocalKey{
+	public const string WBCAMERANAME = "WebCameraName";
+	public const string LASTONLINE = "LastOnLine";//"True" or "False"
 }
 
 public abstract class DataKey
@@ -41,7 +47,7 @@ public abstract class DataKey
 	public const string EXPIREDATE = "ExpireDate";
 	public const string PLAYFABID = "PlayfabID";
 	public const string HOMECALIB = "HomeCalib";
-	public const string WBCAMERANAME = "WebCameraName";
+	
 	public const string CLINICLIMIT = "ClinicLimit";
 	public const string HOMELIMIT = "HomeLimit";
 	public const string FreeLicenseDay = "FreeLinceseLimit";
@@ -50,36 +56,19 @@ public abstract class DataKey
 
 	public static string GetPrefKeyName(string orgkey){
 		if(string.IsNullOrEmpty(GameState.username)){
-			Debug.LogError("Username is empty.");
-			return "";
+			return GameConst.PATIENTNAME_ANONYMOUS + "_" + orgkey;
 		}
 		return GameState.username + "_" + orgkey;
 	}
 
 	public static void SetPrefsString(string key, string value)
 	{
-		if(string.IsNullOrEmpty(GameState.username)){
-			Debug.LogError("Username is empty.");
-			return;
-		}
-		if(string.IsNullOrEmpty(GameState.playfabID)){
-			Debug.LogError("PlayfabID is empty.");
-			return;
-		}
 		PlayerPrefs.SetString(GetPrefKeyName(key), StringEncrypter.Crypt(value));
 	}
 
 
 	public static string GetPrefsString(string key, string defaultValue = "")
 	{
-		if(string.IsNullOrEmpty(GameState.username)){
-			Debug.LogError("Username is empty.");
-			return "";
-		}
-		if(string.IsNullOrEmpty(GameState.playfabID)){
-			Debug.LogError("PlayfabID is empty.");
-			return "";
-		}
 		string value = PlayerPrefs.GetString(GetPrefKeyName(key), "");
 		if(string.IsNullOrEmpty(value))
 			return default;
@@ -89,14 +78,6 @@ public abstract class DataKey
 	
 	public static void DeletePrefsKey(string key)
 	{
-		if(string.IsNullOrEmpty(GameState.username)){
-			Debug.LogError("Username is empty.");
-			return;
-		}
-		if(string.IsNullOrEmpty(GameState.playfabID)){
-			Debug.LogError("PlayfabID is empty.");
-			return;
-		}
 		PlayerPrefs.DeleteKey(GetPrefKeyName(key));
 	}
 
@@ -178,6 +159,10 @@ public class GamePlay
 	//public DateTime time;
 	public int duration, sScr, eScr, sLvl = 1, eLvl;
 
+}
+
+public class DiagnosticRecord{
+	public string result, unit, norm, comment;
 }
 
 public class StatisData

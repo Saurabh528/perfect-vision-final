@@ -4,19 +4,20 @@
 public class Ball : MonoBehaviour
 {
     public float speed = 180;
-    public new Rigidbody2D rigidbody { get; private set; }
+    [HideInInspector]
+    public Rigidbody2D rigid;
 
   
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigid = GetComponent<Rigidbody2D>();
     }
 
     public void ResetPosition()
     {
-        rigidbody.velocity = Vector2.zero;
-        rigidbody.position = Vector2.zero;
+        rigid.velocity = Vector2.zero;
+        rigid.position = Vector2.zero;
     }
 
     public void AddStartingForce()
@@ -30,7 +31,7 @@ public class Ball : MonoBehaviour
                                       : Random.Range(0.5f, 1f);
 
         Vector2 direction = new Vector2(x, y);
-        rigidbody.AddForce(direction * speed * GamePlayController.Instance.GetDifficultyValue());
+        rigid.AddForce(direction * speed * GamePlayController.Instance.GetDifficultyValue());
     }
 
 	public void SetPlaingState(bool state)

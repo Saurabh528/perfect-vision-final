@@ -1,0 +1,2 @@
+Assesses binocular vision and presence of suppression or diplopia
+Result;;;Normal response indicating proper binocular vision

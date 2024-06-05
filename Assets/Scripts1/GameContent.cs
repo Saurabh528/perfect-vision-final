@@ -13,6 +13,14 @@ public abstract class GameConst
 	public const string PYARG_CAMERAINDEX = "cameraindex";
 	public const string PYARG_DATADIR = "datadir";
 	public const string PLAYFABID_CLINIC = "0000000000000000";
+	public const string COMPANYNAME =	"BinoPlay";
+	public const float PRISMTHRES_HOR = 2f;
+	public const float PRISMTHRES_VER = 0.5f;
+										//"CAVT<sup><i><color=yellow>  DICHO</color></i></sup>";
+}
+
+public abstract class GameVersion{
+	public const int DIAGNOSTICS = 2;
 }
 
 public enum ColorChannel
@@ -41,10 +49,41 @@ public class IrisState
 	
 }
 
+public class SingleEyeAlignmentData{
+	public string horVal, horTag, verVal, verTag, combineVal, combineTag, degree;
+	public SingleEyeAlignmentData(string hv, string ht, string vv, string vt, string cv, string ct, string d){
+		horVal = hv;
+		horTag = ht;
+		verVal = vv;
+		verTag = vt;
+		combineVal = cv;
+		combineTag = ct;
+		degree = d;
+	}
+}
+
 public class ColorSet
 {
 	public UInt32 red, cyan, back, slider;//slider: 00, Red, Cyan, Back(%)
 	
+}
+
+public class DiagGraphItemData{
+	public string name;
+	public int value;
+	public DiagGraphItemData(string nm, int v){
+		name = nm;
+		value = v;
+	}
+
+	public static Color[] colorByValue = new Color[]{
+		UtilityFunc.UInt2Color(0x000000ff),
+		UtilityFunc.UInt2Color(0xd78487ff),
+		UtilityFunc.UInt2Color(0xe2924bff),
+		UtilityFunc.UInt2Color(0xe8bb4fff),
+		UtilityFunc.UInt2Color(0x74b77aff),
+		UtilityFunc.UInt2Color(0x4896bbff),
+	};
 }
 public abstract class GameState
 {
@@ -73,7 +112,6 @@ public abstract class GameState
 	public static bool IsOnline;
 	public static int CilinicLimit;//Count limit of cilinic patients enrollment
 	public static int HomeLimit;//Count limit of home patients enrollment
-
 	public static bool IsDoctor(){
 		return userRole == USERROLE.DOCTOR;
 	}
@@ -164,6 +202,7 @@ public abstract class PatientMgr
 	{
 		return Application.persistentDataPath + "/PatientData/" + GetCurrentPatientName();
 	}
+
 
 	public static string GetCurrentPatientName()
 	{
