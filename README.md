@@ -61,6 +61,14 @@ This function SaveData uses PlayFab's API to update a user's session data with s
 
 
 ## How to Build
+	Test on Mac OS
+		1. Open Terminal.
+		2. Run the following command to enable the "Anywhere" option in Gatekeeper:
+			sudo spctl --master-disable
+		3. Enter your administrator password when prompted.
+
+	Sign on Mac OS
+		codesign --deep --verbose --force --options runtime --sign "Developer ID Application: Your Developer Name (Team ID)" /path/to/PerfectVision.app
 
 
 
