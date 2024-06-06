@@ -14,6 +14,7 @@ public class WebCamRender : MonoBehaviour
     string recordFileName;
     Texture2D recordedImage;
     byte[] recordedBytes;
+    bool ratioset;
 
     public bool OpenCamera(){
         CloseCamera();
@@ -24,14 +25,22 @@ public class WebCamRender : MonoBehaviour
         WebCamDevice device = devices[GlobalSettingUI.GetCurrentCameraIndex()];
         tex = new WebCamTexture(device.name);
         tex.Play();
-
-        // Update aspect ratio
-        float aspectRatio = (float)tex.width / (float)tex.height;
-        aspectFitter.aspectRatio = aspectRatio;
         display.texture = tex;
-        display.enabled = true;
-        isCaptuable = true;
         return true;
+    }
+
+    void Update(){
+        if(tex != null && !ratioset){
+            if(tex.width > 100 && tex.height > 100){
+                // Update aspect ratio
+                float aspectRatio = (float)tex.width / (float)tex.height;
+                print($"{tex.width}-{tex.height}");
+                aspectFitter.aspectRatio = aspectRatio;
+                display.enabled = true;
+                isCaptuable = true;
+                ratioset = true;
+            }
+        }
     }
 
     void OnDestroy(){

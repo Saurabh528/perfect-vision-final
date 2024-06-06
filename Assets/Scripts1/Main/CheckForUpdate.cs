@@ -38,21 +38,21 @@ public class CheckForUpdate : MonoBehaviour
             subMinor = short.Parse(versionStrings[2]);
         }
 
-        internal bool IsDifferentThan(Version _otherVersion)
+        internal bool IsUpdatable(Version onlineVersion)
         {
-            if (major != _otherVersion.major)
+            if (major < onlineVersion.major)
             {
                 return true;
             }
             else
             {
-                if (minor != _otherVersion.minor)
+                if (minor < onlineVersion.minor)
                 {
                     return true;
                 }
                 else
                 {
-                    if (subMinor != _otherVersion.subMinor)
+                    if (subMinor < onlineVersion.subMinor)
                     {
                         return true;
                     }
@@ -87,7 +87,7 @@ public class CheckForUpdate : MonoBehaviour
         try{
             WebClient webClient = new WebClient();
             Version onlineVersion = new Version(webClient.DownloadString("https://drive.google.com/uc?export=download&id=1C_C61DPiFoyult1hiZgpTLLN0asxRXG0"));
-            if (onlineVersion.IsDifferentThan(localVersion))
+            if (localVersion.IsUpdatable(onlineVersion))
             {
                 onlineVersionTxt.text = onlineVersion.ToString();
                 tweenNewVersion.Appear();
@@ -108,7 +108,7 @@ public class CheckForUpdate : MonoBehaviour
         }
         else/*  if (os.Contains("Mac OS") || os.Contains("MacOS")) */
         {
-            Debug.Log("This is a Mac operating system.");
+            Application.OpenURL("https://drive.google.com/uc?export=download&id=19Por_Ht6a2d5-lgY5lCbTsNaB2dTp0uq");
         }
         
         ExitUI.ForceExit();
