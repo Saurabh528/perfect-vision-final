@@ -14,6 +14,7 @@ public class MuscleBalanceResultData{
 
 public class MascleBalanceController : DiagnosticController
 {
+    public const string GameName = "Muscle Balance";
     [SerializeField] TweenAppear _tweenUseArrowKeys, _tweenOnceAligned, _tweenRightFixating;
     [SerializeField] TipUI _topPopUp;
     [SerializeField] MuscleResultViewer _resultViewer_L, _resultViewer_R;
@@ -22,7 +23,7 @@ public class MascleBalanceController : DiagnosticController
     [SerializeField] float _moveSpeed = 30;
     [SerializeField] PhoriaObserveUI _observerL, _observerR;
     [SerializeField] Toggle _toggleRightFixation, _toggleViewResult;
-    [SerializeField] GameObject _resultView, _topDescription;
+    [SerializeField] GameObject _resultView;
     [SerializeField] Button _btnNext, _btnPrev;
     int _curIndex;
     EYESIDE _curSide;
@@ -61,7 +62,6 @@ public class MascleBalanceController : DiagnosticController
     public void OnToggleViewResult(bool value){
         if(value){
             _resultView.SetActive(true);
-            _topDescription.SetActive(true);
             bool isOK_L = _resultViewer_L.ShowPoints(_resultData_L, _basePts);
             bool isOK_R = _resultViewer_R.ShowPoints(_resultData_R, _basePts);
             if(!isOK_L && !isOK_R)
@@ -73,7 +73,6 @@ public class MascleBalanceController : DiagnosticController
         }
         else{
             _resultView.SetActive(false);
-            _topDescription.SetActive(false);
         }
         _btnNext.enabled = _btnPrev.enabled = !value;
     }
@@ -83,7 +82,6 @@ public class MascleBalanceController : DiagnosticController
             return;
         if(_resultView.activeSelf){
             _resultView.SetActive(false);
-            _topDescription.SetActive(false);
             _toggleViewResult.isOn = false;
         }
         _tweenRightFixating.Disappear();
@@ -215,18 +213,14 @@ public class MascleBalanceController : DiagnosticController
     public override void AddResults(){
         PatientRecord pr = PatientDataMgr.GetPatientRecord();
         DiagnoseTestItem dti = new DiagnoseTestItem();
-        for(int eye = 0; eye < 2; eye++){
-            for(int ptindex = 0; ptindex < 9; ptindex++){
-                dti.AddValue(resultValues[eye, ptindex].horVal);
-                dti.AddValue(resultValues[eye, ptindex].horTag);
-                dti.AddValue(resultValues[eye, ptindex].verVal);
-                dti.AddValue(resultValues[eye, ptindex].verTag);
-                dti.AddValue(resultValues[eye, ptindex].combineVal);
-                dti.AddValue(resultValues[eye, ptindex].combineTag);
-                dti.AddValue(resultValues[eye, ptindex].degree);
+        for(int ptindex = 0; ptindex < 9; ptindex++){
+            for(int eye = 0; eye < 2; eye++){
+                dti.AddValue($"{resultValues[eye, ptindex].horVal}:{resultValues[eye, ptindex].horTag}");
+                dti.AddValue($"{resultValues[eye, ptindex].verVal}:{resultValues[eye, ptindex].verTag}");
+                dti.AddValue($"{resultValues[eye, ptindex].combineVal}:{resultValues[eye, ptindex].combineTag}");
             }
         }
-        pr.AddDiagnosRecord("Muscle Balance", dti);
+        pr.AddDiagnosRecord(GameName, dti);
     }
 
     public override bool ResultExist(){

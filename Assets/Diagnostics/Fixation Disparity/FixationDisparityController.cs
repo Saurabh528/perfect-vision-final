@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class FixationDisparityController : DiagnosticController
 {
+    public const string GameName = "Fixation Disparity";
     bool _topMoving, _rightMoving;
     [SerializeField] Transform _transTop, _transRight;
     [SerializeField] TweenAppear _tweenArrowKeys;
@@ -107,11 +108,11 @@ public class FixationDisparityController : DiagnosticController
     public void ShowValuesAndCheck(){
         _textHorDisparity.text = Mathf.Abs((_transTop.localPosition.x - 0.1364f) / 28.6578f).ToString("F2");
         _textHorPrism.text = Mathf.Abs((_transTop.localPosition.x + 0.006f) / 18.58f).ToString("F2");
-        _textHorTag.text = _transTop.localPosition.x > 0 ? "eso": "exo";
+        _textHorTag.text = _transTop.localPosition.x > GameConst.PRISMTHRES_HOR ? "eso": (_transTop.localPosition.x < -GameConst.PRISMTHRES_HOR ? "exo":"");
 
         _textVerDisparity.text = Mathf.Abs((_transRight.localPosition.y - 0.1364f) / 28.6578f).ToString("F2");
         _textVerPrism.text = Mathf.Abs((_transRight.localPosition.y + 0.006f) / 18.58f).ToString("F2");
-        _textVerTag.text = _transRight.localPosition.y > 0 ? "hypo": "hyper";
+        _textVerTag.text = _transRight.localPosition.y > GameConst.PRISMTHRES_VER ? "hypo": (_transRight.localPosition.y < -GameConst.PRISMTHRES_VER?"hyper":"");
         if(_topBlinking && Math.Abs(_transTop.localPosition.x) < 2){
             _topBlinking = false;
             _transTop.Find("Sprite").GetComponent<Image>().color = _originColor;
@@ -169,13 +170,9 @@ public class FixationDisparityController : DiagnosticController
     public override void AddResults(){
         PatientRecord pr = PatientDataMgr.GetPatientRecord();
         DiagnoseTestItem dti = new DiagnoseTestItem();
-        dti.AddValue(_textHorDisparity.text);
-        dti.AddValue(_textHorTag.text);
-        dti.AddValue(_textHorPrism.text);
-        dti.AddValue(_textVerDisparity.text);
-        dti.AddValue(_textVerTag.text);
-        dti.AddValue(_textVerPrism.text);
-        pr.AddDiagnosRecord("Fixation Disparity", dti) ;
+        dti.AddValue($"{_textHorPrism.text}:{_textHorTag.text}");
+        dti.AddValue($"{_textVerPrism.text}:{_textVerTag.text}");
+        pr.AddDiagnosRecord(GameName, dti) ;
     }
 
     public override bool ResultExist(){

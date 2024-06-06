@@ -15,10 +15,10 @@ public class PhoriaObserveUI : MonoBehaviour
             xval = -deltaXPix;
         float hor = PixToPhoriaValue(xval);
         _textHorVal.text = Mathf.Abs(hor).ToString("F2");
-        _textHorTag.text = hor > 0? "exo": (hor < 0?"eso": "");
+        _textHorTag.text = hor > GameConst.PRISMTHRES_HOR? "exo": (hor < -GameConst.PRISMTHRES_HOR?"eso": "");
         float ver = PixToPhoriaValue(deltaYPix);
         _textVerVal.text = Mathf.Abs(ver).ToString("F2");
-        _textVerTag.text = ver > 0? "hypo": (ver < 0?"hyper": "");
+        _textVerTag.text = ver > GameConst.PRISMTHRES_VER? "hypo": (ver < -GameConst.PRISMTHRES_VER?"hyper": "");
         float combine = Mathf.Sqrt(hor * hor + ver * ver);
         _textCombineVal.text = combine.ToString("F2");
         _textCombineTag.text = $"{_textHorTag.text} {_textVerTag.text}";

@@ -135,7 +135,7 @@ public class CardCali : MonoBehaviour
 		if (!File.Exists(executablePath))
 		{
 			DebugUI.LogString($"Executable not found at {executablePath}");
-			return;  // Stop further execution if the file does not exist
+			return false;  // Stop further execution if the file does not exist
 		}
 		_processStartInfo.FileName = executablePath;  // Use the full path
 		_processStartInfo.Arguments        = $"--connect --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";

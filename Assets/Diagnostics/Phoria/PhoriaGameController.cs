@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class PhoriaGameController : DiagnosticController
 {
+
     [SerializeField] TipUI _tipUI;
     [SerializeField] TweenAppear _tweenTop, _tweenUseLeftArrow, _tweenUseRightArrow, _tweenClickRight, _tweenBottom, _tweenWheel;
     [SerializeField] RectTransform _horLine, _horDot, _verLine, _verDot;
@@ -16,6 +17,7 @@ public class PhoriaGameController : DiagnosticController
 
     const string TIPTEXT_60cm = "Viewing Distance set to Near = 60cm";
     const string TIPTEXT_RightFixating = "Put the Red Circle on top of Blue Circle.";
+    public const string GameName = "Phoria";
     const float DOTPLACE_RANGE = 0.15f;
     bool _movable;
     EYESIDE _sideFixating = EYESIDE.LEFT;
@@ -195,21 +197,13 @@ public class PhoriaGameController : DiagnosticController
     public override void AddResults(){
         PatientRecord pr = PatientDataMgr.GetPatientRecord();
         DiagnoseTestItem dti = new DiagnoseTestItem();
-        dti.AddValue(_observerLeft._textHorVal.text);
-        dti.AddValue(_observerLeft._textHorTag.text);
-        dti.AddValue(_observerLeft._textVerVal.text);
-        dti.AddValue(_observerLeft._textVerTag.text);
-        dti.AddValue(_observerLeft._textCombineVal.text);
-        dti.AddValue(_observerLeft._textCombineTag.text);
-        dti.AddValue(_observerLeft._textDegreeVal.text);
-        dti.AddValue(_observerRight._textHorVal.text);
-        dti.AddValue(_observerRight._textHorTag.text);
-        dti.AddValue(_observerRight._textVerVal.text);
-        dti.AddValue(_observerRight._textVerTag.text);
-        dti.AddValue(_observerRight._textCombineVal.text);
-        dti.AddValue(_observerRight._textCombineTag.text);
-        dti.AddValue(_observerRight._textDegreeVal.text);
-        pr.AddDiagnosRecord("Phoria", dti) ;
+        dti.AddValue($"{_observerLeft._textHorVal.text}:{_observerLeft._textHorTag.text}");
+        dti.AddValue($"{_observerLeft._textVerVal.text}:{_observerLeft._textVerTag.text}");
+        dti.AddValue($"{_observerLeft._textCombineVal.text}:{_observerLeft._textCombineTag.text}");
+        dti.AddValue($"{_observerRight._textHorVal.text}:{_observerRight._textHorTag.text}");
+        dti.AddValue($"{_observerRight._textVerVal.text}:{_observerRight._textVerTag.text}");
+        dti.AddValue($"{_observerRight._textCombineVal.text}:{_observerRight._textCombineTag.text}");
+        pr.AddDiagnosRecord(GameName, dti) ;
     }
 
     public override bool ResultExist(){

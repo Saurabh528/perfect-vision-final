@@ -326,7 +326,7 @@ public class UserAccountManager : MonoBehaviour
 						System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();  
 						try  
 						{  
-							PingReply reply = p.Send(host, 3000);  
+							PingReply reply = p.Send(host, 10000);  
 							PlayerPrefs.SetString(LocalKey.LASTONLINE, reply.Status == IPStatus.Success?"True": "False");
 							if (reply.Status == IPStatus.Success){
 								Debug.Log("Internet is available.");
@@ -344,9 +344,12 @@ public class UserAccountManager : MonoBehaviour
 									SignInOnline(successAction, failedAction);
 								}, error =>
 								{
-									Debug.Log($"<color=red>Unsuccessful Login with username and password</color>");
+									Debug.Log($"<color=red>Unsuccessful Login with username and password</color>: " + error.ErrorMessage);
 									failedAction.Invoke(error.ErrorMessage);
 								});
+							}
+							else{
+								Debug.Log("Internet is unavailable");
 							}
 							return;
 						}  

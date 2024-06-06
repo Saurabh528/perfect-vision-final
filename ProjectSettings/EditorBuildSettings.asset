@@ -27,9 +27,6 @@ EditorBuildSettings:
     path: Assets/ActiveScenes/ModePanel.unity
     guid: cd847dc0de565415297f7c78d6fab695
   - enabled: 1
-    path: Assets/Scenes/UnuseScene.unity
-    guid: 33954d60c35894f4da6281b05e8041a3
-  - enabled: 1
     path: Assets/ActiveScenes/BallonBurst.unity
     guid: cb692e02b4791ee4081bc5deab3ad6b9
   - enabled: 1
@@ -60,21 +57,15 @@ EditorBuildSettings:
     path: Assets/Plane/Plane.unity
     guid: 50be64e6e661e43958d4d6765d1b0929
   - enabled: 1
-    path: Assets/ActiveScenes/unuse3.unity
-    guid: 46dcb59a20b0c442b9862e24fd4cbf27
-  - enabled: 1
-    path: Assets/ActiveScenes/Details.unity
-    guid: a41d12f59c3b64e61af86593e59f468b
-  - enabled: 1
     path: Assets/Diagnostics/Wrth4dottest/DotTest.unity
     guid: 82c105c9201e417418517eb81d61ea2e
-  - enabled: 1
+  - enabled: 0
     path: Assets/ActiveScenes/Unuse1.unity
     guid: 4f773c4b6751d40d9bc8d53a0c39bc69
-  - enabled: 1
+  - enabled: 0
     path: Assets/ActiveScenes/unuse2.unity
     guid: d52355164cebc4b6e8ba1e50f8fa3a5c
-  - enabled: 1
+  - enabled: 0
     path: Assets/CircleGames/CircleGameStages.unity
     guid: bf86062fc11e14220bc15e082b0f0f57
   - enabled: 1
@@ -83,7 +74,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Enrollment.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Login.unity
     guid: 517a34799379346568c0d9d6751451b3
   - enabled: 0
@@ -116,7 +107,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/FlapNFly/Scenes/FlapNFly.unity
     guid: fef23bcac8c23c847b5cfb575dadc8bc
-  - enabled: 1
+  - enabled: 0
     path: Assets/CSV/CSVFiles.unity
     guid: f15654a8b57ca4f54a0b1221e0a09ade
   - enabled: 1

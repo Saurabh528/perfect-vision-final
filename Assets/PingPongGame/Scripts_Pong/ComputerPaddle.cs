@@ -16,20 +16,20 @@ public class ComputerPaddle : Paddle
         if (ball.velocity.x > 0f)
         {
             // Move the paddle in the direction of the ball to track it
-            if (ball.position.y > rigidbody.position.y) {
-                rigidbody.AddForce(Vector2.up * realspeed);
-            } else if (ball.position.y < rigidbody.position.y) {
-                rigidbody.AddForce(Vector2.down * realspeed);
+            if (ball.position.y > rigid.position.y) {
+                rigid.AddForce(Vector2.up * realspeed);
+            } else if (ball.position.y < rigid.position.y) {
+                rigid.AddForce(Vector2.down * realspeed);
             }
         }
         else
         {
             // Move towards the center of the field and idle there until the
             // ball starts coming towards the paddle again
-            if (rigidbody.position.y > 0f) {
-                rigidbody.AddForce(Vector2.down * realspeed);
-            } else if (rigidbody.position.y < 0f) {
-                rigidbody.AddForce(Vector2.up * realspeed);
+            if (rigid.position.y > 0f) {
+                rigid.AddForce(Vector2.down * realspeed);
+            } else if (rigid.position.y < 0f) {
+                rigid.AddForce(Vector2.up * realspeed);
             }
         }
     }

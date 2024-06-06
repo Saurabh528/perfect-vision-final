@@ -155,7 +155,8 @@ public abstract class PatientDataMgr
 	}
 	public static void SavePatientData(UnityAction successAction = null, UnityAction<string> failAction = null)
 	{
-		
+		if(GameState.currentPatient == null)
+			return;
 		if(GameState.currentPatient.place == THERAPPYPLACE.Home && GameState.IsDoctor()){
 			Debug.LogError("Can not save Home patient data.");
 			return;

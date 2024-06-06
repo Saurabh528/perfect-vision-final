@@ -133,9 +133,10 @@ public class Diagnosis : DiagnosticController
     public override void AddResults(){
         PatientRecord pr = PatientDataMgr.GetPatientRecord();
         DiagnoseTestItem dti = new DiagnoseTestItem();
-        foreach(string str in resultText){
-            dti.AddValue(str == null?"":str);
-        }
+        string result = resultText[resultText.Length - 1];
+        if(result == null)
+            result = "";
+        dti.AddValue(result);
         pr.AddDiagnosRecord("Worth 4 Dot Test", dti) ;
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UI.Tables;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,10 +54,21 @@ public class UIDiagnosticReportView : MonoBehaviour
                 newObj.transform.SetSiblingIndex(siblingIndex++);
                 newObj.SetActive(true);
                 newObj.transform.Find("Tests").Find("Text").GetComponent<Text>().text = structure[itemcount].Name;
-                newObj.transform.Find("Result").Find("Text").GetComponent<Text>().text = str;
+                newObj.transform.Find("Result").Find("Text").GetComponent<Text>().text = GetResultValueString(str);
                 newObj.transform.Find("Unit").Find("Text").GetComponent<Text>().text = structure[itemcount].unit;
                 newObj.transform.Find("Norm").Find("Text").GetComponent<Text>().text = structure[itemcount].norm;
-                newObj.transform.Find("Comment").Find("Text").GetComponent<Text>().text = structure[itemcount].comment;
+                newObj.transform.Find("Comment").Find("Text").GetComponent<Text>().text = structure[itemcount].comment == "?"?GetCommentString(str):structure[itemcount].comment;
+
+                //resize columns
+                if(string.IsNullOrEmpty(structure[itemcount].unit) && string.IsNullOrEmpty(structure[itemcount].norm)){
+                    newObj.transform.Find("Unit").gameObject.SetActive(false);
+                    newObj.transform.Find("Norm").gameObject.SetActive(false);
+                    newObj.transform.Find("Result").GetComponent<TableCell>().columnSpan = 3;
+                }
+                else if(string.IsNullOrEmpty(structure[itemcount].unit)){
+                    newObj.transform.Find("Unit").gameObject.SetActive(false);
+                    newObj.transform.Find("Result").GetComponent<TableCell>().columnSpan = 2;
+                }
                 itemcount++;
             }
         }
@@ -82,6 +94,34 @@ public class UIDiagnosticReportView : MonoBehaviour
         }
     }
 
+    string GetResultValueString(string result){
+        if(string.IsNullOrEmpty(result))
+            return "";
+        else if(result.Contains(":")){
+            string []words = result.Split(':', System.StringSplitOptions.RemoveEmptyEntries);
+            if(words.Length > 0)
+                return words[0];
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    string GetCommentString(string result){
+        if(string.IsNullOrEmpty(result))
+            return "";
+        else if(result.Contains(":")){
+            string []words = result.Split(':', System.StringSplitOptions.RemoveEmptyEntries);
+            if(words.Length == 2)
+                return words[1];
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
     void LoadItemStructure(string gamename){
          // Load the file as a TextAsset
         TextAsset textAsset = Resources.Load<TextAsset>($"Data/Diagnostics/{gamename}");
@@ -92,7 +132,7 @@ public class UIDiagnosticReportView : MonoBehaviour
             string fileContent = textAsset.text;
             List<DiagnoItemStructure> structures = new List<DiagnoItemStructure>();
             // Split the content into lines
-            string[] lines = fileContent.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = fileContent.Split(new[] { '\r', '\n' });
             if(lines.Length == 0){
                 Debug.LogError($"File is empty: Resource/Data/Diagnostics/{gamename}");
                 return;

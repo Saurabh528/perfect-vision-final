@@ -82,7 +82,7 @@ public class TableRowExpander : MonoBehaviour, IPointerClickHandler
                 float textHeight = LayoutUtility.GetPreferredHeight(textComponent.rectTransform);
 
                 // Add the height of the RectTransform itself
-                textHeight += cell.rect.height;
+                textHeight += 30;
 
                 // Update the content height
                 contentHeight = Mathf.Max(contentHeight, textHeight);
@@ -103,20 +103,23 @@ public class TableRowExpander : MonoBehaviour, IPointerClickHandler
             float newHeight = Mathf.Lerp(startHeight, targetHeight, elapsedTime / animationDuration);
             rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, newHeight);
             tableRow.preferredHeight = newHeight;
+            if(previousExpander == this)
 
             if(previousExpander != null){
                 TableRow prevRow = previousExpander.GetComponent<TableRow>();
                 newHeight = Mathf.Lerp(prevRow.preferredHeight, previousExpander.preferredHeight, elapsedTime / animationDuration);
                 RectTransform prevRT = previousExpander.GetComponent<RectTransform>();
-                prevRT.sizeDelta = new Vector2(prevRT.sizeDelta.x, newHeight);
-                prevRow.preferredHeight = newHeight;
+                if(previousExpander != this){
+                    prevRT.sizeDelta = new Vector2(prevRT.sizeDelta.x, newHeight);
+                    prevRow.preferredHeight = newHeight;
+                }
             }
             elapsedTime += Time.deltaTime;
             yield return null;
         }
         tableRow.preferredHeight = targetHeight;
         rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, targetHeight);
-        if(previousExpander != null){
+        if(previousExpander != null && previousExpander != this){
             previousExpander.GetComponent<TableRow>().preferredHeight = previousExpander.preferredHeight;
             previousExpander.GetComponent<RectTransform>().sizeDelta = new Vector2(previousExpander.GetComponent<RectTransform>().sizeDelta.x, previousExpander.preferredHeight);
         }

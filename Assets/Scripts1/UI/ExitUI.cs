@@ -7,6 +7,8 @@ public class ExitUI : MonoBehaviour
     public static ExitUI Instance;
     public static bool HideCursorOnResume = false;
     float showtime;
+
+    static bool forceexit;
     [SerializeField] GameObject ExitPanel, btnShutdown;
 
     void Awake(){
@@ -15,7 +17,7 @@ public class ExitUI : MonoBehaviour
     }
 
     void OnApplicationQuit(){
-        if(!IsShowingExitPanel()){
+        if(!IsShowingExitPanel() && !forceexit){
             
             Application.CancelQuit();
             HideCursorOnResume = !Cursor.visible;
@@ -67,4 +69,8 @@ public class ExitUI : MonoBehaviour
         Instance.btnShutdown.SetActive(enable);
     }
 
+    public static void ForceExit(){
+        forceexit = true;
+        Application.Quit();
+    }
 }

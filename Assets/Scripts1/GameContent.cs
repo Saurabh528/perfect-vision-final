@@ -13,10 +13,14 @@ public abstract class GameConst
 	public const string PYARG_CAMERAINDEX = "cameraindex";
 	public const string PYARG_DATADIR = "datadir";
 	public const string PLAYFABID_CLINIC = "0000000000000000";
+	public const string COMPANYNAME =	"BinoPlay";
+	public const float PRISMTHRES_HOR = 2f;
+	public const float PRISMTHRES_VER = 0.5f;
+										//"CAVT<sup><i><color=yellow>  DICHO</color></i></sup>";
 }
 
 public abstract class GameVersion{
-	public const int DIAGNOSTICS = 1;
+	public const int DIAGNOSTICS = 2;
 }
 
 public enum ColorChannel

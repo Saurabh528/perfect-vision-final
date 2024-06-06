@@ -61,6 +61,8 @@ public class UISessionRecordView : MonoBehaviour
     private ScrollRect parentScrollRect;
     private Vector2 initialPointerPosition;
     private Vector2 initialScrollPosition;
+
+
     private void Awake()
 	{
 		Instance = this;
@@ -77,6 +79,34 @@ public class UISessionRecordView : MonoBehaviour
 	void Update(){
 		if(Input.GetKeyDown(KeyCode.D))
 			UnityEngine.Debug.Log($"ScrollPos position:{_scrollRect.verticalNormalizedPosition}");
+	}
+
+	void LateUpdate(){
+		if ( Input.touchCount > 1 ) {
+
+			Vector2 totalMove = Vector2.zero;
+
+			foreach (Touch thisTouch in Input.touches ) {
+				totalMove += thisTouch.deltaPosition;
+			}
+
+			/* calculate average movement for each touch */
+
+			Vector2 panMove    =  totalMove / Input.touchCount;
+			if(panMove.y != 0){
+				float position = Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + panMove.y / Screen.height * Time.deltaTime);
+				_scrollRect.verticalNormalizedPosition = position;
+			}
+			
+		}
+		else{
+			float Vertical = Input.GetAxis("Vertical");
+			if(Vertical != 0){
+				float position = Mathf.Clamp01(_scrollRect.verticalNormalizedPosition + Vertical * 0.1f * Time.deltaTime);
+				_scrollRect.verticalNormalizedPosition = position;
+			}
+				
+		}
 	}
 	public void LoadSessionData()
 	{
@@ -106,7 +136,8 @@ public class UISessionRecordView : MonoBehaviour
 	{
 		foreach (UISessionReportButton btn in _ssReportButtons)
 		{
-			GameObject.Destroy(btn.gameObject);
+			if(btn.gameObject != null)
+				GameObject.Destroy(btn.gameObject);
 		}
 		_ssReportButtons.Clear();
 		UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);

@@ -27704,6 +27704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 180
+  rigid: {fileID: 0}
 --- !u!61 &702247806
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -30537,7 +30538,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1362602725}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.053493, y: -0.4012015, z: 0}
+  m_LocalPosition: {x: 7.27, y: -0.4012015, z: 0}
   m_LocalScale: {x: 0.3157214, y: 2.3679101, z: 1.5786068}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30577,6 +30578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2c66bb1aa5055643be7d334cf5a3063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rigid: {fileID: 0}
   ball: {fileID: 702247804}
 --- !u!61 &1362602730
 BoxCollider2D:
@@ -41394,6 +41396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2c0061ddcd9c8541b8d8b2ebae63267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rigid: {fileID: 0}
 --- !u!50 &1535292067
 Rigidbody2D:
   serializedVersion: 4

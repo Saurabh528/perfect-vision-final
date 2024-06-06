@@ -124,29 +124,21 @@ public class WebCamRender : MonoBehaviour
 
     IEnumerator Routine_Record(){
         while(tex != null && !string.IsNullOrEmpty(recordFileName)){
-            if(!tex.isPlaying)
-                ;//yield return new WaitForSeconds(0.01f);
-            /* else if(recordedBytes == null){
-                // Read pixels from the WebCamTexture
-                recordedImage.SetPixels(tex.GetPixels());
-                recordedImage.Apply();
-
-                // Encode texture into PNG
-                recordedBytes = recordedImage.EncodeToPNG();
-                yield return new WaitForSeconds(0.01f);
-            } */
-            else if(!File.Exists(recordFileName)){
-                if(recordedBytes != null){
-                    // Write to a file
-                    File.WriteAllBytes(recordFileName, recordedBytes);
-                    recordedBytes = null;
+            if(tex.isPlaying){
+                if(!File.Exists(recordFileName)){
+                    if(recordedBytes != null){
+                        // Write to a file
+                        File.WriteAllBytes(recordFileName, recordedBytes);
+                        recordedBytes = null;
+                    }
+                    else
+                        BufferImage();
                 }
-                else
+                else if(File.Exists(recordFileName)){
                     BufferImage();
+                }
             }
-            else if(File.Exists(recordFileName)){
-                BufferImage();
-            }
+               
             yield return new WaitForSeconds(0.01f);
                 
         }

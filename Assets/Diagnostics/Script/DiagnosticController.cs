@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public abstract class DiagnosticController : MonoBehaviour
 {
     public void OnBtnClose(){
@@ -28,6 +30,8 @@ public abstract class DiagnosticController : MonoBehaviour
     }
 
     public virtual bool ResultExist(){
+        if(GameState.currentPatient == null)
+            return false;
         PatientRecord pr = PatientDataMgr.GetPatientRecord();
         if(pr == null)
             return false;

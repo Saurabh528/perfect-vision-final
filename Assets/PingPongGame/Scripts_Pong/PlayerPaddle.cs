@@ -25,7 +25,7 @@ public class PlayerPaddle : Paddle
 		if (!GamePlayController.Instance.IsPlaying())
 			return;
 		if (direction.sqrMagnitude != 0) {
-            rigidbody.AddForce(direction * 6 * GamePlayController.Instance.GetDifficultyValue());
+            rigid.AddForce(direction * 6 * GamePlayController.Instance.GetDifficultyValue());
         }
     }
 
