@@ -37,7 +37,9 @@ GameLauncher/obj/
 # Build
 Deploy/WindowsBuild/
 Deploy/WindowsBuild.zip
-Deploy/MacBuild/
+Deploy/MacBuild/PerfectVision.app/
+Deploy/MacBuild/PerfectVision.pkg
+Deploy/MacBuild/Python
 Python/build/
 Python/dist/
 
