@@ -35,11 +35,15 @@ GameLauncher/obj/
 
 
 # Build
-WindowsBuild/
-WindowsBuild.zip
-MacBuild/
+Deploy/WindowsBuild/
+Deploy/WindowsBuild.zip
+Deploy/MacBuild/
 Python/build/
 Python/dist/
+
+#deploy
+Deploy/PerfectVision-cache/
+Deploy/PerfectVisionSetup.exe
 
 # Gradle cache directory
 .gradle/
