@@ -18,27 +18,6 @@ import json
 import time
 import threading
 
-import pygame
-from gtts import gTTS
-
-def play_sound(sound_file):
-
-    # Load the sound
-    sound = pygame.mixer.Sound(sound_file)
-    
-    # Play the sound
-    sound.play()
-    
-    # Wait for the sound to finish playing
-    while pygame.mixer.get_busy():
-        time.sleep(0.1)
-
-def speak(text):
-    tts = gTTS(text=text, lang='en')
-    filename = 'temp_audio.mp3'
-    tts.save(filename)
-    play_sound(filename)
-    os.remove(filename)
 
 def create_instruction_frame(frame, text, distance_text=''):
     # Create a white frame with the same resolution as the input frame
@@ -73,7 +52,7 @@ def on_data_received(data):
         triggered = True
     
 from argparse import ArgumentParser
-from utils import get_anonymous_directory, wait_for_camera, append_to_log
+from utils import get_anonymous_directory, wait_for_camera, append_to_log, speak
 
 parser = ArgumentParser()
 
@@ -125,9 +104,6 @@ color = (255, 0, 0)
 # Line thickness of 2 px 
 thickness = 2
    
-
-# Initialize pygame
-pygame.init()
 
 def get_unique(c):
     temp_list = list(c)
@@ -377,9 +353,8 @@ min_detection_confidence=0.5) as face_mesh:
                                         flag = 1
                                         if args.connect:
                                             unitysocket.send_message_to_unity(soc, instruction_text)
-                                        speak_thread = threading.Thread(target=speak, args=(instruction_text,))
+                                        speak_thread = threading.Thread(target=speak, args=(args.datadir, instruction_text,))
                                         speak_thread.start()
-                                        #speak(instruction_text)   
                                         break
                                     
                                     #instruction_text = f'Close {eye} eye, gaze with the other'

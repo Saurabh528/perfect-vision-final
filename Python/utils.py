@@ -3,6 +3,7 @@ from  appdirs import user_data_dir
 import cv2
 import time
 import datetime
+import os
 
 app_name = "PerfectVision"
 app_author = "Jatin"
@@ -56,4 +57,37 @@ def append_to_log(text):
             print("Log updated successfully.")
     except Exception as e:
         print(f"Failed to write to log file: {e}")
+
+
+from gtts import gTTS
+import pygame
+
+pygame.init()
+
+def play_sound(sound_file):
+    # Initialize pygame
+    #pygame.init()
+
+    # Load the sound
+    sound = pygame.mixer.Sound(sound_file)
     
+    # Play the sound
+    sound.play()
+    
+    # Wait for the sound to finish playing
+    while pygame.mixer.get_busy():
+        time.sleep(0.1)     
+    
+def speak(savefolder, text):
+    tts = gTTS(text=text, lang='en')
+    filename = os.path.join(savefolder, 'temp_audio.mp3')
+    try:
+        tts.save(filename)
+        play_sound(filename)
+        os.remove(filename)
+    except PermissionError:
+        append_to_log(f"Permission denied: Unable to write to the file at {filename}.")
+    except IOError as e:
+        append_to_log(f"An I/O error occurred: {e}")
+    except Exception as e:
+        append_to_log(f"An unexpected error occurred: {e}")

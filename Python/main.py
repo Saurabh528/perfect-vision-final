@@ -2,41 +2,17 @@ import cv2
 import numpy as np
 import time
 import pandas as pd
-from gtts import gTTS
 import os
-import pygame
 from collections import defaultdict
 import time
 from cv import process_video
 
-def play_sound(sound_file):
-    # Initialize pygame
-    pygame.init()
-
-    # Load the sound
-    sound = pygame.mixer.Sound(sound_file)
-    
-    # Play the sound
-    sound.play()
-    
-    # Wait for the sound to finish playing
-    while pygame.mixer.get_busy():
-        time.sleep(0.1)
-
+args = []
 
 def display_dot(img, position):
     img[:] = 0
     cv2.circle(img, position, 20, (255, 255, 255), -1)
     return img
-
-def speak(text):
-    tts = gTTS(text=text, lang='en')
-    filename = 'temp_audio.mp3'
-    tts.save(filename)
-    play_sound(filename)
-    os.remove(filename)
-
-args = []
 
 # Define the screen resolution and the window size
 screen_width, screen_height = 1366, 768
@@ -88,7 +64,7 @@ def process_metrics(metrics_queue):
    
 
 from argparse import ArgumentParser
-from utils import get_anonymous_directory, append_to_log, wait_for_camera
+from utils import get_anonymous_directory, append_to_log, wait_for_camera, speak
 
 parser = ArgumentParser()
 
@@ -143,8 +119,6 @@ metrics = defaultdict(list)
 # wait until camera is connected
 if not wait_for_camera(args.cameraindex):
         exit()
-if args.connect:
-    send_command_to_unity(socket, "CAMERAREADY")
 
 import threading
 # Modify your while loop as follows
@@ -159,7 +133,7 @@ while True:
         if not args.quiet:
             display_img = display_dot(img, positions[dot_number])
             cv2.imshow('Dots', display_img)
-        speak(f"Please look at the {position_names[dot_number]} dot")
+        speak(args.datadir, f"Please look at the {position_names[dot_number]} dot")
         if args.connect:
             send_command_to_unity(socket, "DotNumber:{0}".format(dot_number))
         cv2.waitKey(5000)

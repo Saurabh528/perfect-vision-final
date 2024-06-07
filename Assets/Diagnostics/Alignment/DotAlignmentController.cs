@@ -303,7 +303,7 @@ public class DotAlignmentController : GamePlayController {
 		{
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
-			_textInstruction.text = "Loading";
+			_textInstruction.text = "Loading...";
 			UnityEngine.Debug.Log("PYTHON PROCESS IS NOT NULLLLLLl");
             
         }
@@ -344,10 +344,6 @@ public class DotAlignmentController : GamePlayController {
 					_textInstruction.text = "";
 				ShowCurDot();
 				//tcp.StopTCP();
-			}
-			else if (cmdstr == "CAMERAREADY")
-			{
-				_textInstruction.text = "";
 			}
 		}
 		else if (message.StartsWith("MSG:"))

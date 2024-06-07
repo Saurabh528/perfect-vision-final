@@ -183,7 +183,6 @@ public class CardCali : MonoBehaviour
 	private void OnPythonProcessExited(object sender, EventArgs e)
 	{
 		_finished = true;
-		_btnStart.gameObject.SetActive(true);
 	}
 
 

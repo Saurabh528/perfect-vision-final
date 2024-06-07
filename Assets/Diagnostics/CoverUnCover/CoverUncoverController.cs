@@ -55,7 +55,7 @@ public class CoverUncoverController : DiagnosticController
 			StartCoroutine(Routine_Finish());
 			_finished = false;
 		}
-		else if(pythonProcess != null && Input.GetKeyDown(KeyCode.P)){
+		else if(pythonProcess != null && _txtStatus.text.StartsWith("Distance:") && Input.GetKeyDown(KeyCode.P)){
 			_textHint.text = "";
 			_tcp.SendString("p");
 		}
@@ -97,7 +97,7 @@ public class CoverUncoverController : DiagnosticController
 #endif
 		if (pythonProcess != null)
 		{
-			_textHint.text = "Sit at a distance of 40 cms and press p";
+			_textHint.text = "Connecting to camera...";
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
 		}
@@ -123,8 +123,11 @@ public class CoverUncoverController : DiagnosticController
 				_textHint.text = message.Substring(4);
 		}
 		else if (message.StartsWith("STS:")) {
-			if (_txtStatus)
+			if (_txtStatus){
 				_txtStatus.text = message.Substring(4);
+				if(_txtStatus.text.StartsWith("Distance:"))
+					_textHint.text = "Sit at a distance of 40 cms and press p";
+			}
 		}
 	}
 
