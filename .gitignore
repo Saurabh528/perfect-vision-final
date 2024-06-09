@@ -38,7 +38,7 @@ GameLauncher/obj/
 Deploy/WindowsBuild/
 Deploy/WindowsBuild.zip
 Deploy/MacBuild/PerfectVision.app/
-Deploy/MacBuild/PerfectVision.pkg
+Deploy/MacBuild/build/PerfectVision.pkg
 Deploy/MacBuild/Python
 Python/build/
 Python/dist/
@@ -92,6 +92,5 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-.DS_Store
 Python/__pycache__/
 /.DS_Store
