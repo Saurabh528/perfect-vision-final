@@ -18,7 +18,7 @@ public class UISignIn : MonoBehaviour {
 	
 	private void Start()
 	{
-#if UNITY_EDITOR
+#if UNITY_EDITOR_
 		levelstarted = true;
 		username.text = "Akuete";
 		password.text = "123456";
@@ -40,10 +40,18 @@ public class UISignIn : MonoBehaviour {
         }
 		else
 		{
-            ChangeScene.LoadScene("HomeTherapy");
+			PatientDataManager.GetPatientDataByName(GameState.username, OnLoadHomePatientDataSuccess, ShowErrorMsg);
+            
         }
 		
 	}
+
+	void OnLoadHomePatientDataSuccess(PatientData pdata)
+    {
+        PatientMgr.SetPatientList(new Dictionary<string, PatientData>(){{pdata.name, pdata}});
+        GameState.currentPatient = pdata;
+		ChangeScene.LoadScene(ChangeScene.SCENENAME_MODEPANEL);
+    }
 
 
 

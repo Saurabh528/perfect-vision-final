@@ -3982,6 +3982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a60b4236098beca43bd571057f73213f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextScene: {fileID: 102900000, guid: 82c105c9201e417418517eb81d61ea2e, type: 3}
   NextBtnText: {fileID: 1607744544}
   GuideText: {fileID: 138105735}
   CountText: {fileID: 1839210397}

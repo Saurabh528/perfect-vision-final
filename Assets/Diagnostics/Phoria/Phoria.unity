@@ -3338,6 +3338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2164c65f9a60c5041974f6ab87f00eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextScene: {fileID: 102900000, guid: 540e9439dae05f34c9613d0b6c703f26, type: 3}
   _tipUI: {fileID: 1488590231}
   _tweenTop: {fileID: 1911572298}
   _tweenUseLeftArrow: {fileID: 816635873}

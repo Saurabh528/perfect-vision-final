@@ -140,8 +140,10 @@ public class UISessionRecordView : MonoBehaviour
 				GameObject.Destroy(btn.gameObject);
 		}
 		_ssReportButtons.Clear();
-		UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
-		diagnosticReportView.gameObject.SetActive(false);
+		if(_reportViewTmpl)
+			UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
+		if(diagnosticReportView)
+			diagnosticReportView.gameObject.SetActive(false);
 		ClearProgressViews();
 	}
 
@@ -185,8 +187,10 @@ public class UISessionRecordView : MonoBehaviour
 	
 	public void ShowSessionReport(UISessionReportButton button)
 	{
-		UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
-		diagnosticReportView.gameObject.SetActive(false);
+		if(_reportViewTmpl != null)
+			UtilityFunc.DeleteAllSideTransforms(_reportViewTmpl.transform);
+		if(diagnosticReportView)
+			diagnosticReportView.gameObject.SetActive(false);
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
 		List<SessionRecord> sessionlist = record.GetSessionRecordList();
 		int siblingIndex = button.transform.GetSiblingIndex() + 1;
@@ -205,7 +209,7 @@ public class UISessionRecordView : MonoBehaviour
         
 		Dictionary<string, DiagnoseRecord> diagnoRecords = record.GetDiagnoseRecords();
 		foreach(KeyValuePair<string, DiagnoseRecord> pair in diagnoRecords){
-			if(pair.Key == button.name){
+			if(pair.Key == button.name && diagnosticReportView != null){
 				diagnosticReportView.gameObject.SetActive(true);
 				diagnosticReportView.transform.SetSiblingIndex(siblingIndex);
 				diagnosticReportView.ShowRecord(pair.Value, $"Diagnostic Report - {pair.Key}");
@@ -270,7 +274,8 @@ public class UISessionRecordView : MonoBehaviour
 			view.ViewDateScoreProgression(gamename);//show score/date
 			_progressViews.Add(view);
 		}
-		_btnExportPDF.SetActive(true);
+		if(_btnExportPDF)
+			_btnExportPDF.SetActive(true);
 		StartCoroutine(ScrollToTarget(_highcoreView.GetComponent<RectTransform>()));
         //GetDataFunction();
     }
@@ -384,11 +389,14 @@ public class UISessionRecordView : MonoBehaviour
 		_highcoreView.gameObject.SetActive(false);
 		_calisliderView.Clear();
 		_calisliderView.gameObject.SetActive(false);
-		diagGraphSection.SetActive(false);
-		objSpectacles_Exercises.SetActive(false);
-		obj_Summary_Suggestion.SetActive(false);
-		obj_DiagAnalysTable.SetActive(false);
-		_btnExportPDF.SetActive(false);
+		if(diagGraphSection)
+			diagGraphSection.SetActive(false);
+		/* objSpectacles_Exercises.SetActive(false);
+		obj_Summary_Suggestion.SetActive(false); */
+		if(obj_DiagAnalysTable)
+			obj_DiagAnalysTable.SetActive(false);
+		if(_btnExportPDF)
+			_btnExportPDF.SetActive(false);
 	}
 
 	public void OnBtnExportPDF()

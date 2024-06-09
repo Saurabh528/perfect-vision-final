@@ -384,7 +384,7 @@ public class CraneGameController : GamePlayController
 	public void OnClickSaveButton(){
         AddResults();
         PatientDataMgr.SavePatientData();
-        base.EndGame();
+        ChangeScene.LoadScene("MuscleBalance");
     }
 
 	void AddResults(){

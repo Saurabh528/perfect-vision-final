@@ -138,12 +138,7 @@ public class Slider1 : MonoBehaviour
 	{
         if (GameState.currentPatient != null)
 			PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
-		if(!File.Exists(PatientMgr.GetPatientDataDir() + "/focus_value.txt"))
-			ChangeScene.LoadScene("ScreenDistance");
-		else if(!File.Exists(PatientMgr.GetPatientDataDir() + "/conversion_rates.txt"))
-			ChangeScene.LoadScene("CardCalli");
-		else
-			ChangeScene.LoadScene("DeviceSetting");        
+		ChangeScene.LoadScene("ScreenDistance");
 	}
 
 	public void OnSliderTransparent(Boolean value)

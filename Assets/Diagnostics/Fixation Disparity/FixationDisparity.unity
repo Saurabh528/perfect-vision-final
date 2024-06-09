@@ -1967,6 +1967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe17854709f23645a0a47248fed9193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextScene: {fileID: 102900000, guid: 251c1ad4402923d4aa74f32ddac516c5, type: 3}
   _transTop: {fileID: 1592084358}
   _transRight: {fileID: 1658920418}
   _tweenArrowKeys: {fileID: 816635873}

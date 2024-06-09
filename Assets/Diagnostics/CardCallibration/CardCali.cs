@@ -62,6 +62,7 @@ public class CardCali : MonoBehaviour
 		if(turnIndex == 4){
 			turnIndex = 0;
 			webCamRender.StopRecord();
+			pointTip.SetActive(false);
 			string pointparam = "";
 			for(int i = 0; i < 4; i++){
 				for(int j = 0; j < 4; j++){

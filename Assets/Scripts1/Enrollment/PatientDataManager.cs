@@ -396,74 +396,124 @@ public static class PatientDataManager
 	public static void GetPatientDataByName(string name, UnityAction<PatientData> successAction, UnityAction<string> failAction){
 		PatientData pdata= null;
 		Dictionary<string, string> nameIDList = PatientMgr.GetNameIDList();
-		if(!nameIDList.ContainsKey(name) || GameState.IsPatient())
+		if(!nameIDList.ContainsKey(name) && GameState.IsDoctor()){
+			UnityEngine.Debug.LogError("Patient List is empty.");
 			return;
-		if(nameIDList[name] == GameConst.PLAYFABID_CLINIC){
-			if(GameState.IsOnline){
-				GetUserDataRequest request = new GetUserDataRequest();
-				request.Keys = new List<string>(){name};
-				PlayFabClientAPI.GetUserData(request,
-					result=>{
-						if(result.Data != null && result.Data.ContainsKey(name)){
-							pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[name].Value);
-							Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
-							DataKey.SetPrefsString(name, result.Data[name].Value);
-							plist[name] = pdata;
-							successAction.Invoke(pdata);
-						}
-					},
-					error=>{
-						failAction.Invoke(error.ToString());
-					}
-				);
-				return;
-			}
-			else{
-				string localStr = DataKey.GetPrefsString(name);
-				if(!string.IsNullOrEmpty(localStr)){
-					pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
-					PatientMgr.GetPatientList()[name] = pdata;
-					successAction.Invoke(pdata);
-				}
-				else
-					failAction.Invoke("Local patient data does not exist.");
-			}
-			
 		}
-		else{//Home patient
+		if(GameState.IsDoctor()){
+			if(!nameIDList.ContainsKey(name)){
+				if(failAction != null){
+					failAction.Invoke("Can not find such patient from database.");
+					return;
+				}
+			}
+			if(nameIDList[name] == GameConst.PLAYFABID_CLINIC){
+				if(GameState.IsOnline){
+					GetUserDataRequest request = new GetUserDataRequest();
+					request.Keys = new List<string>(){name};
+					PlayFabClientAPI.GetUserData(request,
+						result=>{
+							if(result.Data != null && result.Data.ContainsKey(name)){
+								pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[name].Value);
+								Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
+								DataKey.SetPrefsString(name, result.Data[name].Value);
+								plist[name] = pdata;
+								if(successAction != null)
+									successAction.Invoke(pdata);
+							}
+						},
+						error=>{
+							if(failAction != null)
+								failAction.Invoke(error.ToString());
+						}
+					);
+					return;
+				}
+				else{
+					string localStr = DataKey.GetPrefsString(name);
+					if(!string.IsNullOrEmpty(localStr)){
+						pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
+						PatientMgr.GetPatientList()[name] = pdata;
+						if(successAction != null)
+							successAction.Invoke(pdata);
+					}
+					else if(failAction != null)
+						failAction.Invoke("Local patient data does not exist.");
+				}
+			}
+			else{//home patient
+				if(GameState.IsOnline){
+					GetUserDataRequest request = new GetUserDataRequest();
+					request.Keys = new List<string>(){DataKey.HOMEPATIENT};
+					request.PlayFabId = nameIDList[name];
+					PlayFabClientAPI.GetUserData(request,
+						result=>{
+							if(result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
+								pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);
+								Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
+								DataKey.SetPrefsString(name, result.Data[DataKey.HOMEPATIENT].Value);
+								plist[name] = pdata;
+								if(successAction != null)
+									successAction.Invoke(pdata);
+							}
+						},
+						error=>{
+							if(failAction != null)
+								failAction.Invoke(error.ToString());
+						}
+					);
+					return;
+				}
+				else{
+					string localStr = DataKey.GetPrefsString(name);
+					if(!string.IsNullOrEmpty(localStr)){
+						pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
+						PatientMgr.GetPatientList()[name] = pdata;
+						if(successAction != null)
+							successAction.Invoke(pdata);
+					}
+					else if(failAction != null)
+						failAction.Invoke("Local patient data does not exist.");
+				}
+			}
+		}
+		else if(GameState.IsPatient()){//Home patient
 			if(GameState.IsOnline){
 				GetUserDataRequest request = new GetUserDataRequest();
 				request.Keys = new List<string>(){DataKey.HOMEPATIENT};
-				request.PlayFabId = nameIDList[name];
 				PlayFabClientAPI.GetUserData(request,
 					result=>{
 						if(result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
 							pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);
 							Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
-							plist[name] = pdata;
+							plist[pdata.name] = pdata;
 							request = new GetUserDataRequest();
-							request.Keys = new List<string>(){name};
+							request.PlayFabId = GameState.DoctorID;
+							request.Keys = new List<string>(){pdata.name};
 							PlayFabClientAPI.GetUserData(request,
 								result=>{
-									if(result.Data != null && result.Data.ContainsKey(name)){
-										HomePatientData hpdata = JsonConvert.DeserializeObject<HomePatientData>(result.Data[name].Value);
-										PatientMgr.GetHomePatientDataList()[name] = hpdata;
+									if(result.Data != null && result.Data.ContainsKey(pdata.name)){
+										HomePatientData hpdata = JsonConvert.DeserializeObject<HomePatientData>(result.Data[pdata.name].Value);
+										PatientMgr.GetHomePatientDataList()[pdata.name] = hpdata;
 										pdata.GetDataFromDoctorData(hpdata);
-										successAction.Invoke(pdata);
+										if(successAction != null)
+											successAction.Invoke(pdata);
 									}
-									else
+									else if(failAction != null)
 										failAction.Invoke("Can not download local home patient data.");
 								},
 								error=>{
-									failAction.Invoke("Can not download local home patient data.");
+									if(failAction != null)
+										failAction.Invoke("can not download local home patient data.");
 								}
 							);
 						}
-						else
+						else if(failAction != null)
 							failAction.Invoke("Can not download patient data.");
 					},
 					error=>{
-						failAction.Invoke(error.ToString());
+						if(failAction != null)
+							failAction.Invoke(error.ToString());
 					}
 				);
 			}

@@ -83,9 +83,11 @@ public class UserAccountManager : MonoBehaviour
 
 	void SignInWithUserRole(UnityAction successAction, UnityAction<string> failedAction){
 		if(GameState.IsPatient()){//Home patient
-			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){Keys = new List<string>() { DataKey.HOMEPATIENT}},
+			PlayFabClientAPI.GetUserData(new GetUserDataRequest(){Keys = new List<string>() {DataKey.DOCTORID, DataKey.HOMEPATIENT}},
 			result =>{
-				if(result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
+				if(result.Data != null && result.Data.ContainsKey(DataKey.DOCTORID) && result.Data.ContainsKey(DataKey.HOMEPATIENT)){
+					GameState.DoctorID = result.Data[DataKey.DOCTORID].Value;
+					DataKey.SetPrefsString(DataKey.DOCTORID, GameState.DoctorID);
 					PatientData pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);
 					PatientMgr.AddPatientData(pdata);
 					PlayFabClientAPI.GetUserData(new GetUserDataRequest(){Keys = new List<string>() { pdata.name}, PlayFabId = GameState.DoctorID},
@@ -93,6 +95,7 @@ public class UserAccountManager : MonoBehaviour
 						if(result.Data != null && result.Data.ContainsKey(pdata.name)){
 							HomePatientData hdata = JsonConvert.DeserializeObject<HomePatientData>(result.Data[pdata.name].Value);
 							pdata.GetDataFromDoctorData(hdata);
+							PatientMgr.GetNameIDList()[pdata.name] = GameState.playfabID;
 							successAction.Invoke();
 						}
 						else
@@ -174,116 +177,38 @@ public class UserAccountManager : MonoBehaviour
 	}
 
 	void SignInOnline(UnityAction successAction, UnityAction<string> failedAction){
-		string key = DataKey.ROLE;
+		
 		PlayFabClientAPI.GetUserData(new GetUserDataRequest(){
-		Keys = new List<string>(){key}
+		Keys = new List<string>(){DataKey.ROLE, DataKey.EXPIREDATE}
 		},
 		result =>{
-			if (result.Data != null && result.Data.ContainsKey(key))
+			if (result.Data != null && result.Data.ContainsKey(DataKey.ROLE) && result.Data.ContainsKey(DataKey.EXPIREDATE))
 			{
-				GameState.userRole = result.Data[key].Value == USERROLE.PATIENT.ToString()? USERROLE.PATIENT: USERROLE.DOCTOR;
+				GameState.userRole = result.Data[DataKey.ROLE].Value == USERROLE.PATIENT.ToString()? USERROLE.PATIENT: USERROLE.DOCTOR;
 				DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
-				if(GameState.IsDoctor()){
-					key = DataKey.EXPIREDATE;
-					PlayFabClientAPI.GetUserData(new GetUserDataRequest()
-					{
-						Keys = new List<string>() { key }
-					},
-					result =>
-					{
-						if (result.Data != null && result.Data.ContainsKey(key))
-						{
-							string str = result.Data[key].Value;
-							DateTime expiredate;
-							if(DateTime.TryParse(str, out expiredate)){
-								DataKey.SetPrefsString(DataKey.EXPIREDATE, str);
-								PlayFabClientAPI.GetTime(new GetTimeRequest(), result =>{
-									if(result.Time > expiredate){
-										failedAction.Invoke("License Expired.");
-									}
-									else{
-										SignInWithUserRole(successAction, failedAction);
-										return;
-									}
-									return;
-								},
-								error =>
-								{
-									failedAction.Invoke("Can not get server time.");
-									return;
-								});
-								return;
-							}
-							else{
-								failedAction.Invoke("Invalid date expiring format.");
-								return;
-							}
+				DataKey.SetPrefsString(DataKey.EXPIREDATE, result.Data[DataKey.EXPIREDATE].Value);
+				if(DateTime.TryParse(result.Data[DataKey.EXPIREDATE].Value, out GameState.ExpireDate)){
+					PlayFabClientAPI.GetTime(new GetTimeRequest(), result =>{
+						if(result.Time > GameState.ExpireDate){
+							failedAction.Invoke("License Expired.");
 						}
 						else{
-							failedAction.Invoke("Missing License lifetime data.");
-							return;
+							DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
+							SignInWithUserRole(successAction, failedAction);
 						}
+						return;
 					},
 					error =>
 					{
-						failedAction.Invoke("Missing License lifetime data.");
+						failedAction.Invoke("Can not get server time.");
 						return;
 					});
 				}
-				else{//Home patient
-					key = DataKey.DOCTORID;
-					PlayFabClientAPI.GetUserData(new GetUserDataRequest()
-					{
-						Keys = new List<string>() { key }
-					},
-					result =>
-					{
-						if(result.Data != null && result.Data.ContainsKey(key)){
-							GameState.DoctorID = result.Data[key].Value;
-							DataKey.SetPrefsString(key, GameState.DoctorID);
-							GetUserDataRequest request = new GetUserDataRequest();
-							request.Keys = new List<string>(){DataKey.HOMEPATIENT};
-							PlayFabClientAPI.GetUserData(request,
-								result =>
-								{
-									if (result.Data != null && result.Data.ContainsKey(DataKey.HOMEPATIENT))
-									{
-										string str = result.Data[DataKey.HOMEPATIENT].Value;
-										PatientData pdata = JsonConvert.DeserializeObject<PatientData>(str);
-										PlayFabClientAPI.GetTime(new GetTimeRequest(), result =>{
-											if(result.Time > pdata.ExpireDate){
-												failedAction.Invoke("License Expired.");
-											}
-											else{
-												GameState.ExpireDate = pdata.ExpireDate;
-												DataKey.SetPrefsString(DataKey.EXPIREDATE, GameState.ExpireDate.ToString(GameConst.STRFORMAT_DATETIME));
-												SignInWithUserRole(successAction, failedAction);
-											}
-										},
-										error =>
-										{
-											failedAction.Invoke("Can not get server time.");
-										});
-										return;
-									}
-								},
-								error =>
-								{
-									failedAction.Invoke(error.ToString());
-									return;
-								}
-							);
-							return;
-						}
-						else{
-							failedAction.Invoke("Can not get doctor ID.");
-							return;
-						}
-					}, error =>{
-						failedAction.Invoke("Can not get doctor ID.");
-						return;
-					});
+				else{
+					failedAction.Invoke("Invalid date expiring format from server.");
+					return;
 				}
+				
 			}
 			else{
 				failedAction.Invoke("Can not get user role.");
@@ -595,6 +520,11 @@ public class UserAccountManager : MonoBehaviour
 				result =>{
 					if (result.Data != null && result.Data.ContainsKey(DataKey.DOCTORID) && result.Data.ContainsKey(DataKey.HOMEPATIENT))
 					{
+						PatientData pdata = JsonConvert.DeserializeObject<PatientData>(result.Data[DataKey.HOMEPATIENT].Value);	
+						if(username != pdata.name){
+							failedAction.Invoke($"Name is not matching with registered name.");
+							return;
+						}
 						PlayFabClientAPI.UnlinkCustomID(new UnlinkCustomIDRequest(), null, null);
 						GameState.DoctorID = result.Data[DataKey.DOCTORID].Value;
 						DataKey.SetPrefsString(DataKey.DOCTORID, GameState.DoctorID);
@@ -637,13 +567,7 @@ public class UserAccountManager : MonoBehaviour
 		});
 	}
 
-    void OnLoadHomePatientDataSuccess(PatientData pdata)
-    {
-        Debug.Log("OnLoadHomePatientDataSuccess Called");
-        PatientMgr.SetPatientList(new Dictionary<string, PatientData>(){{pdata.name, pdata}});
-        GameState.currentPatient = pdata;
-        ChangeScene.LoadScene("ColorScreen");
-    }
+    
 
     /* void etUserRole(UnityAction<USERROLE> resultAction)
     {

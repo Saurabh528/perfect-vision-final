@@ -12,11 +12,10 @@ public class ModeMgr : MonoBehaviour
     {
 		SettingUI.LoadAudioSetting();
 		GameState.currentGamePlay = null;
-		GameState.currentPatient = null;
         VisualFactor.LoadFactor();
         btnEnrollment.SetActive(!onlyDiagnose && GameState.IsDoctor());
         btnHomeTherapy.SetActive(!onlyDiagnose && GameState.IsPatient());
-        btnGamePlay.SetActive(!onlyDiagnose);
+        btnGamePlay.SetActive(!onlyDiagnose && GameState.IsDoctor());
     }
 
 
