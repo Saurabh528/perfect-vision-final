@@ -126,7 +126,9 @@ public class UserAccountManager : MonoBehaviour
 						DataKey.SetPrefsString(DataKey.CLINICLIMIT, GameState.CilinicLimit.ToString());
 						DataKey.SetPrefsString(DataKey.HOMELIMIT, GameState.HomeLimit.ToString());
 						//Upload local data
+						UtilityFunc.AppendToLog("LocalKey.LASTONLINE: " + PlayerPrefs.GetString(LocalKey.LASTONLINE, "True"));
 						if(PlayerPrefs.GetString(LocalKey.LASTONLINE, "True").ToLower() == "false"){
+							UtilityFunc.AppendToLog("Uploading local data.");
 							string jsonstr = DataKey.GetPrefsString(DataKey.PATIENT);
 							if(string.IsNullOrEmpty(jsonstr))
 								successAction.Invoke();
@@ -232,7 +234,7 @@ public class UserAccountManager : MonoBehaviour
 		
 		GameState.username = username;
 		GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
-
+		UtilityFunc.AppendToLog($"Trying sign in as {username}");
 		//offline mode
 		if(PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&
 		!string.IsNullOrEmpty(GameState.playfabID))
@@ -246,13 +248,15 @@ public class UserAccountManager : MonoBehaviour
 					DateTime curdate = DateTime.Now;
 					if(expdate >= curdate){
 						//try connect
-	
+						UtilityFunc.AppendToLog("Trying connect to playfab.com");
 						string host = "playfab.com";  
 						System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();  
 						try  
 						{  
 							PingReply reply = p.Send(host, 10000);  
 							PlayerPrefs.SetString(LocalKey.LASTONLINE, reply.Status == IPStatus.Success?"True": "False");
+							Debug.Log("Saved LastOnLine key: " + (reply.Status == IPStatus.Success?"True": "False"));
+							UtilityFunc.AppendToLog("Saved LastOnLine key: " + (reply.Status == IPStatus.Success?"True": "False"));
 							if (reply.Status == IPStatus.Success){
 								Debug.Log("Internet is available.");
 								//connected to internet
@@ -278,7 +282,8 @@ public class UserAccountManager : MonoBehaviour
 							}
 							return;
 						}  
-						catch (Exception e){ 
+						catch (Exception e){
+							UtilityFunc.AppendToLog(e.ToString());
 							Debug.Log(e.ToString());
 							GameState.IsOnline = false;
 							GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
@@ -330,6 +335,7 @@ public class UserAccountManager : MonoBehaviour
 			Password = password,
 		}, result =>
 		{
+			PlayerPrefs.SetString(LocalKey.LASTONLINE, "True");
 			GameState.IsOnline = true;
 			GameState.password = password;
 			GameState.username = username;

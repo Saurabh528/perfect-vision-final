@@ -16,7 +16,7 @@
     <ROW Property="ProductCode" Value="1033:{229A2E1B-6B70-4CCD-BAED-5B8C96721720} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="PerfectVision"/>
-    <ROW Property="ProductVersion" Value="1.0.5"/>
+    <ROW Property="ProductVersion" Value="1.0.6"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{B298B4C0-C8C4-4334-90E9-09BF5609282C}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
