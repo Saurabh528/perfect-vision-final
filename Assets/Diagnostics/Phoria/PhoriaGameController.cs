@@ -17,6 +17,7 @@ public class PhoriaGameController : DiagnosticController
 
     const string TIPTEXT_60cm = "Viewing Distance set to Near = 60cm";
     const string TIPTEXT_RightFixating = "Put the Red Circle on top of Blue Circle.";
+    const string TIPTEXT_LeftFixating = "Put the Blue Circle on top of Red Circle.";
     public const string GameName = "Phoria";
     const float DOTPLACE_RANGE = 0.15f;
     bool _movable;
@@ -78,13 +79,11 @@ public class PhoriaGameController : DiagnosticController
     void ShowValues(){
         if(_sideFixating == EYESIDE.LEFT){
             bool passed = _observerLeft.ShowValues(_verLine.transform.localPosition.x, _verDot.transform.localPosition.y, _sideFixating);
-            if(passed && _movable)
-                StartCoroutine(StartClickhereRoutine());
+            
         }
         else{
             bool passed = _observerRight.ShowValues(_verLine.transform.localPosition.x, _verDot.transform.localPosition.y, _sideFixating);
-            if(passed && _movable)
-                StartCoroutine(ShowResult());
+            
         }
     }
 
@@ -94,23 +93,19 @@ public class PhoriaGameController : DiagnosticController
         ApplyColorCalliToImage(_verDot, ColorChannel.CC_Red);
         ApplyColorCalliToImage(_horLine, ColorChannel.CC_Cyan);
         ApplyColorCalliToImage(_horDot, ColorChannel.CC_Cyan);
-        PlaceDotsRandom();
         _tipUI.Show(TIPTEXT_60cm);
-        _toggleLeft.enabled = false;
-        _toggleRight.enabled = false;
     }
 
     public void OnToggleRightFixating(bool value){
         if(!value)
             return;
-        _toggleLeft.enabled = false;
-        _toggleRight.enabled = false;
         StartCoroutine(StartRightFixating());
     }
 
     public void OnToggleLeftFixating(bool value){
         if(!value)
             return;
+        StartCoroutine(StartLeftFixating());
     }
 
     public void OnClickedTipUIButton(Text tipText){
@@ -122,7 +117,41 @@ public class PhoriaGameController : DiagnosticController
             ApplyZoom();
             _topTweenText.text = "Align the blue dot over the red dot on the screen.";
             _tweenTop.Appear();
+            _tweenWheel.Disappear();
+            ShowValues();
+            ApplyColorCalliToImage(_verLine, ColorChannel.CC_Cyan);
+            ApplyColorCalliToImage(_verDot, ColorChannel.CC_Cyan);
+            ApplyColorCalliToImage(_horLine, ColorChannel.CC_Red);
+            ApplyColorCalliToImage(_horDot, ColorChannel.CC_Red);
+            PlaceDotsRandom();
+            _sideFixating = EYESIDE.RIGHT;
+            _movable = true;
+            _zoomFactor = 1;
+            ApplyZoom();            
+            _toggleLeft.enabled = _toggleRight.enabled = true;
+            resultExist = true;
         }
+        else if(tipText.text == TIPTEXT_LeftFixating){
+            _movable = true;
+            _zoomFactor = 1;
+            ApplyZoom();
+            _topTweenText.text = "Align the red dot over the blue dot on the screen.";
+            _tweenTop.Appear();
+            _tweenWheel.Disappear();
+            ShowValues();
+            ApplyColorCalliToImage(_verLine, ColorChannel.CC_Red);
+            ApplyColorCalliToImage(_verDot, ColorChannel.CC_Red);
+            ApplyColorCalliToImage(_horLine, ColorChannel.CC_Cyan);
+            ApplyColorCalliToImage(_horDot, ColorChannel.CC_Cyan);
+            PlaceDotsRandom();
+            _sideFixating = EYESIDE.LEFT;
+            _movable = true;
+            _zoomFactor = 1;
+            ApplyZoom();
+            _toggleLeft.enabled = _toggleRight.enabled = true;
+        }
+        
+        
     }
 
     void PlaceDotsRandom(){
@@ -140,59 +169,37 @@ public class PhoriaGameController : DiagnosticController
         scc._ColorChannel = channel;
     }
 
-    IEnumerator StartLeftFixating(){
-        ShowValues();
-        _topTweenText.text = "Align the red dot over the blue dot on the screen.";
-        _tweenTop.Appear();
-        yield return new WaitForSeconds(1);
-        _tweenUseLeftArrow.Appear();
-        _movable = true;
-        _zoomFactor = 1;
-        ApplyZoom();
-    }
+    
 
-    IEnumerator StartClickhereRoutine(){
+    IEnumerator StartRightFixating(){
+        _toggleLeft.enabled = _toggleRight.enabled = false;
+        _sideFixating = EYESIDE.INVALID;
         _movable = false;
+        _tweenClickRight.Disappear();
+        _tweenWheel.Disappear();
         _tweenTop.Disappear();
         yield return new WaitForSeconds(1);
         _tweenUseLeftArrow.Disappear();
-        yield return new WaitForSeconds(1);
-        _tweenWheel.Appear();
-        yield return new WaitForSeconds(2);
-        _tweenClickRight.Appear();
-        _toggleLeft.enabled = true;
-        _toggleRight.enabled = true;
-    }
-
-    IEnumerator StartRightFixating(){
-        _tweenClickRight.Disappear();
-        _tweenWheel.Disappear();
-        yield return new WaitForSeconds(1);
         _tweenUseRightArrow.Appear();
         yield return new WaitForSeconds(1);
-        ApplyColorCalliToImage(_verLine, ColorChannel.CC_Cyan);
-        ApplyColorCalliToImage(_verDot, ColorChannel.CC_Cyan);
-        ApplyColorCalliToImage(_horLine, ColorChannel.CC_Red);
-        ApplyColorCalliToImage(_horDot, ColorChannel.CC_Red);
-        PlaceDotsRandom();
         _tipUI.Show(TIPTEXT_RightFixating);
-        _sideFixating = EYESIDE.RIGHT;
         
     }
 
-    IEnumerator ShowResult(){
-        resultExist = true;
+    IEnumerator StartLeftFixating(){
+        _toggleLeft.enabled = _toggleRight.enabled = false;
+        _sideFixating = EYESIDE.INVALID;
         _movable = false;
+        _tweenClickRight.Disappear();
+        _tweenWheel.Disappear();
+        _tweenTop.Disappear();
+        yield return new WaitForSeconds(1);
+        _tweenUseLeftArrow.Appear();
         _tweenUseRightArrow.Disappear();
         yield return new WaitForSeconds(1);
-        _tweenWheel.Appear();
-        yield return new WaitForSeconds(1);
-        _tweenTop.Disappear();
-        yield return new WaitForSeconds(3);
-        _tweenBottom.Appear();
-        yield return new WaitForSeconds(3);
-        _tweenBottom.Disappear();
+        _tipUI.Show(TIPTEXT_LeftFixating);
     }
+
 
     public override void AddResults(){
         PatientRecord pr = PatientDataMgr.GetPatientRecord();

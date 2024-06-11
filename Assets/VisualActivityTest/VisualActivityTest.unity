@@ -3983,6 +3983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextScene: {fileID: 102900000, guid: 82c105c9201e417418517eb81d61ea2e, type: 3}
+  nextSceneName: DotTest
   NextBtnText: {fileID: 1607744544}
   GuideText: {fileID: 138105735}
   CountText: {fileID: 1839210397}

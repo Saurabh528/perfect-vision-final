@@ -122,4 +122,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Diagnostics/MuscleBalance/MuscleBalance.unity
     guid: bb67e70dd9d7d7d4da30a9ca7ad5d506
+  - enabled: 1
+    path: Assets/Vergence/VergenceGame.unity
+    guid: bec15c1b2fa25ee4ea9a59de694a0b3d
   m_configObjects: {}

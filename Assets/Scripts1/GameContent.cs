@@ -224,8 +224,8 @@ public abstract class PatientMgr
 public abstract class SessionMgr
 {
 	static List<byte> gamelist = new List<byte>();
-	static string[] gamenames = new string[] { "Ballon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly"};
-	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly"};
+	static string[] gamenames = new string[] { "Ballon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly", "Vergence"};
+	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly", "VergenceGame"};
 	static SessionRecord sessionRecord;
 	public static int _timeSecond = 120;
 	public static bool AddGame(byte gameid, out string error)

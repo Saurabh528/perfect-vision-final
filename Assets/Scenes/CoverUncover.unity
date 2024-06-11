@@ -7300,6 +7300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextScene: {fileID: 102900000, guid: 5649637c7d6ee7e4da6c91b4b6559c55, type: 3}
+  nextSceneName: Phoria
   _tcp: {fileID: 2021284275}
   _redPoint: {fileID: 1843764069}
   _btnPrint: {fileID: 1562035634}

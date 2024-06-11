@@ -6,7 +6,7 @@ using UnityEngine;
 
 public abstract class DiagnosticController : MonoBehaviour
 {
-    [SerializeField] Object nextScene;
+    [SerializeField] string nextSceneName;
     public void OnBtnClose(){
         if(ResultExist())
             PopupUI.ShowQuestionBox("Would you like to save the diagnostic result?", OnClickSaveButton, ExitScene);
@@ -27,10 +27,10 @@ public abstract class DiagnosticController : MonoBehaviour
     public void OnClickSaveButton(){
         AddResults();
         SaveResult();
-        if(string.IsNullOrEmpty(nextScene.name))
+        if(string.IsNullOrEmpty(nextSceneName))
             ChangeScene.LoadScene("Diagnostic");
         else
-            ChangeScene.LoadScene(nextScene.name);
+            ChangeScene.LoadScene(nextSceneName);
     }
 
     public virtual bool ResultExist(){

@@ -2459,6 +2459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextScene: {fileID: 102900000, guid: 1f6e3957e1aa87a4da5370f1085d6e22, type: 3}
+  nextSceneName: Alignment
   questionset: {fileID: 11400000, guid: 4eefb931b9b9cd24ba9e6f5f9c9f9b28, type: 2}
   Question: {fileID: 598073755}
   diagnosis: {fileID: 146000811}
