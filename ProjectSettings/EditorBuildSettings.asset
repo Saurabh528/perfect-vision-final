@@ -9,14 +9,14 @@ EditorBuildSettings:
     path: Assets/ActiveScenes/StartScene.unity
     guid: 64ee08f5e5e6b4a388ec86c985e09540
   - enabled: 1
+    path: Assets/Scenes/CoverUncover.unity
+    guid: 2de563100aeec1045a99bd64cec07260
+  - enabled: 1
     path: Assets/Scenes_snake/Snake.unity
     guid: c9bcb0d243a5d47ef8cf898a0195a4ac
   - enabled: 1
     path: Assets/Diagnostics/Alignment/Alignment.unity
     guid: 1f6e3957e1aa87a4da5370f1085d6e22
-  - enabled: 1
-    path: Assets/Scenes/CoverUncover.unity
-    guid: 2de563100aeec1045a99bd64cec07260
   - enabled: 1
     path: Assets/Scenes/ScreenDistance.unity
     guid: 5e96161728839774e9bb7d5d12da1367
