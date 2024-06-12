@@ -94,3 +94,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Python/__pycache__/
 /.DS_Store
+Deploy/MacBuild/PerfectVision/PerfectVision.pkg
+Deploy/MacBuild/Python_conda.zip
