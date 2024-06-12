@@ -3080,9 +3080,18 @@ MonoBehaviour:
   _blueImage: {fileID: 1024014267}
   _redImage: {fileID: 1300171164}
   btnStop: {fileID: 0}
-  _patternSet: []
-  textLevel: {fileID: 0}
-  textScore: {fileID: 0}
+  _patternSet:
+  - _blueSprite: {fileID: 21300000, guid: 6fe054d92bc623c49b1090067d9e4781, type: 3}
+    _redSprite: {fileID: 21300000, guid: 2e8a73e49a27a284dbd2f452359a6370, type: 3}
+    _name: Nest
+  - _blueSprite: {fileID: 21300000, guid: 6c0454bc26c8d5e49963666c5963eb0a, type: 3}
+    _redSprite: {fileID: 21300000, guid: 0bb8b2523d065e2488ce22ff448010e9, type: 3}
+    _name: Chitta
+  - _blueSprite: {fileID: 21300000, guid: c3b611ab6fea645419e7a31061409feb, type: 3}
+    _redSprite: {fileID: 21300000, guid: b24dd1b693bf84f45aa22b402ae730c2, type: 3}
+    _name: Target1
+  textLevel: {fileID: 1335492659}
+  textScore: {fileID: 1114673914}
 --- !u!1 &871135690
 GameObject:
   m_ObjectHideFlags: 0
@@ -4156,8 +4165,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -33.800003}
-  m_SizeDelta: {x: 160.0028, y: 50}
+  m_AnchoredPosition: {x: 16.42, y: -33.799988}
+  m_SizeDelta: {x: 250.32, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1114673914
 MonoBehaviour:
@@ -4186,7 +4195,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 3
     m_MaxSize: 50
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -6016,8 +6025,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 858703128}
         m_TargetAssemblyTypeName: VergenceGameController, Assembly-CSharp
-        m_MethodName: OnBtnStartOrStop
-        m_Mode: 4
+        m_MethodName: OnBtnStart
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -6400,8 +6409,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 858703128}
         m_TargetAssemblyTypeName: VergenceGameController, Assembly-CSharp
-        m_MethodName: OnBtnStartOrStop
-        m_Mode: 4
+        m_MethodName: OnBtnStop
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

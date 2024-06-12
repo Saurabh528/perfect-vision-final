@@ -25,7 +25,7 @@ public class UIProgressView : MonoBehaviour
 				if (gp.name == gamename)
 				{
 					time += gp.duration;
-					scoreValueList[time] = gp.eScr;
+					scoreValueList[time] = GamePlay.GetConvertedScore(gp.eScr, gp.name);
 					levelValueList[time] = gp.eLvl;
 					avgTimeList[time] = gp.eLvl == gp.sLvl? gp.duration: ((float)gp.duration / (gp.eLvl - gp.sLvl));
 				}

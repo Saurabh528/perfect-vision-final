@@ -46,9 +46,9 @@ public class VergenceGameController : GamePlayController
 	}
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
-       
+        base.Update();
         _bio += speed * Time.deltaTime;
         if(_bio > _BO)
         {
@@ -66,11 +66,35 @@ public class VergenceGameController : GamePlayController
 	}
 
 
-    public void OnBtnStartOrStop(float timeScale)
-    {
-		Time.timeScale = timeScale;
-	}
 
+    public void OnBtnStart(){
+        Time.timeScale = 1;
+        _level++;
+        ShowLevel();
+        _patternIndex++;
+        if(_patternIndex == _patternSet.Count)
+            _patternIndex = 0;
+        _blueImage.sprite = _patternSet[_patternIndex]._blueSprite;
+        _redImage.sprite = _patternSet[_patternIndex]._redSprite;
+    }
+
+    public void OnBtnStop(){
+        Debug.Log($"_bio:{_bio}");
+        _score = (int)(_bio * 10);
+        ShowScore();
+        Time.timeScale = 0;
+    }
+
+    public override void ShowScore() {
+        float abs = Mathf.Abs((float)_score) / 10f;
+        string absstr = abs.ToString("F1");
+        string direction = _score > 0? "BO": "BI";
+        textScore.text = $"Score {absstr} {direction}";
+    }
+
+    public override void ShowLevel() {
+        textLevel.text = $"Level {_level}";
+    }
 
 
 }

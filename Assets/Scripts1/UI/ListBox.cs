@@ -25,7 +25,7 @@ public class ListBox : MonoBehaviour
 
 	public void Clear()
 	{
-		UtilityFunc.DeleteAllSideTransforms(_itemTmpl.transform);
+		UtilityFunc.DeleteAllSideTransforms(_itemTmpl.transform, false);
 		items.Clear();
 	}
 

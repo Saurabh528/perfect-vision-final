@@ -158,7 +158,12 @@ public class GamePlay
 	public string name;
 	//public DateTime time;
 	public int duration, sScr, eScr, sLvl = 1, eLvl;
-
+	public static float GetConvertedScore(int score, string gamename){
+		if(gamename == GameConst.GAMENAME_VERGENCE)
+			return Mathf.Abs((float)score) / 10;
+		else
+			return score;
+	}
 }
 
 public class DiagnosticRecord{

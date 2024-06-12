@@ -909,11 +909,11 @@ public class UISessionRecordView : MonoBehaviour
                     if (scoreSumList.ContainsKey(dt))
                     {
                         countList[dt]++;
-                        scoreSumList[dt] += gp.eScr;
+                        scoreSumList[dt] += GamePlay.GetConvertedScore(gp.eScr, gp.name);
                     }
                     else
                     {
-                        scoreSumList[dt] = gp.eScr;
+                        scoreSumList[dt] = GamePlay.GetConvertedScore(gp.eScr, gp.name);
                         countList[dt] = 1;
                     }
                 }
@@ -961,8 +961,8 @@ public class UISessionRecordView : MonoBehaviour
 					GamePlay gp = ssrecord.games[j];
 					if (gp.name == gamenames[i])
 					{
-						if (gp.eScr > maxscore)
-							maxscore = gp.eScr;
+						if (GamePlay.GetConvertedScore(gp.eScr, gp.name) > maxscore)
+							maxscore = GamePlay.GetConvertedScore(gp.eScr, gp.name);
 						if (gp.eLvl > maxLevel)
 							maxLevel = gp.eLvl;
 						float avgtime = gp.sLvl == gp.eLvl ? 0 : ((float)gp.duration / (gp.eLvl - gp.sLvl));

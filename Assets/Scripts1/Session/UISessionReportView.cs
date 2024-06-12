@@ -19,7 +19,7 @@ public class UISessionReportView : MonoBehaviour
 			if(i < record.games.Count)
 			{
 				_gamenames[i].text = record.games[i].name;
-				_maxScores[i].text = record.games[i].eScr.ToString();
+				_maxScores[i].text = GamePlay.GetConvertedScore(record.games[i].eScr, record.games[i].name).ToString();
 				_maxLevels[i].text = record.games[i].eLvl.ToString();
 				float avgtime = record.games[i].sLvl == record.games[i].eLvl ? 0 : ((float)record.games[i].duration / (record.games[i].eLvl - record.games[i].sLvl));
 				_maxavgTimes[i].text = avgtime == 0? "-": ((int)avgtime).ToString();

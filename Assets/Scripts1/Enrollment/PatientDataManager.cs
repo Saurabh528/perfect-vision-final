@@ -339,6 +339,7 @@ public static class PatientDataManager
 				string str = DataKey.GetPrefsString(DataKey.PATIENT, "");
 				if (!string.IsNullOrEmpty(str)){
 					Dictionary<string, string> nameIDPair = JsonConvert.DeserializeObject<Dictionary<string,string>>(str);
+					PatientMgr.SetNameIDList(nameIDPair);
 					Dictionary<string, PatientData> plist = new Dictionary<string, PatientData>();
 					foreach(KeyValuePair<string, string> pair in nameIDPair)
 						plist[pair.Key] = null;

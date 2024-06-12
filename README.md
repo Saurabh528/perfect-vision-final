@@ -1,4 +1,4 @@
-![PerfectVision](https://github.com/NiKuang413/PerfectVision/assets/149320858/83c17cf2-feaa-4b85-a59f-f8cf6b32152e)
+![PerfectVision](https://github.com/Saurabh528/perfect-vision-final/assets/149320858/83c17cf2-feaa-4b85-a59f-f8cf6b32152e)
 
 :tada: Welcome to PerfectVision Project :tada:
 
@@ -14,7 +14,7 @@ This repository contains all kinds of resources for Project from scripts to data
 1. You can [browse this repository](#content) and find your desired sources or you can [clone this repository](https://help.github.com/articles/cloning-a-repository/) and browse the files:
 
 ```bash
-git clone https://github.com/NiKuang413/PerfectVision.git
+git clone https://github.com/Saurabh528/perfect-vision-final.git
 ```
 
 then open the folder in unity or you can find useful stuff by [browsing awesome resources in the below](#resources).
@@ -38,20 +38,25 @@ then open the folder in unity or you can find useful stuff by [browsing awesome 
 
 ## Content
 
-- [Assets/](https://github.com/NiKuang413/PerfectVision/tree/master/Assets) : Unity assets including scripts, textures, audio clips and so on.
-- [Design/](https://github.com/NiKuang413/PerfectVision/tree/master/Design) : Non-unity assets but necessary to make unity assets, including 3DS Max files.
-- [Python/](https://github.com/NiKuang413/PerfectVision/tree/master/Python) : Python scripts used in machine learning and computer vision
-	◦ [Alignment/](https://github.com/NiKuang413/PerfectVision/tree/master/Python/Alignment) : Python scripts used in Alignment tool
-	◦ [CoverUnCover/](https://github.com/NiKuang413/PerfectVision/tree/master/Python/CoverUnCover) : Python scripts used in CoverUnCover tool
-	◦ [Displacement/](https://github.com/NiKuang413/PerfectVision/tree/master/Python/Displacement) : Python scripts used in Displacement tool
-	◦ [ScreenCali/](https://github.com/NiKuang413/PerfectVision/tree/master/Python/ScreenCali) : Python scripts used in ScreenCali tool
-- [WindowsBuild/](https://github.com/NiKuang413/PerfectVision/tree/master/WindowsBuild) : Executables for Windows platform. This includes main unity project executables and python builds. Python scripts in Python directory can be built using pyinstaller command and .spec files.
+- [Assets/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Assets) : Unity assets including scripts, textures, audio clips and so on.
+- [Design/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Design) : Non-unity assets but necessary to make unity assets, including 3DS Max files.
+- [Python/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Python) : Python scripts used in machine learning and computer vision
+	◦ [Alignment/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Python/Alignment) : Python scripts used in Alignment tool
+	◦ [CoverUnCover/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Python/CoverUnCover) : Python scripts used in CoverUnCover tool
+	◦ [Displacement/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Python/Displacement) : Python scripts used in Displacement tool
+	◦ [ScreenCali/](https://github.com/Saurabh528/perfect-vision-final/tree/master/Python/ScreenCali) : Python scripts used in ScreenCali tool
+- [WindowsBuild/](https://github.com/Saurabh528/perfect-vision-final/tree/master/WindowsBuild) : Executables for Windows platform. This includes main unity project executables and python builds. Python scripts in Python directory can be built using pyinstaller command and .spec files.
 
 # Additions
 
-### FlapNFly Game
+### Adding new therapy game
+- add to SessionMgr.gamenames
+- add to SessionMgr.gameScenenames
+- increase count Enrollment.unity/...RightView/ScrollView/Mask/PatientView/HightscoreView.UISessionReportView.Gamenames, Maxscores,MaxLevels,MaxavgTimes
+- add list item to Enrollment.unity/...RightView/ScrollView/Mask/PatientView/SessionMakeView/GameInfo/Dropdown_AddNewGame.Dropdown
 
-### Convergence Game
+### Gamescore customizing
+- UIProgressView.ViewProgression(string gamename)
 
 ### Function: Save Data
 This function SaveData uses PlayFab's API to update a user's session data with specified x and y coordinates along with the current date. It increments a session count, updates or appends a new session entry in JSON format, and handles both success and error callbacks with appropriate console logging. This method is useful for tracking and storing user position data over multiple sessions in an application.
@@ -92,7 +97,7 @@ Send your GitHub id to one of the below ways:
 
 ## Improvements/Ideas/Feedback
 
-Feel free to [:postbox: Post your ideas/comments/improvements/recommendations](https://github.com/NiKuang413/PerfectVision/issues)
+Feel free to [:postbox: Post your ideas/comments/improvements/recommendations](https://github.com/Saurabh528/perfect-vision-final/issues)
 
 While pushing repository I got following errors.
 
@@ -111,4 +116,4 @@ To solve abive issues, anyone should m
 
 ## License
 
-[None](https://github.com/NiKuang413/PerfectVision/LICENSE) @ [Unity Community](https://github.com/UnityCommunity/)
+[None](https://github.com/Saurabh528/perfect-vision-final/LICENSE) @ [Unity Community](https://github.com/UnityCommunity/)

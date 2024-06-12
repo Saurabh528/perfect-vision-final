@@ -81,7 +81,7 @@ public class UISessionMake : MonoBehaviour
 	public void UpdateGameSlots()
 	{
 		List<byte> gamelist = SessionMgr.GetGameList();
-		UtilityFunc.DeleteAllSideTransforms(_gameitemtmpl.transform);
+		UtilityFunc.DeleteAllSideTransforms(_gameitemtmpl.transform, false);
 		int count = 0;
 		RectTransform rt = _gameitemtmpl.GetComponent<RectTransform>();
 		foreach (byte gameindex in gamelist)
@@ -124,8 +124,10 @@ public class UISessionMake : MonoBehaviour
 	public void RemoveGameItem(UISessionGameItem item)
 	{
 		string error;
-		if (SessionMgr.RemoveGame(item.GetGameName(), out error))
+		if (SessionMgr.RemoveGame(item.GetGameName(), out error)){
 			UpdateGameSlots();
+			Destroy(item.gameObject);
+		}
 		else
 			EnrollmentManager.Instance.ShowMessage(error);
 	}

@@ -279,6 +279,7 @@ public class UserAccountManager : MonoBehaviour
 							}
 							else{
 								Debug.Log("Internet is unavailable");
+								successAction.Invoke();
 							}
 							return;
 						}  

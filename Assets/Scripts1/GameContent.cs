@@ -17,6 +17,7 @@ public abstract class GameConst
 	public const float PRISMTHRES_HOR = 2f;
 	public const float PRISMTHRES_VER = 0.5f;
 										//"CAVT<sup><i><color=yellow>  DICHO</color></i></sup>";
+	public const string GAMENAME_VERGENCE = "Vergence";
 }
 
 public abstract class GameVersion{
