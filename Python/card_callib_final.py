@@ -38,10 +38,11 @@ parser.add_argument("--datadir", type=str,
 
 args = parser.parse_args()
 from unitysocket import init_TCP, send_command_to_unity, send_message_to_unity, send_status_to_unity
-
+from utils import append_to_log
 if args.datadir == "":
     print("missing data directory")
     sys.exit()
+append_to_log("datadir:" + args.datadir)
 # Initialize TCP connection
 if args.connect:
     socket = init_TCP(args.port)
@@ -64,7 +65,7 @@ thickness = 2
 # Open the file 'focus_value.txt', read its content, and print the value it contains
 file_path = os.path.join(args.datadir, 'focus_value.txt')  # Specify the file path
 if not (os.path.exists(file_path) and os.path.isfile(file_path)):
-    print(file_path + " does not exist.")
+    append_to_log(file_path + " does not exist.")
     if args.connect:
         send_message_to_unity("Please do screen distance callibration first.")
     sys.exit()
@@ -319,8 +320,13 @@ run_callib()
 conv_rates = calculate_conversion_rates(calibration_data) 
 
 filename = os.path.join(args.datadir, 'conversion_rates.txt')
-with open(filename, "w") as file:
-    for distance, rates in conv_rates.items():
-        line = f"Distance {distance}: Width Rate = {rates[0]}, Height Rate = {rates[1]}\n"
-        file.write(line)
-print(f"Conversion rates have been stored in {filename}")
+try:
+    with open(filename, "w") as file:
+        for distance, rates in conv_rates.items():
+            line = f"Distance {distance}: Width Rate = {rates[0]}, Height Rate = {rates[1]}\n"
+            file.write(line)
+        print(f"Conversion rates have been stored in {filename}")
+except IOError as e:
+    append_to_log(f"An I/O error occurred: {e.strerror}")
+except Exception as e:
+    append_to_log(f"An unexpected error occurred: {str(e)}")

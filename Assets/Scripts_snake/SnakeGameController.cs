@@ -21,6 +21,10 @@ public class SnakeGameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+		if(!File.Exists(PatientMgr.GetPatientDataDir() + "/conversion_rates.txt")){
+			_textInstruction.text = "Please pass card callibration first on Device Setting.";
+			return;
+		}
 		_textInstruction.text = "Please wait...";
 		snake.gameObject.SetActive(false);
 		_food.SetActive(false);
@@ -61,14 +65,13 @@ public class SnakeGameController : MonoBehaviour
 #else
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		string executablePath = Path.Combine(path, $"final_snake_game{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
-		if (!File.Exists(executablePath))
-		{
-			DebugUI.LogString($"Executable not found at {executablePath}");
-			return;  // Stop further execution if the file does not exist
-		}
-		_processStartInfo.FileName = executablePath;  // Use the full path
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		_processStartInfo.FileName = UtilityFunc.GetPythonExecutablePath(path, "final_snake_game");  // Use the full path
+		
+		if(Application.platform == RuntimePlatform.WindowsPlayer)
+			_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		else if(Application.platform == RuntimePlatform.OSXPlayer)
+			_processStartInfo.Arguments        = $"{path}/final_snake_game.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif

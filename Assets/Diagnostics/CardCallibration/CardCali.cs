@@ -23,6 +23,13 @@ public class CardCali : MonoBehaviour
 	int actIndex;//0,1,2,3,4--p, LT, RT, LB, RB
 	// Start is called before the first frame update
 	Vector2 [,] points = new Vector2[4, 4];
+
+	void Start(){
+		if(!File.Exists(PatientMgr.GetPatientDataDir() + "/focus_value.txt")){
+			_btnStart.gameObject.SetActive(false);
+			_text.text = "Please pass screen callibration first on Device Setting.";
+		}
+	}
 	private void Update()
 	{
 		if(webCamRender.IsOpen() && pythonProcess != null){
@@ -132,25 +139,24 @@ public class CardCali : MonoBehaviour
 #else
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		string executablePath = Path.Combine(path, $"card_callib_final{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
-		if (!File.Exists(executablePath))
-		{
-			DebugUI.LogString($"Executable not found at {executablePath}");
-			return false;  // Stop further execution if the file does not exist
-		}
-		_processStartInfo.FileName = executablePath;  // Use the full path
-		_processStartInfo.Arguments        = $"--connect --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		_processStartInfo.FileName = UtilityFunc.GetPythonExecutablePath(path, "card_callib_final");  // Use the full path
+		if(Application.platform == RuntimePlatform.WindowsPlayer)
+			_processStartInfo.Arguments        = $" --connect --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		else if(Application.platform == RuntimePlatform.OSXPlayer)
+			_processStartInfo.Arguments        = $"{path}/card_callib_final.py --connect --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif
 		if (pythonProcess != null)
 		{
+			UtilityFunc.AppendToLog($"{_processStartInfo.FileName} {_processStartInfo.Arguments}: Started.");
 			ShowTip();
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
 			return true;
 		}
 		else{
+			UtilityFunc.AppendToLog($"{_processStartInfo.FileName} {_processStartInfo.Arguments}: Starting failed.");
 			_btnStart.gameObject.SetActive(true);
 			_text.text = "Checking failed. Try again.";
 			return false;

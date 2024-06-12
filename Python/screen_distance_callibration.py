@@ -78,7 +78,7 @@ def get_unique(c):
 import os   
 
 from argparse import ArgumentParser
-from utils import get_anonymous_directory, wait_for_camera
+from utils import get_anonymous_directory, append_to_log
 
 parser = ArgumentParser()
 
@@ -214,11 +214,15 @@ else:
 
 file_path = os.path.join(args.datadir, 'focus_value.txt')
 # Open the file in write mode ('w') and write the focus value to it
-with open(file_path, 'w') as file:
-    # Write the single value followed by a newline character
-    file.write(f"{final_focus}\n")
-
-print(f"Focus value has been written to {file_path}")
+try:
+    with open(file_path, 'w') as file:
+        # Write the single value followed by a newline character
+        file.write(f"{final_focus}\n")
+        print(f"Focus value has been written to {file_path}")
+except IOError as e:
+    append_to_log(f"An I/O error occurred: {e.strerror}")
+except Exception as e:
+    append_to_log(f"An unexpected error occurred: {str(e)}")
     
 
 

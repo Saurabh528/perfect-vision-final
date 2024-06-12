@@ -9,7 +9,7 @@ import mediapipe as mp
 import numpy as np
 # Initialize MediaPipe solutions
 import math
-import json
+import sys
 import time
 
 #Read arguments
@@ -99,8 +99,10 @@ def read_conversion_rates(filename):
 
 # Use the function to read the file
 filename = os.path.join(args.datadir, 'conversion_rates.txt')  # Replace with the actual path
+if not (os.path.exists(filename) and os.path.isfile(filename)):
+    append_to_log(filename + " does not exist.")
+    sys.exit()
 width_rates, height_rates = read_conversion_rates(filename)
-
 conversion_rates = width_rates
 
 

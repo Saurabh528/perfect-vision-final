@@ -28,63 +28,30 @@
 							<key>CHILDREN</key>
 							<array>
 								<dict>
+									<key>BUNDLE_CAN_DOWNGRADE</key>
+									<false/>
+									<key>BUNDLE_POSTINSTALL_PATH</key>
+									<dict>
+										<key>PATH_TYPE</key>
+										<integer>0</integer>
+									</dict>
+									<key>BUNDLE_PREINSTALL_PATH</key>
+									<dict>
+										<key>PATH_TYPE</key>
+										<integer>0</integer>
+									</dict>
 									<key>CHILDREN</key>
-									<array>
-										<dict>
-											<key>BUNDLE_CAN_DOWNGRADE</key>
-											<false/>
-											<key>BUNDLE_POSTINSTALL_PATH</key>
-											<dict>
-												<key>PATH_TYPE</key>
-												<integer>0</integer>
-											</dict>
-											<key>BUNDLE_PREINSTALL_PATH</key>
-											<dict>
-												<key>PATH_TYPE</key>
-												<integer>0</integer>
-											</dict>
-											<key>CHILDREN</key>
-											<array/>
-											<key>GID</key>
-											<integer>80</integer>
-											<key>PATH</key>
-											<string>PerfectVision.app</string>
-											<key>PATH_TYPE</key>
-											<integer>3</integer>
-											<key>PERMISSIONS</key>
-											<integer>365</integer>
-											<key>TYPE</key>
-											<integer>3</integer>
-											<key>UID</key>
-											<integer>0</integer>
-										</dict>
-										<dict>
-											<key>CHILDREN</key>
-											<array/>
-											<key>GID</key>
-											<integer>80</integer>
-											<key>PATH</key>
-											<string>Python</string>
-											<key>PATH_TYPE</key>
-											<integer>3</integer>
-											<key>PERMISSIONS</key>
-											<integer>493</integer>
-											<key>TYPE</key>
-											<integer>3</integer>
-											<key>UID</key>
-											<integer>0</integer>
-										</dict>
-									</array>
+									<array/>
 									<key>GID</key>
-									<integer>80</integer>
+									<integer>0</integer>
 									<key>PATH</key>
-									<string>PerfectVision</string>
+									<string>../PerfectVision.app</string>
 									<key>PATH_TYPE</key>
-									<integer>2</integer>
+									<integer>1</integer>
 									<key>PERMISSIONS</key>
-									<integer>509</integer>
+									<integer>511</integer>
 									<key>TYPE</key>
-									<integer>2</integer>
+									<integer>3</integer>
 									<key>UID</key>
 									<integer>0</integer>
 								</dict>
@@ -520,7 +487,7 @@
 				<key>POSTINSTALL_PATH</key>
 				<dict>
 					<key>PATH_TYPE</key>
-					<integer>0</integer>
+					<integer>1</integer>
 				</dict>
 				<key>PREINSTALL_PATH</key>
 				<dict>
@@ -528,42 +495,7 @@
 					<integer>0</integer>
 				</dict>
 				<key>RESOURCES</key>
-				<array>
-					<dict>
-						<key>BUNDLE_CAN_DOWNGRADE</key>
-						<false/>
-						<key>CHILDREN</key>
-						<array/>
-						<key>GID</key>
-						<integer>0</integer>
-						<key>PATH</key>
-						<string>PerfectVision.app</string>
-						<key>PATH_TYPE</key>
-						<integer>3</integer>
-						<key>PERMISSIONS</key>
-						<integer>493</integer>
-						<key>TYPE</key>
-						<integer>3</integer>
-						<key>UID</key>
-						<integer>0</integer>
-					</dict>
-					<dict>
-						<key>CHILDREN</key>
-						<array/>
-						<key>GID</key>
-						<integer>0</integer>
-						<key>PATH</key>
-						<string>Python</string>
-						<key>PATH_TYPE</key>
-						<integer>3</integer>
-						<key>PERMISSIONS</key>
-						<integer>493</integer>
-						<key>TYPE</key>
-						<integer>3</integer>
-						<key>UID</key>
-						<integer>0</integer>
-					</dict>
-				</array>
+				<array/>
 			</dict>
 			<key>PACKAGE_SETTINGS</key>
 			<dict>
@@ -574,13 +506,13 @@
 				<key>FOLLOW_SYMBOLIC_LINKS</key>
 				<false/>
 				<key>IDENTIFIER</key>
-				<string>com.jatin.pkg.PerfectVision</string>
+				<string>com.jatin.PerfectVision</string>
 				<key>LOCATION</key>
 				<integer>0</integer>
 				<key>NAME</key>
 				<string>PerfectVision</string>
 				<key>OVERWRITE_PERMISSIONS</key>
-				<false/>
+				<true/>
 				<key>PAYLOAD_SIZE</key>
 				<integer>-1</integer>
 				<key>REFERENCE_PATH</key>
@@ -590,7 +522,7 @@
 				<key>USE_HFS+_COMPRESSION</key>
 				<false/>
 				<key>VERSION</key>
-				<string>1.0</string>
+				<string>1.0.8</string>
 			</dict>
 			<key>TYPE</key>
 			<integer>0</integer>
@@ -713,7 +645,7 @@
 			<key>BUILD_PATH</key>
 			<dict>
 				<key>PATH</key>
-				<string>build</string>
+				<string>PerfectVision</string>
 				<key>PATH_TYPE</key>
 				<integer>3</integer>
 			</dict>
@@ -890,7 +822,7 @@
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>REFERENCE_FOLDER_PATH</key>
-			<string>/Users/topservicer/Documents/Work/PerfectVisionProject/perfect-vision-final/Deploy/MacBuild</string>
+			<string>/Users/juliancoccaro/Documents/Work/PerfectVisionProject/perfect-vision-final/Deploy/MacBuild</string>
 			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
 			<false/>
 		</dict>

@@ -8,7 +8,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
-import csv
+import sys
 import os
 import math
 import statistics
@@ -173,6 +173,9 @@ def read_conversion_rates(filename):
 
 # Use the function to read the file
 filename = os.path.join(args.datadir, 'conversion_rates.txt')  # Replace with the actual path
+if not (os.path.exists(filename) and os.path.isfile(filename)):
+    append_to_log(filename + " does not exist.")
+    sys.exit()
 width_rates, height_rates = read_conversion_rates(filename)
 
 conversion_rates = width_rates
@@ -308,8 +311,8 @@ min_detection_confidence=0.5) as face_mesh:
                                 unitysocket.service_connection(key, mask)
                         if not sel.get_map():
                             break
-                    if cv2.waitKey(1) & 0xFF == ord('p'):
-                        triggered = True
+                    """if cv2.waitKey(1) & 0xFF == ord('p'):
+                        triggered = True"""
                     if triggered:
                         distance_set = True
                         #if args.quiet:
@@ -458,9 +461,13 @@ text_to_save = f"Eye 1: Mean Value = {mean_value1}, Standard Deviation = {std_de
 file_path = os.path.join(args.datadir, 'eye_statistics.txt')  # You can specify a different path or filename
 
 # Writing to the file
-with open(file_path, "w") as file:
-    file.write(text_to_save)
-
-print(f"Data has been written to {file_path}")
+try:
+    with open(file_path, "w") as file:
+        file.write(text_to_save)
+    print(f"Data has been written to {file_path}")
+except IOError as e:
+    append_to_log(f"An I/O error occurred: {e.strerror}")
+except Exception as e:
+    append_to_log(f"An unexpected error occurred: {str(e)}")
 if args.connect:
     soc.close()

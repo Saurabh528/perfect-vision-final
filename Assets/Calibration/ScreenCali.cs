@@ -86,16 +86,11 @@ public class ScreenCali : MonoBehaviour
 		// _processStartInfo.UseShellExecute = false;
         // _processStartInfo.RedirectStandardOutput = true;
         // _processStartInfo.RedirectStandardError = true;
-		string executablePath = Path.Combine(path, $"screen_distance_callibration{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
-		if (!File.Exists(executablePath))
-		{
-			DebugUI.LogString($"Executable not found at {executablePath}");
-			UtilityFunc.AppendToLog($"Executable not found at {executablePath}");
-			return;  // Stop further execution if the file does not exist
-		}
-		_processStartInfo.FileName = executablePath;  // Use the full path
-
-		_processStartInfo.Arguments        = $" --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		_processStartInfo.FileName = UtilityFunc.GetPythonExecutablePath(path, "screen_distance_callibration");  // Use the full path
+		if(Application.platform == RuntimePlatform.WindowsPlayer)
+			_processStartInfo.Arguments        = $"--{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		else if(Application.platform == RuntimePlatform.OSXPlayer)
+			_processStartInfo.Arguments        = $"{path}/screen_distance_callibration.py --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		/* DebugUI.LogValue("FileName", _processStartInfo.FileName);
 		DebugUI.LogValue("Arguments", _processStartInfo.Arguments); */
@@ -103,7 +98,6 @@ public class ScreenCali : MonoBehaviour
 
 
 		pythonProcess = Process.Start(_processStartInfo);
-		DebugUI.LogValue("pythonProcess", pythonProcess);
 		// string output = pythonProcess.StandardOutput.ReadToEnd();
 		// string errors = pythonProcess.StandardError.ReadToEnd();
 		// pythonProcess.WaitForExit();

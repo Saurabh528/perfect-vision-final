@@ -34,16 +34,20 @@ public class CoverUncoverResultData{
 public class CoverUncoverController : DiagnosticController
 {
 	[SerializeField] TCPListener _tcp;
-	[SerializeField] GameObject _redPoint, _btnPrint, _btnHelp;
+	[SerializeField] GameObject _redPoint, _btnPrint, _btnHelp, _btnStart;
 	[SerializeField] Text _textHint, _txtStatus;
 	[SerializeField] CoverResultView _resultView;
 	Process pythonProcess;
 	bool _finished = false;
+	bool hint_P;
 	CoverUncoverResultData _resultData;
 	// Start is called before the first frame update
 	void Start()
     {
-		
+		if(!File.Exists(PatientMgr.GetPatientDataDir() + "/conversion_rates.txt")){
+			_btnStart.SetActive(false);
+			_textHint.text = "Please pass card callibration first on Device Setting.";
+		}
 	}
 
 	
@@ -73,6 +77,9 @@ public class CoverUncoverController : DiagnosticController
 		_tcp.InitTCP();
 		
 		string path =  UtilityFunc.GetFullDirFromApp("Python");
+		
+		//if(Application.platform == RuntimePlatform.OSXPlayer)
+			//path = UtilityFunc.GetFullDirFromApp("Deploy/MacBuild/Python");
 		_textHint.text = "Please wait...";
 #if UNITY_EDITOR
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
@@ -81,23 +88,21 @@ public class CoverUncoverController : DiagnosticController
 		_processStartInfo.Arguments        = $"{path}/cover_uncover.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 		pythonProcess = Process.Start(_processStartInfo);
 #else
+		
 		ProcessStartInfo _processStartInfo = new ProcessStartInfo();
 		_processStartInfo.WorkingDirectory = path;
-		string executablePath = Path.Combine(path, $"cover_uncover{UtilityFunc.GetPlatformSpecificExecutableExtension()}");
-		if (!File.Exists(executablePath))
-		{
-			DebugUI.LogString($"Executable not found at {executablePath}");
-			return;  // Stop further execution if the file does not exist
-		}
-		_processStartInfo.FileName = executablePath;  // Use the full path
-		_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		_processStartInfo.FileName = UtilityFunc.GetPythonExecutablePath(path, "cover_uncover");  // Use the full path
+		if(Application.platform == RuntimePlatform.WindowsPlayer)
+			_processStartInfo.Arguments        = $" --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		else if(Application.platform == RuntimePlatform.OSXPlayer)
+			_processStartInfo.Arguments        = $"{path}/cover_uncover.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
+		
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
-		UtilityFunc.AppendToLog("Cover/Uncover python process started.");
 #endif
 		if (pythonProcess != null)
 		{
-			_textHint.text = "Connecting to camera...";
+			_textHint.text = "Loading...";
 			pythonProcess.EnableRaisingEvents = true;
 			pythonProcess.Exited += OnPythonProcessExited;
 		}
@@ -125,8 +130,10 @@ public class CoverUncoverController : DiagnosticController
 		else if (message.StartsWith("STS:")) {
 			if (_txtStatus){
 				_txtStatus.text = message.Substring(4);
-				if(_txtStatus.text.StartsWith("Distance:"))
+				if(_txtStatus.text.StartsWith("Distance:") && !hint_P){
 					_textHint.text = "Sit at a distance of 40 cms and press p";
+					hint_P = true;
+				}
 			}
 		}
 	}

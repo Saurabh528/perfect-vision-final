@@ -129,14 +129,31 @@ public abstract class UtilityFunc
 	}
 
 	public static string GetFullDirFromApp(string relative){
-		return System.IO.Path.GetFullPath((Application.platform == RuntimePlatform.OSXPlayer)?(Application.dataPath + "/../../" + relative):(Application.dataPath + "/../" + relative));
+		return System.IO.Path.GetFullPath((Application.platform == RuntimePlatform.OSXPlayer)?(Application.dataPath + "/../" + relative):(Application.dataPath + "/../" + relative));
 	}
 
 	public static string GetPythonPath(){
 		if(Application.platform == RuntimePlatform.WindowsEditor)
 			return "python.exe";
+		//else if(Application.platform == RuntimePlatform.OSXEditor)
+		//	return "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3";
+		else if(Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer)
+			return GetFullDirFromApp("/Python/PerfectVision/bin/python3");
+		else return "";
+	}
+
+	public static string GetPythonExecutablePath(string path, string gamename){
+		string executablePath;
+		if(Application.platform == RuntimePlatform.WindowsPlayer)
+			executablePath = Path.Combine(path, $"{gamename}.exe");
 		else
-			return "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3";
+			executablePath = UtilityFunc.GetPythonPath();
+		if (!File.Exists(executablePath))
+		{
+			UtilityFunc.AppendToLog($"Executable not found at {executablePath}");
+			return "";  // Stop further execution if the file does not exist
+		}
+		return executablePath;
 	}
 
 	public static string GetPlatformSpecificExecutableExtension(){

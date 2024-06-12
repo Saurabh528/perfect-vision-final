@@ -7,7 +7,12 @@ import os
 
 app_name = "PerfectVision"
 app_author = "Jatin"
-logfilePath = user_data_dir(app_name, app_author) + "/Python.log"
+logfileDir = user_data_dir(app_name, app_author)
+logfilePath = os.path.join(logfileDir, 'Python.log')
+
+if not os.path.exists(logfileDir):
+    os.makedirs(logfileDir, exist_ok=True)
+
 def get_anonymous_directory():
     return user_data_dir(app_name, app_author) + "/PatientData/Anonymous"
 
