@@ -104,11 +104,17 @@ public class CheckForUpdate : MonoBehaviour
 
         if (os.Contains("Windows"))
         {
-            Application.OpenURL("https://drive.google.com/uc?export=download&id=1LnZyQ_ZGIAWNDXPlkUd2oh5TTDLmv1dh");
+            if(GameConst.COMPANYNAME.StartsWith("BinoPlay"))
+                Application.OpenURL("https://drive.google.com/uc?export=download&id=1LnZyQ_ZGIAWNDXPlkUd2oh5TTDLmv1dh");
+            else
+                Application.OpenURL("https://drive.google.com/uc?export=download&id=1lCI-ZZstN6paqxr2A2LcvT1pioJ1YeNK");
         }
         else/*  if (os.Contains("Mac OS") || os.Contains("MacOS")) */
         {
-            Application.OpenURL("https://drive.google.com/uc?export=download&id=19Por_Ht6a2d5-lgY5lCbTsNaB2dTp0uq");
+            if(GameConst.COMPANYNAME.StartsWith("BinoPlay"))
+                Application.OpenURL("https://drive.google.com/uc?export=download&id=19Por_Ht6a2d5-lgY5lCbTsNaB2dTp0uq");
+            else
+                Application.OpenURL("https://drive.google.com/uc?export=download&id=19Por_Ht6a2d5-lgY5lCbTsNaB2dTp0uq");
         }
         
         ExitUI.ForceExit();

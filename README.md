@@ -54,6 +54,9 @@ then open the folder in unity or you can find useful stuff by [browsing awesome 
 - add to SessionMgr.gameScenenames
 - increase count Enrollment.unity/...RightView/ScrollView/Mask/PatientView/HightscoreView.UISessionReportView.Gamenames, Maxscores,MaxLevels,MaxavgTimes
 - add list item to Enrollment.unity/...RightView/ScrollView/Mask/PatientView/SessionMakeView/GameInfo/Dropdown_AddNewGame.Dropdown
+- increase count Enrollment.unity/...RightView/ScrollView/Mask/PatientView/SessionReportView tmpl/UISessionReportView component
+- increase count Enrollment.unity/...RightView/ScrollView/Mask/PatientView/HightscoreView/UISessionReportView component
+- add row in UISessionRecordView.cs.OnBtnExportPDF
 
 ### Gamescore customizing
 - UIProgressView.ViewProgression(string gamename)

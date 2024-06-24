@@ -438,6 +438,7 @@ public class UISessionRecordView : MonoBehaviour
 		gameColors[SessionMgr.GetGameName(5)] = new BaseColor(181, 235, 145);
 		gameColors[SessionMgr.GetGameName(6)] = new BaseColor(255, 134, 47);
 		gameColors[SessionMgr.GetGameName(7)] = new BaseColor(255, 134, 47);
+		gameColors[SessionMgr.GetGameName(8)] = new BaseColor(237, 161, 145);
 		foreach (KeyValuePair<string, StatisData> pair in highdatas)
         {
 			PdfPCell cell = new PdfPCell(new Phrase(pair.Key, cellFont));

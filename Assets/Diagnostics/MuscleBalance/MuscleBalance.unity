@@ -3284,7 +3284,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 600}
+  m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &730026257
 MonoBehaviour:
@@ -4000,6 +4000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a2c52048b1de04294ca86e785df09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextSceneName: 
   _tweenUseArrowKeys: {fileID: 816635873}
   _tweenOnceAligned: {fileID: 1603583393}
   _tweenRightFixating: {fileID: 584999058}

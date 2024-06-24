@@ -1,9 +1,10 @@
-using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Org.BouncyCastle.Asn1.Mozilla;
 using Newtonsoft.Json.Linq;
+using iTextSharp.text.pdf;
 
 public abstract class GameConst
 {
@@ -14,9 +15,9 @@ public abstract class GameConst
 	public const string PYARG_DATADIR = "datadir";
 	public const string PLAYFABID_CLINIC = "0000000000000000";
 	public const string COMPANYNAME =	"BinoPlay";
+										//"CAVT<sup><i><color=yellow>  DICHO</color></i></sup>";
 	public const float PRISMTHRES_HOR = 2f;
 	public const float PRISMTHRES_VER = 0.5f;
-										//"CAVT<sup><i><color=yellow>  DICHO</color></i></sup>";
 	public const string GAMENAME_VERGENCE = "Vergence";
 }
 
@@ -347,4 +348,31 @@ public abstract class SessionMgr
 	{
 		return sessionRecord != null && GameState.currentPatient != null && sessionRecord.games.Count != 0;
 	}
+}
+
+public abstract class GameResource{
+
+	static BaseFont _serifFont;
+	public static BaseFont SerifFont{
+		get{
+			if(_serifFont != null)
+				return _serifFont;
+			else{
+				string tempFontPath = Path.Combine(Application.temporaryCachePath, "FreeSerif.ttf");
+				if(File.Exists(tempFontPath)){
+					_serifFont = BaseFont.CreateFont(tempFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+					return _serifFont;
+				}
+				TextAsset fontAsset = Resources.Load<TextAsset>("Fonts/FreeSerif");
+				if (fontAsset == null)
+				{
+					return null;
+				}
+				File.WriteAllBytes(tempFontPath, fontAsset.bytes);
+				_serifFont = BaseFont.CreateFont(tempFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				return _serifFont;
+			}
+		}
+	}
+
 }

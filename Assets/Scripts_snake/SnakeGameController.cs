@@ -72,6 +72,7 @@ public class SnakeGameController : MonoBehaviour
 		else if(Application.platform == RuntimePlatform.OSXPlayer)
 			_processStartInfo.Arguments        = $"{path}/final_snake_game.py --connect --quiet --{GameConst.PYARG_CAMERAINDEX}={camindex} --{GameConst.PYARG_DATADIR}=\"{PatientMgr.GetPatientDataDir()}\"";
 
+		//UtilityFunc.AppendToLog($"{_processStartInfo.FileName} {_processStartInfo.Arguments}");
 		_processStartInfo.WindowStyle   = ProcessWindowStyle.Hidden;
 		pythonProcess = Process.Start(_processStartInfo);
 #endif

@@ -1,7 +1,7 @@
 Normal ranges indicate proper alignment
-Left Eye Horizontal Deviation;△; ;?
-Left Eye Vertical Deviation;△; ;?
-Left Eye Combined Deviation;△; ;?
-Right Eye Horizontal Deviation;△; ;?
-Right Eye Vertical Deviation;△; ;?
-Right Eye Combined Deviation;△; ;?
+Left Eye Horizontal Deviation;△; ;Under Study
+Left Eye Vertical Deviation;△; ;Under Study
+Left Eye Combined Deviation;△; ;Under Study
+Right Eye Horizontal Deviation;△; ;Under Study
+Right Eye Vertical Deviation;△; ;Under Study
+Right Eye Combined Deviation;△; ;Under Study

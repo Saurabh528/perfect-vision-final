@@ -1,4 +1,4 @@
-using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -161,6 +161,8 @@ public class UIEditPatient : MonoBehaviour
 		UIPatientList.Instance.AddPatientData(pdata);
 		if((THERAPPYPLACE)_place.value == THERAPPYPLACE.Clinic){
 			gameObject.SetActive(false);
+			GameState.currentPatient = pdata;
+			Directory.CreateDirectory(PatientMgr.GetPatientDataDir());
 			ChangeScene.LoadScene("ColorScreen");
 		}
 		_licenseKey.text = pdata.licenseKey;
