@@ -129,7 +129,7 @@ public abstract class UtilityFunc
 	}
 
 	public static string GetFullDirFromApp(string relative){
-		return System.IO.Path.GetFullPath((Application.platform == RuntimePlatform.OSXPlayer)?(Application.dataPath + "/../" + relative):(Application.dataPath + "/../" + relative));
+		return System.IO.Path.GetFullPath(Application.dataPath + "/../" + relative);
 	}
 
 	public static string GetPythonPath(){
