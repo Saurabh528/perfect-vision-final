@@ -14,7 +14,7 @@ public class SessionRecord
 {
 	public List<GamePlay> games = new List<GamePlay>();
 	public DateTime time;
-	public ColorSet cali = new ColorSet();
+	public ColorSet cali;
 
 	[OnDeserialized]
     private void OnDeserialized(StreamingContext context)
@@ -53,6 +53,7 @@ public class DiagnoseTestItem{//diagnose test item for one diagnostics game
 [JsonObject(MemberSerialization.Fields)]
 public class DiagnoseRecord{
 	Dictionary<string, DiagnoseTestItem> diagnoseTestItems = new Dictionary<string, DiagnoseTestItem>();//key: test name
+	public ColorSet cali;
 	public void AddTestItem(string testname, DiagnoseTestItem item){
 		diagnoseTestItems[testname] = item;
 	}
@@ -64,6 +65,7 @@ public class DiagnoseRecord{
         {
             diagnoseTestItems = new Dictionary<string, DiagnoseTestItem>();
         }
+
     }
 
 	public Dictionary<string, DiagnoseTestItem> GetTestItems(){return diagnoseTestItems;}
@@ -113,11 +115,16 @@ public class PatientRecord
 			record = new DiagnoseRecord();
 			diagnoseRecords[datestr] = record;
 		}
+		record.cali = ColorCalibration.GetCurrentColorSet();
 		record.AddTestItem(testname, diagnos);
 	}
 
 	public List<SessionRecord> GetSessionRecordList()
 	{
+		if(GameConst.MODE_DOCTORTEST){
+			Debug.LogError("Can not request session list in diagnostic mode");
+			return new List<SessionRecord>();
+		}
 		return sessionlist;
 	}
 

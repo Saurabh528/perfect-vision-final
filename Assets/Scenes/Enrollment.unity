@@ -13979,6 +13979,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _msg: {fileID: 787689677}
   _msgTime: 3
+  sessionMakeObj: {fileID: 940473458}
 --- !u!1 &581438033
 GameObject:
   m_ObjectHideFlags: 0
@@ -47666,6 +47667,7 @@ MonoBehaviour:
   _sessionProgressSection: {fileID: 1214473935}
   _colorProgressSection: {fileID: 227006439}
   _btnExportPDF: {fileID: 1063381655}
+  _btnProgressAnalys: {fileID: 1311765023}
   diagGraphSection: {fileID: 327917367}
   diagGraphRow: {fileID: 1789112151}
   objSpectacles_Exercises: {fileID: 1468612762}

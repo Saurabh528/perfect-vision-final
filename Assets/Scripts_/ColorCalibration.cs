@@ -169,4 +169,15 @@ public abstract class ColorCalibration
 		redcolor = GetRedColor(GameState.currentPatient.cali.rd);
 		cyancolor = GetCyanColor(GameState.currentPatient.cali.cy);
 	}
+
+	public static ColorSet GetCurrentColorSet(){
+		return new ColorSet(
+			UtilityFunc.Color2Int(ColorCalibration.RedColor),
+			UtilityFunc.Color2Int(ColorCalibration.CyanColor),
+			UtilityFunc.Color2Int(ColorCalibration.BackColor),
+			((uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Red), 0.5f) : GameState.currentPatient.cali.rd) * 100) << 16) +
+			((uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Cyan), 0.5f) : GameState.currentPatient.cali.cy) * 100) << 8) +
+			(uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Red), 0.5f) : GameState.currentPatient.cali.rd) * 100)
+		);
+	}
 }

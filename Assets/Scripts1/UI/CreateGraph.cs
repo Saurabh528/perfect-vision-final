@@ -17,26 +17,22 @@ public class CreateGraph : MonoBehaviour
 
 	public void SetWidth(float w)
 	{
-		Debug.Log("SetWidth function called");
 		width = w;
 	}
 
 	public void SetColor(Color c)
 	{
-		Debug.Log("Set color called");
 		color = c;
 	}
 
 	public void MoveTo(float x, float y)
 	{
-		Debug.Log("MoveTo function called");
 		curX = x;
 		curY = y;
 	}
 
 	public void LineTo(float x, float y)
 	{
-		Debug.Log("LineTo  function called");
 		MakeLine(curX, curY, x, y);
 		curX = x;
 		curY = y;
@@ -44,7 +40,6 @@ public class CreateGraph : MonoBehaviour
 
 	void MakeLine(float ax, float ay, float bx, float by)
 	{
-		Debug.Log("MakeLine function called");
 		GameObject NewObj = new GameObject();
 		NewObj.name = $"({ax}, {ay})-({bx}, {by})";
 		Image NewImage = NewObj.AddComponent<Image>();
@@ -64,7 +59,6 @@ public class CreateGraph : MonoBehaviour
 
 	public void DrawCircle(float x, float y, float radius)
 	{
-		Debug.Log("DrawCircle functioncalled");
 		GameObject NewObj = new GameObject();
 		NewObj.name = $"Circle({x}, {y})-{radius}";
 		Image NewImage = NewObj.AddComponent<Image>();
@@ -86,7 +80,6 @@ public class CreateGraph : MonoBehaviour
 
 	public void TextOut(string str, float x, float y, TextAnchor anchor, FontStyle style)
 	{
-		Debug.Log("Text Out function called");
 		GameObject NewObj = new GameObject();
 		NewObj.name = $"text-{str}";
 		Text text = NewObj.AddComponent<Text>();

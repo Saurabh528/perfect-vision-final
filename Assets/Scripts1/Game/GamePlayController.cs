@@ -336,7 +336,7 @@ public class GamePlayController : MonoBehaviour
 
 	public static bool IsDiagnosticMode()
 	{
-		return GameState.MODE_DOCTORTEST || GameState.currentGameMode == GAMEMODE.DeviceSetting;
+		return GameConst.MODE_DOCTORTEST || GameState.currentGameMode == GAMEMODE.DeviceSetting;
 	}
 
 	public virtual float GetDifficultyValue(){

@@ -33,6 +33,10 @@ public class UISessionReportView : MonoBehaviour
 
 	public void ViewHighscore()
 	{
+		if(GameConst.MODE_DOCTORTEST){
+			gameObject.SetActive(false);
+			return;
+		}
 		_title.text = $"Session HighScore";
 		Dictionary<string, StatisData> datas = UISessionRecordView.GetHighscoreData();
 		for(int i = 0; i < datas.Count; i++)

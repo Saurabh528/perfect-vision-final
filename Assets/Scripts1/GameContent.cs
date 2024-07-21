@@ -19,6 +19,7 @@ public abstract class GameConst
 	public const float PRISMTHRES_HOR = 2f;
 	public const float PRISMTHRES_VER = 0.5f;
 	public const string GAMENAME_VERGENCE = "Vergence";
+	public static bool MODE_DOCTORTEST = true;
 }
 
 public abstract class GameVersion{
@@ -67,6 +68,13 @@ public class SingleEyeAlignmentData{
 public class ColorSet
 {
 	public UInt32 red, cyan, back, slider;//slider: 00, Red, Cyan, Back(%)
+
+	public ColorSet(UInt32 r, UInt32 cy, UInt32 bck, UInt32 sli){
+		red = r;
+		cyan = cy;
+		back = bck;
+		slider = sli;
+	}
 	
 }
 
@@ -107,7 +115,6 @@ public abstract class GameState
     }
 	//public string playfabID2 = ;
 	public static string password = "";
-	public static bool MODE_DOCTORTEST = false;
 	public static USERROLE userRole;
 	public static string DoctorID;
 	public static DateTime ExpireDate;
@@ -305,12 +312,7 @@ public abstract class SessionMgr
 		GameState.currentGameMode = GAMEMODE.SessionGame;
 		GameState.currentSessionPlayIndex = 0;
 		sessionRecord = new SessionRecord();
-		sessionRecord.cali.back = UtilityFunc.Color2Int(ColorCalibration.BackColor);
-		sessionRecord.cali.red = UtilityFunc.Color2Int(ColorCalibration.RedColor);
-		sessionRecord.cali.cyan = UtilityFunc.Color2Int(ColorCalibration.CyanColor);
-		sessionRecord.cali.slider = ((uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Red), 0.5f) : GameState.currentPatient.cali.rd) * 100) << 16) +
-			((uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Cyan), 0.5f) : GameState.currentPatient.cali.cy) * 100) << 8) +
-			(uint)((GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Red), 0.5f) : GameState.currentPatient.cali.rd) * 100);
+		sessionRecord.cali = ColorCalibration.GetCurrentColorSet();
 		StartSessionGame(GameState.currentSessionPlayIndex);
 	}
 

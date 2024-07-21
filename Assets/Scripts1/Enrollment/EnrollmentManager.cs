@@ -9,12 +9,15 @@ public class EnrollmentManager : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _msg;
 	public float _msgTime = 3;
 	float _msgexpiretime;
+	[SerializeField] GameObject sessionMakeObj;
 	void Awake()
 	{
 #if UNITY_EDITOR
 		UISignIn.StartFromSignInDebugMode();
 #endif
 		Instance = this;
+		if(GameConst.MODE_DOCTORTEST)
+			sessionMakeObj.SetActive(false);
 	}
 
 	private void Start()

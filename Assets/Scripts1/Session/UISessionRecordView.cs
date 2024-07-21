@@ -48,7 +48,7 @@ public class UISessionRecordView : MonoBehaviour
 	[SerializeField] UIDisplacementProgressView _disProgressViewTmpl;
 	[SerializeField] ColorCalibrationProgressView _colorCalibProgViewTmpl;
 	[SerializeField] ColorCalibrationProgressView _colorCaliProgView;
-	[SerializeField] GameObject _disProgressSection, _sessionProgressSection, _colorProgressSection, _btnExportPDF, diagGraphSection, diagGraphRow,
+	[SerializeField] GameObject _disProgressSection, _sessionProgressSection, _colorProgressSection, _btnExportPDF, _btnProgressAnalys, diagGraphSection, diagGraphRow,
 	objSpectacles_Exercises, obj_Summary_Suggestion, obj_DiagAnalysTable;
 	[SerializeField] CalibrationSliderProgressView _calisliderView;
 	[SerializeField] Text textDiagDate;
@@ -156,13 +156,17 @@ public class UISessionRecordView : MonoBehaviour
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
 		Clear();
 		List<string> datelist = new List<string>();
-		List<SessionRecord> sessionlist = record.GetSessionRecordList();
-		foreach(SessionRecord session in sessionlist){
-			DateTime dt = session.time;
-			string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
-			if(!datelist.Contains(datestr))
-				datelist.Add(datestr);
+
+		if(!GameConst.MODE_DOCTORTEST){
+			List<SessionRecord> sessionlist = record.GetSessionRecordList();
+			foreach(SessionRecord session in sessionlist){
+				DateTime dt = session.time;
+				string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
+				if(!datelist.Contains(datestr))
+					datelist.Add(datestr);
+			}
 		}
+		
 
 		Dictionary<string, DiagnoseRecord> diagnoslist = record.GetDiagnoseRecords();
 		foreach(KeyValuePair<string, DiagnoseRecord> pair in diagnoslist){
@@ -192,20 +196,24 @@ public class UISessionRecordView : MonoBehaviour
 		if(diagnosticReportView)
 			diagnosticReportView.gameObject.SetActive(false);
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
-		List<SessionRecord> sessionlist = record.GetSessionRecordList();
 		int siblingIndex = button.transform.GetSiblingIndex() + 1;
-		foreach(SessionRecord session in sessionlist){
-			DateTime dt = session.time;
-			string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
-			if(datestr == button.name){
-				UISessionReportView newview = Instantiate(_reportViewTmpl, _reportViewTmpl.transform.position, _reportViewTmpl.transform.rotation);
-				newview.transform.SetParent(_reportViewTmpl.transform.parent);
-				newview.transform.localScale = _reportViewTmpl.transform.localScale;
-				newview.ViewRecord(session);
-				newview.transform.SetSiblingIndex(siblingIndex++);
-				newview.gameObject.SetActive(true);
+
+		if(!GameConst.MODE_DOCTORTEST){
+			List<SessionRecord> sessionlist = record.GetSessionRecordList();
+			foreach(SessionRecord session in sessionlist){
+				DateTime dt = session.time;
+				string datestr = dt.ToString(GameConst.STRFORMAT_DATETIME);
+				if(datestr == button.name){
+					UISessionReportView newview = Instantiate(_reportViewTmpl, _reportViewTmpl.transform.position, _reportViewTmpl.transform.rotation);
+					newview.transform.SetParent(_reportViewTmpl.transform.parent);
+					newview.transform.localScale = _reportViewTmpl.transform.localScale;
+					newview.ViewRecord(session);
+					newview.transform.SetSiblingIndex(siblingIndex++);
+					newview.gameObject.SetActive(true);
+				}
 			}
 		}
+		
         
 		Dictionary<string, DiagnoseRecord> diagnoRecords = record.GetDiagnoseRecords();
 		foreach(KeyValuePair<string, DiagnoseRecord> pair in diagnoRecords){
@@ -237,46 +245,44 @@ public class UISessionRecordView : MonoBehaviour
 		
 		UnityEngine.Debug.Log("On Btn Progression Analysis called");
 		ClearProgressViews();
-		List<DisplacementRecord> dispplaceRecords = GetMeanDisplacementList();
+		/* List<DisplacementRecord> dispplaceRecords = GetMeanDisplacementList();
 		if(dispplaceRecords !=  null &&  dispplaceRecords.Count != 0)
 		{
 			_disProgressSection.SetActive(true);
 			CreateDisplacementProgressView("Right Eye", dispplaceRecords, UnityEngine.Color.black, EYESIDE.RIGHT);
 			CreateDisplacementProgressView("Left Eye", dispplaceRecords, UnityEngine.Color.black, EYESIDE.LEFT);
-		}
+		} */
 
-		if (PatientDataMgr.GetPatientRecord().GetSessionRecordList().Count == 0)
-		{
-			_colorProgressSection.SetActive(false);
-		}
-		else
-		{
-			_colorProgressSection.SetActive(true);
-			_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Background));
-			_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Cyan));
-			_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Red));
-		}
+		
+		_colorProgressSection.SetActive(true);
+		_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Background));
+		_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Cyan));
+		_colorCaliViews.Add(CreateColorCalibrationView(ColorChannel.CC_Red));
 
 		_calisliderView.gameObject.SetActive(true);
 		_calisliderView.Draw(ColorChannel.CC_Red);
 
-		List<string> gamenames = GetRecodedGames();
-		_sessionProgressSection.SetActive(gamenames.Count > 0);
-		int siblingIndex = _progressViewTmpl.transform.GetSiblingIndex();
-		foreach (string gamename in gamenames){
-			UIProgressView view = Instantiate(_progressViewTmpl, _progressViewTmpl.transform.position, _progressViewTmpl.transform.rotation);
-			view.transform.SetParent(_progressViewTmpl.transform.parent);
-			view.transform.SetSiblingIndex(++siblingIndex);
-			view.transform.localScale = _progressViewTmpl.transform.localScale;
-			view.name = gamename;
-			view.gameObject.SetActive(true);
-			//view.ViewProgression(gamename);//show max score, max level, avg time
-			view.ViewDateScoreProgression(gamename);//show score/date
-			_progressViews.Add(view);
+		if(!GameConst.MODE_DOCTORTEST){
+			List<string> gamenames = GetRecodedGames();
+			_sessionProgressSection.SetActive(gamenames.Count > 0);
+			int siblingIndex = _progressViewTmpl.transform.GetSiblingIndex();
+			foreach (string gamename in gamenames){
+				UIProgressView view = Instantiate(_progressViewTmpl, _progressViewTmpl.transform.position, _progressViewTmpl.transform.rotation);
+				view.transform.SetParent(_progressViewTmpl.transform.parent);
+				view.transform.SetSiblingIndex(++siblingIndex);
+				view.transform.localScale = _progressViewTmpl.transform.localScale;
+				view.name = gamename;
+				view.gameObject.SetActive(true);
+				//view.ViewProgression(gamename);//show max score, max level, avg time
+				view.ViewDateScoreProgression(gamename);//show score/date
+				_progressViews.Add(view);
+			}
 		}
-		if(_btnExportPDF)
+		
+		if(_btnExportPDF && !GameConst.MODE_DOCTORTEST)
 			_btnExportPDF.SetActive(true);
-		StartCoroutine(ScrollToTarget(_highcoreView.GetComponent<RectTransform>()));
+		
+		StartCoroutine(ScrollToTarget(_btnProgressAnalys.GetComponent<RectTransform>()));
         //GetDataFunction();
     }
 
@@ -651,7 +657,7 @@ public class UISessionRecordView : MonoBehaviour
 	void DrawColorCalibrationGraph(Document document, PdfWriter writer, ColorChannel channel)
 	{
 		UnityEngine.Debug.Log("DrawColorCalibrationGraph called");
-		Dictionary<DateTime, uint> timeValuelist = UISessionRecordView.GetSessionColorList(channel);
+		Dictionary<DateTime, uint> timeValuelist = UISessionRecordView.GetSessionDiagnosticsColorList(channel);
 		PDFUtil.AddSubSection(UtilityFunc.ColorChannelToName(channel) + " Slider RGB Values Over Time", document);
 		iTextSharp.text.pdf.BaseFont bfntHead = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
@@ -751,6 +757,7 @@ public class UISessionRecordView : MonoBehaviour
 
 	public static List<string> GetRecodedGames()
     {
+
         List<string> gamenames = new List<string>();
         PatientRecord record = PatientDataMgr.GetPatientRecord();
         List<SessionRecord> sessionlist = record.GetSessionRecordList();
@@ -826,23 +833,54 @@ public class UISessionRecordView : MonoBehaviour
 		}
 	}
 
-	public static Dictionary<DateTime, UInt32> GetSessionColorList(ColorChannel channel)
+	public static Dictionary<DateTime, UInt32> GetSessionDiagnosticsColorList(ColorChannel channel)
 	{
 		PatientRecord record = PatientDataMgr.GetPatientRecord();
-		List<SessionRecord> sessionlist = record.GetSessionRecordList();
 		Dictionary<DateTime, UInt32> colorList = new Dictionary<DateTime, UInt32>();
 		UInt32 curColor = 0;
-		foreach (SessionRecord ssrecord in sessionlist)
+		if(!GameConst.MODE_DOCTORTEST){
+			List<SessionRecord> sessionlist = record.GetSessionRecordList();
+			foreach (SessionRecord ssrecord in sessionlist)
+			{
+
+				DateTime dt = new DateTime(ssrecord.time.Year, ssrecord.time.Month, ssrecord.time.Day);
+				UInt32 color = 0;
+				if (channel == ColorChannel.CC_Red)
+					color = ssrecord.cali.red;
+				else if (channel == ColorChannel.CC_Cyan)
+					color = ssrecord.cali.cyan;
+				else if (channel == ColorChannel.CC_Background)
+					color = ssrecord.cali.back;
+				if (curColor != color && color != 0)
+				{
+					if (colorList.Count >= 2 && color == colorList.ElementAt(colorList.Count - 2).Value)
+						colorList.Remove(colorList.Last().Key);
+					else if(colorList.Count == 0 || colorList.Last().Value != color)
+					{
+						colorList[dt] = color;
+						curColor = color;
+					}
+					
+				}
+				
+
+			}
+		}
+		
+		Dictionary<string, DiagnoseRecord> diagList = record.GetDiagnoseRecords();
+		foreach (KeyValuePair<string, DiagnoseRecord> pair in diagList)
 		{
 
-			DateTime dt = new DateTime(ssrecord.time.Year, ssrecord.time.Month, ssrecord.time.Day);
+			DateTime dt = DateTime.Parse(pair.Key);
+			if(pair.Value.cali == null)
+				continue;
 			UInt32 color = 0;
 			if (channel == ColorChannel.CC_Red)
-				color = ssrecord.cali.red;
+				color = pair.Value.cali.red;
 			else if (channel == ColorChannel.CC_Cyan)
-				color = ssrecord.cali.cyan;
+				color = pair.Value.cali.cyan;
 			else if (channel == ColorChannel.CC_Background)
-				color = ssrecord.cali.back;
+				color = pair.Value.cali.back;
 			if (curColor != color && color != 0)
 			{
 				if (colorList.Count >= 2 && color == colorList.ElementAt(colorList.Count - 2).Value)
@@ -857,7 +895,7 @@ public class UISessionRecordView : MonoBehaviour
 			
 
 		}
-
+		colorList = colorList.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
 		int maxCount = 8;
 		if (colorList.Count > maxCount)

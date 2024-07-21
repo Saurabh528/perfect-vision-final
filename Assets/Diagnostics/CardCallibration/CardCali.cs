@@ -197,7 +197,7 @@ public class CardCali : MonoBehaviour
 	{
 		_text.text = "Checking successful.";
 		yield return new WaitForSeconds(2);
-		ChangeScene.LoadScene(GameState.MODE_DOCTORTEST? "Diag_ForTest" : "Diagnostic");
+		ChangeScene.LoadScene("Diagnostic");
 	}
 
 	private void OnDestroy()

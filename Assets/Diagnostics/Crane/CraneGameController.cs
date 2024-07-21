@@ -366,7 +366,7 @@ public class CraneGameController : GamePlayController
 	{
 		Cursor.visible = true;
 		Time.timeScale = 1;
-		if (GameState.MODE_DOCTORTEST)
+		if (GameConst.MODE_DOCTORTEST)
 			ChangeScene.LoadScene("Diag_ForTest");
 		else if (GameState.currentGameMode == GAMEMODE.DeviceSetting)
 			ChangeScene.LoadScene("Diagnostic");

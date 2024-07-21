@@ -37,7 +37,7 @@ public class ColorCalibrationProgressView : MonoBehaviour
 			_textTitle.text = "Background";
 			_textTitle.color = Color.white;
 		}
-		Dictionary<DateTime, UInt32> colorlist = UISessionRecordView.GetSessionColorList(channel);
+		Dictionary<DateTime, UInt32> colorlist = UISessionRecordView.GetSessionDiagnosticsColorList(channel);
         _graph.CreateItems(colorlist);
     }
 }

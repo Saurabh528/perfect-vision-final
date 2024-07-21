@@ -33,9 +33,11 @@ public class CalibrationGraph : MonoBehaviour
 			RectTransform rtsrc = _infoSlotTmpl.GetComponent<RectTransform>();
 			rt.SetParent(rtsrc.parent);
             UtilityFunc.CopyRectTransform(rtsrc, rt);
-            rt.Translate(new Vector3(slotwidth * count, 0, 0));
+            //rt.Translate(new Vector3(slotwidth * count, 0, 0));
             //rt.localPosition = rtsrc.localPosition + new Vector3(slotwidth * count, 0, 0);
 			//rt.offsetMax = new Vector3(rtsrc.offsetMin.x + slotwidth * (count + 1), rtsrc.offsetMax.y);
+            rt.offsetMin = rtsrc.offsetMin + new Vector2(slotwidth * count, 0);
+            rt.offsetMax = rtsrc.offsetMax + new Vector2(slotwidth * count, 0);
 			calibInfoUI.name = pair.Key.ToString();
             calibInfoUI.SetInfo(pair.Key, pair.Value);
             count++;
