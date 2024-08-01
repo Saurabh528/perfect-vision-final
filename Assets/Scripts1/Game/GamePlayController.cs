@@ -90,20 +90,18 @@ public class GamePlayController : MonoBehaviour
 					}
 				}
 				else{
-					
+					OnTimeisUp();
 				}
 				
 			}
 			if ((int)_timeleft != _timeLeftInt)
-			{
-				_timeLeftInt = (int)_timeleft;
-				int minutes = (int)(_timeLeftInt / 60);
-				int seconds = (int)(_timeLeftInt % 60);
-				textTime.text = $"{minutes:00}:{seconds:00}";
-			}
-			
+				textTime.text = UtilityFunc.ConvertSec2MMSS(_timeleft);
 		}
     }
+
+	public virtual void OnTimeisUp(){
+
+	}
 
 	public virtual void StartGamePlay()
 	{

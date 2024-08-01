@@ -213,4 +213,11 @@ public abstract class UtilityFunc
         target.offsetMin = source.offsetMin;
         target.offsetMax = source.offsetMax;
     }
+
+	public static string ConvertSec2MMSS(float time){
+		int sec = (int)time;
+		int minutes = (int)(sec / 60);
+		int seconds = (int)(sec % 60);
+		return $"{minutes:00}:{seconds:00}";
+	}
 }

@@ -98,7 +98,7 @@ public class PingPongController : GamePlayController {
 	}
 	public override void OnScoreChange(int levelstartscore, int score)
 	{
-		ShowScore();
+		base.OnScoreChange(levelstartscore, score);
 		if (score >= levelstartscore + 3)
 		{
 			IncreaseLevel();

@@ -104,7 +104,9 @@ public class CheckForUpdate : MonoBehaviour
 
         if (os.Contains("Windows"))
         {
-            if(GameConst.COMPANYNAME.StartsWith("BinoPlay"))
+            if(GameConst.MODE_DOCTORTEST)
+                Application.OpenURL("https://drive.google.com/uc?export=download&id=1QOn-EvaF9P8lPAvKSrqpG7OgSGe4j0Bs");
+            else if(GameConst.COMPANYNAME.StartsWith("BinoPlay"))
                 Application.OpenURL("https://drive.google.com/uc?export=download&id=1LnZyQ_ZGIAWNDXPlkUd2oh5TTDLmv1dh");
             else
                 Application.OpenURL("https://drive.google.com/uc?export=download&id=1lCI-ZZstN6paqxr2A2LcvT1pioJ1YeNK");

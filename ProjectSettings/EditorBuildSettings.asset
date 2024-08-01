@@ -125,4 +125,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Vergence/VergenceGame.unity
     guid: bec15c1b2fa25ee4ea9a59de694a0b3d
+  - enabled: 1
+    path: Assets/Games/Stereogram/Scene/Stereogram.unity
+    guid: 9bf7ffecd9703664782597531e00b27f
   m_configObjects: {}

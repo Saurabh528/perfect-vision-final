@@ -162,7 +162,6 @@ public class ColorSwitchController : GamePlayController
 				ShowLevel();
 			}
 			Lost();
-			return;
 		}
 		else if (col.tag == "ColorSwitch")
 		{
@@ -183,7 +182,6 @@ public class ColorSwitchController : GamePlayController
 					col.transform.parent.gameObject.SetActive(false); */
 				col.enabled = false;
 				Lost();
-				return;
 			}
 		}
 		

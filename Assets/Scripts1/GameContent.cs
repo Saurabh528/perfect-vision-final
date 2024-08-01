@@ -19,7 +19,7 @@ public abstract class GameConst
 	public const float PRISMTHRES_HOR = 2f;
 	public const float PRISMTHRES_VER = 0.5f;
 	public const string GAMENAME_VERGENCE = "Vergence";
-	public static bool MODE_DOCTORTEST = true;
+	public static bool MODE_DOCTORTEST = false;
 }
 
 public abstract class GameVersion{

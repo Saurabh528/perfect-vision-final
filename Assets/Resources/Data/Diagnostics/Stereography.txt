@@ -1,0 +1,4 @@
+Longest distance indicates high ability.
+Longest distance; ;10 - 15; Normal if higher than 10
+Corrects; ;Longest distance;Normal if close to Longest distance
+Errors; ;2 - 5;Normal if close to 0
