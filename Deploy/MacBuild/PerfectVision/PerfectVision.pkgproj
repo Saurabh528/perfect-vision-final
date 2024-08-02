@@ -522,7 +522,7 @@
 				<key>USE_HFS+_COMPRESSION</key>
 				<false/>
 				<key>VERSION</key>
-				<string>1.0.8</string>
+				<string>1.0.10</string>
 			</dict>
 			<key>TYPE</key>
 			<integer>0</integer>
@@ -645,9 +645,9 @@
 			<key>BUILD_PATH</key>
 			<dict>
 				<key>PATH</key>
-				<string>PerfectVision</string>
+				<string>.</string>
 				<key>PATH_TYPE</key>
-				<integer>3</integer>
+				<integer>1</integer>
 			</dict>
 			<key>EXCLUDED_FILES</key>
 			<array>
