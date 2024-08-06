@@ -69,6 +69,15 @@ This function SaveData uses PlayFab's API to update a user's session data with s
 
 
 ## How to Build
+	Build on Mac OS
+		1. Build Unity project
+		2. Create dir "Python" inside PerfectVision.app directory
+		3. Create conda environment "Perfect" in Python directory.
+			
+		4. Copy .py files from ../../../../Python directory to current dir.
+		5 install python packages using ../../../../Python/requirements.txt
+		6. Create package using PerfectVision.pkgproj.
+
 	Test on Mac OS
 		1. Open Terminal.
 		2. Run the following command to enable the "Anywhere" option in Gatekeeper:

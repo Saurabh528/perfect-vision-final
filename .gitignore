@@ -38,7 +38,7 @@ GameLauncher/obj/
 Deploy/WindowsBuild/
 Deploy/WindowsBuild.zip
 Deploy/MacBuild/PerfectVision.app/
-Deploy/MacBuild/build/PerfectVision.pkg
+Deploy/MacBuild/PerfectVision/PerfectVision.pkg
 Deploy/MacBuild/Python
 Python/build/
 Python/dist/
@@ -94,3 +94,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Python/__pycache__/
 /.DS_Store
+
