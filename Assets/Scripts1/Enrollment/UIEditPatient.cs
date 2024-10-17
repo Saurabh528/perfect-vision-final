@@ -178,7 +178,7 @@ public class UIEditPatient : MonoBehaviour
 
 	public void OnPlaceChanged(int value){
 		//Called when clicked on Add patient or when changed the dropdown from Clinic to home
-		Debug.Log("3)On Place Changed function called");
+		//Debug.Log("3)On Place Changed function called");
 		THERAPPYPLACE place = (THERAPPYPLACE)value;
 		if(place == THERAPPYPLACE.Clinic){
 			_licenseKey.text = "";

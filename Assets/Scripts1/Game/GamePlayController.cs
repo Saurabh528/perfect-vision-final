@@ -28,7 +28,6 @@ public class GamePlayController : MonoBehaviour
 
 
 	bool _isPlaying = false;
-	int _timeLeftInt;
 	protected int _score = 0;
 	protected int _level = 1;
 	protected int _levelStartScore;
@@ -94,8 +93,7 @@ public class GamePlayController : MonoBehaviour
 				}
 				
 			}
-			if ((int)_timeleft != _timeLeftInt)
-				textTime.text = UtilityFunc.ConvertSec2MMSS(_timeleft);
+			textTime.text = UtilityFunc.ConvertSec2MMSS(_timeleft);
 		}
     }
 
@@ -169,10 +167,12 @@ public class GamePlayController : MonoBehaviour
 		ShowLevel();
 	}
 
-	public virtual void IncreaseLevel()
+	public virtual void IncreaseLevel(int delta = 1)
 	{
 		_levelStartScore = _score;
-		_level++;
+		_level += delta;
+		if(_level <= 0)
+			_level = 1;
 		ShowLevel();
 	}
 
@@ -215,6 +215,12 @@ public class GamePlayController : MonoBehaviour
 		}
 
 	}
+
+	void OnApplicationFocus(bool hasFocus)
+    {
+        if(!hasFocus && imageBackButton && imageBackButton.sprite == spritePause && pausePanel && !pausePanel.activeSelf)
+			OnBtnPause();
+    }
 
 	public virtual void OnBtnResume()
 	{

@@ -59,12 +59,12 @@ def append_to_log(text):
         with open(logfilePath, 'a') as file:
             # Append the timestamp, followed by the text and a newline
             file.write(f"{timestamp} - {text}\n")
-            print("Log updated successfully.")
+            file.close()
     except Exception as e:
         print(f"Failed to write to log file: {e}")
 
 
-from gtts import gTTS
+"""from gtts import gTTS
 import pygame
 
 pygame.init()
@@ -95,4 +95,4 @@ def speak(savefolder, text):
     except IOError as e:
         append_to_log(f"An I/O error occurred: {e}")
     except Exception as e:
-        append_to_log(f"An unexpected error occurred: {e}")
+        append_to_log(f"An unexpected error occurred: {e}")"""

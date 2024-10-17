@@ -84,9 +84,9 @@ public class BallonBurstController : GamePlayController {
 			IncreaseLevel();
 	}
 
-	public override void IncreaseLevel()
+	public override void IncreaseLevel(int delta = 1)
 	{
-		base.IncreaseLevel();
+		base.IncreaseLevel(delta);
 		//ChangeBackground();
 		destroypool.ResetMissingCount();
 	}

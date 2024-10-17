@@ -111,7 +111,7 @@ public class TCPListener : MonoBehaviour
 					var incommingData = new byte[length];
 					Array.Copy(bytes, 0, incommingData, 0, length);
 					recvStr = Encoding.ASCII.GetString(incommingData);
-					Debug.Log("Received: " + recvStr);
+					//Debug.Log("Received: " + recvStr);
 					//print("Received message: " + clientMessage);
 
 					// SendData(client);

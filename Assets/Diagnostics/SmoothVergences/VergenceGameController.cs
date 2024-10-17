@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class VergenceGameController : GamePlayController
 {
+    const string KeyName_MaxIn = "Vergence_MaxIn";
+    const string KeyName_MaxOut = "Vergence_MaxOut";
     //Deviation (cm) = Prism diopters (Δ) * Distance to screen (m) where deviation is the distance between images, prism dioptres is the BI BO value and distance is the distance from the screen
 	float _bio;
     float _BI, _BO;//BI < 0, BO > 0
@@ -19,13 +21,14 @@ public class VergenceGameController : GamePlayController
     [SerializeField] GameObject btnStop;
     [SerializeField] List<VergencePatternInfo> _patternSet = new List<VergencePatternInfo>();
     [SerializeField] Text textLevel, textScore;
+    [SerializeField] TMP_InputField textMaxIn, textMaxOut;
     int _patternIndex;
     // Start is called before the first frame update
     public override void Start()
     {
-        base.Start();
-        _BI = -10;
-        _BO = 10;
+        
+        textMaxIn.text = (-PlayerPrefs.GetFloat(KeyName_MaxIn, -10)).ToString();
+        textMaxOut.text = PlayerPrefs.GetFloat(KeyName_MaxOut, 10).ToString();
         _bio = 0;
         float dpi = 72;
         /* string dpipath = Application.dataPath + "/../Python/DPI.txt";
@@ -38,6 +41,14 @@ public class VergenceGameController : GamePlayController
         } */
         _cm2pix = dpi / 2.54f;
 	}
+
+    public void OnClickOptionOK(){
+        _BI = -float.Parse(textMaxIn.text);
+        _BO = float.Parse(textMaxOut.text);
+        PlayerPrefs.SetFloat(KeyName_MaxIn, _BI);
+        PlayerPrefs.SetFloat(KeyName_MaxOut, _BO);
+        base.Start();
+    }
 
     public void StartGame()
     {

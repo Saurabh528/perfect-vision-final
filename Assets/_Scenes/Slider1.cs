@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using System.IO;
 using PlayFab;
 using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
 
 public class Slider1 : MonoBehaviour
 {
@@ -28,8 +29,11 @@ public class Slider1 : MonoBehaviour
     public Text CyanText;
 	public Toggle toggleTransparent;
 	public TMP_Dropdown _dropdownProfile;
+	[SerializeField] Toggle toggleCalorimeter;
 	private void Start()
 	{
+		
+		Directory.CreateDirectory(PatientMgr.GetPatientDataDir());
         BackSlider.value = GameState.currentPatient == null? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Background), 0.5f): GameState.currentPatient.cali.bg;
 		OnBackSliderChange(BackSlider.value);
 		toggleTransparent.isOn = GameState.currentPatient == null ? 
@@ -56,6 +60,9 @@ public class Slider1 : MonoBehaviour
 		OnRedSliderChange(RedSlider.value);
         CyanSlider.value = GameState.currentPatient == null ? PlayerPrefs.GetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Cyan), 0.5f) : GameState.currentPatient.cali.cy;
 		OnCyanSliderChange(CyanSlider.value);
+
+		toggleCalorimeter.isOn = PlayerPrefs.GetInt(BackgroundTask.KeyName_ShowRGB, 0) == 1;
+		toggleCalorimeter.gameObject.SetActive(BackgroundTask.MODE_CALORIMETERENABLED);
     }
 
 
@@ -162,6 +169,13 @@ public class Slider1 : MonoBehaviour
 		Bee.material.color = newColor;
 		RedHandle.color = newColor;
 		ColorCalibration.RedColor = newColor;
+	}
+
+	public void OnEnableCalorimeter(bool value){
+		PlayerPrefs.SetInt(BackgroundTask.KeyName_ShowRGB, value? 1:0);
+		if(BackgroundTask.Instance == null)
+			return;
+		BackgroundTask.Instance.CheckRGBEnable(SceneManager.GetActiveScene().name);
 	}
 }
 

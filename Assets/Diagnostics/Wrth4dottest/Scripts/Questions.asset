@@ -17,11 +17,11 @@ MonoBehaviour:
   question:
   - question: How many lights are you seeing?
     options:
-    - '4 lights: 1 red, 2 green, and 1 mixed color'
-    - '5 lights: 2 red and 3 green'
-    - 3 Green lights (from the Left eye)
+    - '4 lights: 1 red, 2 blue, and 1 mixed color'
+    - '5 lights: 2 red and 3 blue'
+    - 3 blue lights (from the Left eye)
     - 2 Red lights (from the Right eye)
-    - 2 Red lights OR 3 Green lights (Alternating between the two responses)
+    - 2 Red lights OR 3 blue lights (Alternating between the two responses)
     Diagonis:
     - Normal Retinal Correspondence (BSV) or ARC (with manifest deviation)
     - 1
@@ -53,10 +53,10 @@ MonoBehaviour:
     - Esotropia (ET)
     - Exotropia (XT)
     - 1
-  - question: Are the green lights on top of the red lights or vice versa?
+  - question: Are the blue lights on top of the red lights or vice versa?
     options:
-    - The green lights (left eye) are on top of the red lights (right eye)
-    - The red lights (right eye) are on top of the green lights (left eye)
+    - The blue lights (left eye) are on top of the red lights (right eye)
+    - The red lights (right eye) are on top of the blue lights (left eye)
     - None
     Diagonis:
     - R Hypertropia or L Hypotropia

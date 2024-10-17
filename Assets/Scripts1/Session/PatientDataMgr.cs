@@ -204,7 +204,8 @@ public abstract class PatientDataMgr
 		}
 		string keystr = patientname + DataKey.SF_SESSIONRECORD;
 		//offline mode
-		if(pd.place == THERAPPYPLACE.Clinic || GameState.IsPatient()){
+		if(GameSetting.MODE_OFFLINEENABLED){
+			if(pd.place == THERAPPYPLACE.Clinic || GameState.IsPatient()){
 			string str = DataKey.GetPrefsString(keystr, "");
 			if (!string.IsNullOrEmpty(str))
 			{
@@ -216,6 +217,8 @@ public abstract class PatientDataMgr
 				}
 			}
 		}
+		}
+		
 		
 		if (!GameState.IsOnline)
 		{
@@ -256,6 +259,9 @@ public abstract class PatientDataMgr
 		   });
 		}
 	}
+
+
+	
 
 	
 

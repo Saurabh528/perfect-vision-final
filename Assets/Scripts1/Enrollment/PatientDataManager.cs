@@ -38,15 +38,17 @@ public static class PatientDataManager
 				DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
 				if(pfID == GameConst.PLAYFABID_CLINIC)
 					DataKey.DeletePrefsKey(name);
-				successAction.Invoke("Deleting success");
+				successAction.Invoke(name);
 			}, error => {
 				failAction.Invoke(error.ToString());
 			});
 		}
 		else{
+			if(GameSetting.MODE_OFFLINEENABLED){
 			DataKey.SetPrefsString(DataKey.PATIENT, jsonstr);
 			if(pfID == GameConst.PLAYFABID_CLINIC)
 				DataKey.DeletePrefsKey(name);
+			}
 		}
 	}
 
@@ -323,6 +325,7 @@ public static class PatientDataManager
 			}
 		}
 		else{
+			if(GameSetting.MODE_OFFLINEENABLED){
 			//offline mode
 			if(GameState.IsPatient()){
 				string str = DataKey.GetPrefsString(DataKey.HOMEPATIENT, "");
@@ -348,11 +351,12 @@ public static class PatientDataManager
 				else
 					failAction.Invoke("Failed to load local parent data.");
 			}
+			}
 		}
 	}
 
 	public static void GetHomePatientCalib(PatientData pd, UnityAction<PatientData> successAction = null){
-        UnityEngine.Debug.Log("GetHomePatientCalib Patient called");
+        //UnityEngine.Debug.Log("GetHomePatientCalib Patient called");
         if (pd == null)
 			return;
 		else if(pd.IsClinic()){
@@ -382,16 +386,19 @@ public static class PatientDataManager
 				successAction.Invoke(pd);
 			});
 		}
-		else if(GameState.IsPatient()){
-			string jsonstr = DataKey.GetPrefsString(DataKey.HOMECALIB);
-			if(!string.IsNullOrEmpty(jsonstr))
-				pd.cali = JsonConvert.DeserializeObject<CalibraionDetails>(jsonstr);
+		else if(GameSetting.MODE_OFFLINEENABLED){
+			if(GameState.IsPatient()){
+				string jsonstr = DataKey.GetPrefsString(DataKey.HOMECALIB);
+				if(!string.IsNullOrEmpty(jsonstr))
+					pd.cali = JsonConvert.DeserializeObject<CalibraionDetails>(jsonstr);
+				else
+					DataKey.SetPrefsString(DataKey.HOMECALIB, JsonConvert.SerializeObject(pd.cali));
+				successAction.Invoke(pd);
+			}
 			else
-				DataKey.SetPrefsString(DataKey.HOMECALIB, JsonConvert.SerializeObject(pd.cali));
-			successAction.Invoke(pd);
+				successAction.Invoke(pd);
 		}
-		else
-			successAction.Invoke(pd);
+		 
 	}
 
 	public static void GetPatientDataByName(string name, UnityAction<PatientData> successAction, UnityAction<string> failAction){
@@ -430,7 +437,7 @@ public static class PatientDataManager
 					);
 					return;
 				}
-				else{
+				else if(GameSetting.MODE_OFFLINEENABLED){
 					string localStr = DataKey.GetPrefsString(name);
 					if(!string.IsNullOrEmpty(localStr)){
 						pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
@@ -454,9 +461,29 @@ public static class PatientDataManager
 								Dictionary<string, PatientData> plist = PatientMgr.GetPatientList();
 								DataKey.SetPrefsString(name, result.Data[DataKey.HOMEPATIENT].Value);
 								plist[name] = pdata;
-								if(successAction != null)
-									successAction.Invoke(pdata);
+								//Get home patient data from doctor account
+								request = new GetUserDataRequest();
+								request.Keys = new List<string>(){pdata.name};
+								PlayFabClientAPI.GetUserData(request,
+									result=>{
+										if(result.Data != null && result.Data.ContainsKey(pdata.name)){
+											HomePatientData hpdata = JsonConvert.DeserializeObject<HomePatientData>(result.Data[pdata.name].Value);
+											PatientMgr.GetHomePatientDataList()[pdata.name] = hpdata;
+											pdata.GetDataFromDoctorData(hpdata);
+											if(successAction != null)
+												successAction.Invoke(pdata);
+										}
+										else if(failAction != null)
+											failAction.Invoke("Can not download home patient data.");
+									},
+									error=>{
+										if(failAction != null)
+											failAction.Invoke(error.ToString());
+									}
+								);
 							}
+							else if(failAction != null)
+								failAction.Invoke($"{name}'s data does not exist.");
 						},
 						error=>{
 							if(failAction != null)
@@ -465,7 +492,7 @@ public static class PatientDataManager
 					);
 					return;
 				}
-				else{
+				else if(GameSetting.MODE_OFFLINEENABLED){
 					string localStr = DataKey.GetPrefsString(name);
 					if(!string.IsNullOrEmpty(localStr)){
 						pdata= JsonConvert.DeserializeObject<PatientData>(localStr);
@@ -521,5 +548,34 @@ public static class PatientDataManager
 		}
 	}
 	
-	
+	public static void ClearPatientData(UnityAction successAction = null, UnityAction<string> failAction = null){
+		if(GameState.currentPatient == null)
+			return;
+		string patientname = GameState.currentPatient.name;
+		PatientData pd = GameState.currentPatient;
+		pd.ResetData();
+		if(GameState.IsDoctor() && pd.IsHome())
+			PatientMgr.GetHomePatientDataList()[patientname] = new HomePatientData();
+		Dictionary<string, string> requestData = new Dictionary<string, string>();
+		if(GameState.IsDoctor()){//doctor
+			requestData[patientname] = pd.IsClinic()?JsonConvert.SerializeObject(pd): JsonConvert.SerializeObject(PatientMgr.GetHomePatientDataList()[patientname]);
+		}
+		else{//home patient
+			requestData[DataKey.HOMEPATIENT] = JsonConvert.SerializeObject(pd);
+			requestData[DataKey.HOMECALIB] = JsonConvert.SerializeObject(pd.cali);
+		}
+
+		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
+			{
+				Data = requestData,
+				Permission = UserDataPermission.Public
+			},
+			result => {
+				if(successAction != null)
+					successAction.Invoke();
+			}, error => {
+				if(failAction != null)
+					failAction.Invoke(error.ToString());
+			});
+	}
 }

@@ -13,7 +13,11 @@ using UnityEngine.UI;
 
 public abstract class UtilityFunc
 {
-	static string logFilePath = Application.persistentDataPath + "/Application.log";
+	static string logFilePath{
+		get{
+			return Application.persistentDataPath + "/Application.log";
+		}
+	}
 	public static string ComputeSha256Hash(string rawData)
 	{
 		// Create a SHA256   
@@ -78,6 +82,12 @@ public abstract class UtilityFunc
 		g = (byte)((color32 >> 16) & 0xff);
 		b = (byte)((color32 >> 8) & 0xff);
 		a = (byte)(color32 & 0xff);
+	}
+
+	public static string UIntColor2RGBString(uint color32){
+		byte r, g, b, a;
+		UInt2RGB(color32, out r, out g, out b, out a);
+		return $"({r}, {g}, {b})";
 	}
 
 	public static UnityEngine.Color UInt2Color(uint color32){//0xrrggbbaa
@@ -219,5 +229,24 @@ public abstract class UtilityFunc
 		int minutes = (int)(sec / 60);
 		int seconds = (int)(sec % 60);
 		return $"{minutes:00}:{seconds:00}";
+	}
+
+	public static string GetCalorimeterDataDir()
+	{
+		return Application.persistentDataPath + "/CalorimeterRecords";
+	}
+
+	public static void PlayAudioClipFromList(AudioClip[] clips, string text, AudioSource source){
+		if(source.loop == true)
+			source.loop = false;
+		foreach(AudioClip clip in clips){
+			if(clip.name == text){
+				if(source.isPlaying)
+					source.Stop();
+				source.clip = clip;
+				source.Play();
+				return;
+			}
+		}
 	}
 }

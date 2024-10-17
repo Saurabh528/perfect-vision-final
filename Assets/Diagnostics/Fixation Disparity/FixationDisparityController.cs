@@ -33,6 +33,8 @@ public class FixationDisparityController : DiagnosticController
     // Start is called before the first frame update
     void Start()
     {
+        RecordWebcamVideo.StartRecord();
+        RecordWebcamVideo.ActivateSaveButton();
         StartGame();
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,18 +17,41 @@ public enum StereoTestMode{
     VisualSymbol
 };
 
+public enum DepthMode{
+    Depth10,
+    Depth20,
+    Depth30,
+    DepthIncrease,
+    DepthCustom
+};
+
+public enum SizeMode{
+    Normal,
+    Small
+};
+
+public enum LevelMode{
+    Level1,
+    Level2
+};
+
+
+
 public class StereogramSettingUI : MonoBehaviour
 {
     
-    [SerializeField] Slider sliderJumpTime;
-    [SerializeField] TextMeshProUGUI textJumpTime;
-    [SerializeField] Toggle[] togglesDepth, togglesOverlap, togglesplayTime, togglesTest;
+    [SerializeField] Slider sliderJumpTime, sliderCustomEyesin;
+    [SerializeField] TextMeshProUGUI textJumpTime, textCustomEyesIn;
+    [SerializeField] Toggle[] togglesDepth, togglesOverlap, togglesplayTime, togglesTest, togglesSize, togglesLevel;
 
     const string KeyName_Depth = "Stereo_Depth";
+    const string KeyName_CustomEyesin = "Stereo_CustomEyesIn";
     const string KeyName_JumpTime = "Stereo_JumpTime";
     const string KeyName_OverlapMode = "Stereo_OverlapMode";
     const string KeyName_PlayTime = "Stereo_PlayTime";
     const string KeyName_TestMode = "Stereo_TestMode";
+    const string KeyName_SizeMode = "Stereo_SizeMode";
+    const string KeyName_LevelMode = "Stereo_LevelMode";
     
     // Start is called before the first frame update
     void Start()
@@ -36,18 +60,24 @@ public class StereogramSettingUI : MonoBehaviour
     }
 
     void LoadSetting(){
-        SetDepth(PlayerPrefs.GetInt(KeyName_Depth, 1));
+        SetDepthMode((DepthMode)PlayerPrefs.GetInt(KeyName_Depth, 0));
+        SetCustomEyesIn(PlayerPrefs.GetInt(KeyName_CustomEyesin, 10));
         SetJumpTime(PlayerPrefs.GetFloat(KeyName_JumpTime, 5));
         SetOverlapMode((StereoOverlapMode)PlayerPrefs.GetInt(KeyName_OverlapMode, 0));
-        SetTestMode((StereoTestMode)PlayerPrefs.GetInt(KeyName_TestMode, 0));
+        SetSizeMode((SizeMode)PlayerPrefs.GetInt(KeyName_SizeMode, 0));
+        SetLevelMode((LevelMode)PlayerPrefs.GetInt(KeyName_LevelMode, 0));
+        //SetTestMode((StereoTestMode)PlayerPrefs.GetInt(KeyName_TestMode, 0));
         SetPlayTime(PlayerPrefs.GetFloat(KeyName_PlayTime, 60));
     }
 
     public void SaveSetting(){
-        PlayerPrefs.SetInt(KeyName_Depth, GetDepth());
+        PlayerPrefs.SetInt(KeyName_Depth, (int)GetDepthMode());
+        PlayerPrefs.SetInt(KeyName_CustomEyesin, GetCustomEyesIn());
         PlayerPrefs.SetFloat(KeyName_JumpTime, GetJumpTime());
         PlayerPrefs.SetInt(KeyName_OverlapMode, (int)GetOverlapMode());
-        PlayerPrefs.SetInt(KeyName_TestMode, (int)GetTestMode());
+        PlayerPrefs.SetInt(KeyName_SizeMode, (int)GetSizeMode());
+        PlayerPrefs.SetInt(KeyName_LevelMode, (int)GetLevelMode());
+        //PlayerPrefs.SetInt(KeyName_TestMode, (int)GetTestMode());
         PlayerPrefs.SetFloat(KeyName_PlayTime, GetPlayTime());
     }
 
@@ -63,23 +93,50 @@ public class StereogramSettingUI : MonoBehaviour
         }
     }
 
+    
+
     public void OnJumpTimeSliderChange(float value){
         textJumpTime.text = value.ToString();
     }
 
-    public int GetDepth(){//1, 2, 3
+    public void OnBtnDecreaseCustomEyesIn(){
+        if(sliderCustomEyesin.value > sliderCustomEyesin.minValue){
+            sliderCustomEyesin.value--;
+        }
+    }
+
+    public void OnBtnIncreaseCustomEyesIn(){
+        if(sliderCustomEyesin.value < sliderCustomEyesin.maxValue){
+            sliderCustomEyesin.value++;
+        }
+    }
+
+    public void OnCustomEyesInSliderChange(float value){
+        textCustomEyesIn.text = value.ToString();
+    }
+
+    public DepthMode GetDepthMode(){//1, 2, 3
         for(int i = 0; i < togglesDepth.Length; i++){
             if(togglesDepth[i].isOn)
-                return i + 1;
+                return (DepthMode)i;
         }
-        return 1;
+        return DepthMode.Depth10;
     }
-    void SetDepth(int i){
-        if(i - 1 >= togglesDepth.Length){
+    void SetDepthMode(DepthMode mode){
+        int i = (int )mode;
+        if(i >= togglesDepth.Length){
             UnityEngine.Debug.LogError("Depth value exceeds limit.");
             return;
         }
-        togglesDepth[i - 1].isOn = true;
+        togglesDepth[i].isOn = true;
+    }
+
+    void SetSizeMode(SizeMode mode){
+        togglesSize[(int)mode].isOn = true;
+    }
+
+    void SetLevelMode(LevelMode mode){
+        togglesLevel[(int)mode].isOn = true;
     }
 
     public float GetJumpTime(){
@@ -88,6 +145,14 @@ public class StereogramSettingUI : MonoBehaviour
 
     void SetJumpTime(float time){
         sliderJumpTime.value = time;
+    }
+
+    public int GetCustomEyesIn(){
+        return (int)sliderCustomEyesin.value;
+    }
+
+    void SetCustomEyesIn(int value){
+        sliderCustomEyesin.value = value;
     }
 
     public float GetPlayTime(){
@@ -116,12 +181,27 @@ public class StereogramSettingUI : MonoBehaviour
         return StereoOverlapMode.EyesIn;
     }
 
+    public SizeMode GetSizeMode(){
+        if(togglesSize[0].isOn)
+            return SizeMode.Normal;
+        else
+            return SizeMode.Small;
+    }
+
+    public LevelMode GetLevelMode(){
+        if(togglesLevel[0].isOn)
+            return LevelMode.Level1;
+        else
+            return LevelMode.Level2;
+    }
+
     void SetOverlapMode(StereoOverlapMode mode){
         togglesOverlap[(int)mode].isOn = true;
     }
 
     public StereoTestMode GetTestMode(){
-         for(int i = 0; i < togglesTest.Length; i++){
+
+        for(int i = 0; i < togglesTest.Length; i++){
             if(togglesTest[i].isOn)
                 return (StereoTestMode)i;
         }

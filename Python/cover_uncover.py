@@ -16,7 +16,9 @@ import cv2
 import mediapipe as mp
 import json
 import time
-import threading
+
+from export_video import init_writer, write_frame, release_writer
+# import threading
 
 
 def create_instruction_frame(frame, text, distance_text=''):
@@ -52,7 +54,7 @@ def on_data_received(data):
         triggered = True
     
 from argparse import ArgumentParser
-from utils import get_anonymous_directory, wait_for_camera, append_to_log, speak
+from utils import get_anonymous_directory, wait_for_camera, append_to_log
 
 parser = ArgumentParser()
 
@@ -238,13 +240,14 @@ static_image_mode=True,
 max_num_faces=2,
 refine_landmarks=True,
 min_detection_confidence=0.5) as face_mesh:
+    if cap.isOpened():
+        init_writer(args.datadir, cap)
     while cap.isOpened():
         flag = 0
         ret, frame = cap.read()
         
         if not ret:
             break
-
         results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
         try:
@@ -338,6 +341,7 @@ min_detection_confidence=0.5) as face_mesh:
                                 if not ret:
                                     break
 
+                                write_frame(frame)
                                 results = face_mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                                 flag = 0 
                                 for face_landmark in results.multi_face_landmarks:
@@ -356,8 +360,8 @@ min_detection_confidence=0.5) as face_mesh:
                                         flag = 1
                                         if args.connect:
                                             unitysocket.send_message_to_unity(soc, instruction_text)
-                                        speak_thread = threading.Thread(target=speak, args=(args.datadir, instruction_text,))
-                                        speak_thread.start()
+                                        # speak_thread = threading.Thread(target=speak, args=(args.datadir, instruction_text,))
+                                        # speak_thread.start()
                                         break
                                     
                                     #instruction_text = f'Close {eye} eye, gaze with the other'
@@ -417,7 +421,7 @@ min_detection_confidence=0.5) as face_mesh:
                             
                             # Wait for 1 second to allow the user to shift their gaze
                             
-                            
+                    release_writer()
                     cap.release()
                     cv2.destroyAllWindows()
 

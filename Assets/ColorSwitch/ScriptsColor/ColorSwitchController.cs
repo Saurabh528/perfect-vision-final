@@ -100,10 +100,6 @@ public class ColorSwitchController : GamePlayController
 			IncreaseLevel();
 	}
 
-	public override void IncreaseLevel()
-	{
-		base.IncreaseLevel();
-	}
 
 	public override void SetInitialLevelAndScore(string keyname, SavedGameData sgd)
 	{

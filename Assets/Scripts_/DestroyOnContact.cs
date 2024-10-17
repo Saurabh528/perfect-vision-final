@@ -38,7 +38,7 @@ public class DestroyOnContact : MonoBehaviour {
 			ShowMissingCount();
 			if (GamePlayController.Instance.GetType() == typeof(BallonBurstController))
 				GamePlayController.Instance.IncreaseScore(-1);
-			if (Ballonsdestroy >= 10)
+			if (Ballonsdestroy >= 5)
 			{
 				if(GameState.currentGamePlay == null)
 				{
@@ -49,7 +49,7 @@ public class DestroyOnContact : MonoBehaviour {
 				{
 					Ballonsdestroy = 0;
 					ShowMissingCount();
-					GamePlayController.Instance.ClearScoreAndLevel();
+					GamePlayController.Instance.IncreaseLevel(-1);
 				}
 			}
 		}

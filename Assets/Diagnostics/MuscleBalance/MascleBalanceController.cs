@@ -34,6 +34,8 @@ public class MascleBalanceController : DiagnosticController
     {
         _curSide = EYESIDE.LEFT;
         StartCoroutine(Routine_StartGame());
+        
+        RecordWebcamVideo.StartRecord();
     }
 
     // Update is called once per frame
@@ -124,8 +126,10 @@ public class MascleBalanceController : DiagnosticController
                 _topPopUp.Show("Left Fixating completed", 3);
                 _toggleRightFixation.interactable = true;
             }
-            else
+            else{
                 _topPopUp.Show("Right Fixating completed", 3);
+                RecordWebcamVideo.ActivateSaveButton();
+            }
             
         }
         else{

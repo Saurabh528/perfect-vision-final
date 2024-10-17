@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Diagnostics;
 
 public class Diagnosis : DiagnosticController
 {
@@ -80,7 +82,7 @@ public class Diagnosis : DiagnosticController
         {
             if(questionset.question[CurrentQuestionIndex].options[questionIndex] == "None")
             {
-                Debug.Log(tempdiagnosis);
+                UnityEngine.Debug.Log(tempdiagnosis);
                 if(CurrentQuestionIndex == 4)
                 {
                     //diagnosis.text = "Esotropia (ET) or Exotropia (XT) or Hypotropia or Hypertropia";
@@ -144,5 +146,23 @@ public class Diagnosis : DiagnosticController
         if(!base.ResultExist())
             return false;
         return !string.IsNullOrEmpty(diagnosis.text);
+    }
+
+    public static void SaveVideo(string path, string diagnosticName, bool openAfterSave = true){
+        UnityEngine.Debug.Log($"SaveVideo{path}/{diagnosticName}");
+        string temppath = $"{path}/temp_video.avi";
+        if(!File.Exists(temppath))
+            return;
+        try{
+		    string newpath = $"{path}/{diagnosticName} {DateTime.Now.ToString("dd-MM-yyyy_hh-mm-ss.avi")}";
+            File.Move(temppath, newpath);
+             // Use Process.Start to open the .avi file with the default program
+            Process.Start(new ProcessStartInfo(newpath) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions such as file not found or no associated program
+            UnityEngine.Debug.Log("An error occurred: " + ex.Message);
+        }
     }
 }

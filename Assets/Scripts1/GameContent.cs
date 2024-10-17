@@ -6,6 +6,10 @@ using Org.BouncyCastle.Asn1.Mozilla;
 using Newtonsoft.Json.Linq;
 using iTextSharp.text.pdf;
 
+
+public abstract class GameSetting{
+	public const bool MODE_OFFLINEENABLED = false;
+}
 public abstract class GameConst
 {
 	public const int MAX_THERAPHYGAMECOUNT = 6;
@@ -212,6 +216,7 @@ public abstract class PatientMgr
 		return Application.persistentDataPath + "/PatientData/" + GetCurrentPatientName();
 	}
 
+	
 
 	public static string GetCurrentPatientName()
 	{
@@ -233,7 +238,7 @@ public abstract class PatientMgr
 public abstract class SessionMgr
 {
 	static List<byte> gamelist = new List<byte>();
-	static string[] gamenames = new string[] { "Ballon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly", "Vergence"};
+	static string[] gamenames = new string[] { "Balloon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly", "Vergence"};
 	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly", "VergenceGame"};
 	static SessionRecord sessionRecord;
 	public static int _timeSecond = 120;

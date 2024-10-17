@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement; */
 
 public class UISessionMake : MonoBehaviour
 {
+	public static UISessionMake Instance;
 	public UISessionGameItem _gameitemtmpl;
 	[SerializeField] TextMeshProUGUI _txtTotal;
 	[SerializeField] TextMeshProUGUI _txtTime;
@@ -23,6 +24,10 @@ public class UISessionMake : MonoBehaviour
 	int _timeMin;
 	//private int count;
 	//private int countLimit;
+
+	void Awake(){
+		Instance = this;
+	}
 	private void Start()
 	{
 		

@@ -10,14 +10,24 @@ public class PopupUI : MonoBehaviour
 {
     public static PopupUI Instance;
     [SerializeField] Button YesButton, NoButton;
-    [SerializeField] TextMeshProUGUI txtExplain;
+    [SerializeField] TextMeshProUGUI txtExplain, txtNotification;
     [SerializeField] GameObject objDialog;
+
+    static float notifyRemainTime;
     void Awake(){
         Instance = this;
         GameObject.DontDestroyOnLoad(gameObject);
     }
 
-    public static void ShowQuestionBox(string question, UnityAction yesaction, UnityAction noaction = null){
+    void Update(){
+        if(txtNotification.gameObject.activeSelf){
+            notifyRemainTime -= Time.deltaTime;
+            if(notifyRemainTime < 0)
+                txtNotification.gameObject.SetActive(false);
+        }
+    }
+
+    static void GetInstance(){
         if(Instance == null){
             GameObject canvasPopupPrefab = Resources.Load<GameObject>("Prefab/CanvasPopup");
             if (canvasPopupPrefab != null)
@@ -30,6 +40,10 @@ public class PopupUI : MonoBehaviour
                 // canvasPopupInstance.transform.SetParent(transform, false);
             }
         }
+    }
+
+    public static void ShowQuestionBox(string question, UnityAction yesaction, UnityAction noaction = null){
+        GetInstance();
         if(Instance == null)
             return;
         Instance.txtExplain.text = question;
@@ -43,5 +57,13 @@ public class PopupUI : MonoBehaviour
         Instance.objDialog.SetActive(true);
     }
 
+    public static void ShowNotification(string text, float time = 3){
+        GetInstance();
+        if(Instance == null)
+            return;
+        Instance.txtNotification.text = text;
+        Instance.txtNotification.gameObject.SetActive(true);
+        notifyRemainTime = time;
+    }
    
 }

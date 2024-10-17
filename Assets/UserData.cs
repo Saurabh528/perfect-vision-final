@@ -132,6 +132,10 @@ public class PatientData
 		hdata.therapygames = therapygames;
 	}
 	
+	public void ResetData(){
+		cali = new CalibraionDetails();
+		therapygames.Clear();
+	}
 }
 
 public class HomePatientData{

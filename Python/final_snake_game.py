@@ -16,6 +16,8 @@ import time
 from argparse import ArgumentParser
 from utils import get_anonymous_directory, append_to_log, wait_for_camera
 import os
+from export_video import init_writer, write_frame, release_writer
+
 parser = ArgumentParser()
 
 parser.add_argument("--connect", action="store_true",
@@ -438,7 +440,8 @@ def process_video(video_path):
     max_num_faces=1,
     refine_landmarks=True,
     min_detection_confidence=0.3) as face_mesh:
-
+        if cap.isOpened():
+            init_writer(args.datadir, cap)
         
         while cap.isOpened():
             current_time = time.time()  # Get the current time on each iteration
@@ -449,6 +452,7 @@ def process_video(video_path):
             success, image = cap.read()
             if not success:
                 break
+            write_frame(image.copy())
             # Convert the image to RGB
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = face_detection.process(image_rgb)
@@ -663,7 +667,8 @@ def process_video(video_path):
                     cv2.imshow('Transformed Face', transformed_face)
                     if cv2.waitKey(5) & 0xFF == ord('q'):
                         break
-    
+        
+        release_writer()
         cap.release()
         cv2.destroyAllWindows()
 

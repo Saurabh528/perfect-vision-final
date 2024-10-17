@@ -89,10 +89,6 @@ public class JugglingController : GamePlayController
 			IncreaseLevel();
 	}
 
-	public override void IncreaseLevel()
-	{
-		base.IncreaseLevel();
-	}
 
 	public override void ShowLevel()
 	{

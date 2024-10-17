@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -19,6 +20,7 @@ using System.Net.NetworkInformation;
 
 public class UserAccountManager : MonoBehaviour
 {
+	
     const string PropName_NamePassHash = "NamePassHash";
 
     [SerializeField] TextMeshProUGUI errorText;
@@ -39,6 +41,7 @@ public class UserAccountManager : MonoBehaviour
     {
         Instance = this;
 		UtilityFunc.AppendToLog("---------------------------------Application Started------------------------------------------------");
+		PatientMgr.ClearPatients();
     }
 
     private void Update()
@@ -115,19 +118,25 @@ public class UserAccountManager : MonoBehaviour
 		else{
 			PlayFabClientAPI.GetUserData(new GetUserDataRequest()
 			{
-				Keys = new List<string>() { DataKey.CLINICLIMIT, DataKey.HOMELIMIT }
+				Keys = new List<string>() { DataKey.CLINICLIMIT, DataKey.HOMELIMIT, DataKey.PATIENT }
 			},
 			result =>
 			{
-				if(result.Data != null && result.Data.ContainsKey(DataKey.CLINICLIMIT) && result.Data.ContainsKey(DataKey.HOMELIMIT)){
+				if(result.Data != null && result.Data.ContainsKey(DataKey.CLINICLIMIT) && result.Data.ContainsKey(DataKey.HOMELIMIT) && result.Data.ContainsKey(DataKey.PATIENT)){
 					try{
 						GameState.CilinicLimit = int.Parse(result.Data[DataKey.CLINICLIMIT].Value);
 						GameState.HomeLimit = int.Parse(result.Data[DataKey.HOMELIMIT].Value);
 						DataKey.SetPrefsString(DataKey.CLINICLIMIT, GameState.CilinicLimit.ToString());
 						DataKey.SetPrefsString(DataKey.HOMELIMIT, GameState.HomeLimit.ToString());
+						DataKey.SetPrefsString(DataKey.PATIENT, result.Data[DataKey.PATIENT].Value);
+						Dictionary<string, string> nameIDList = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Data[DataKey.PATIENT].Value);
+						PatientMgr.SetNameIDList(nameIDList);
+						Dictionary<string, PatientData> plist = new Dictionary<string, PatientData>();
+						foreach(KeyValuePair<string, string> pair in nameIDList)
+							plist[pair.Key] = null;
 						//Upload local data
 						UtilityFunc.AppendToLog("LocalKey.LASTONLINE: " + PlayerPrefs.GetString(LocalKey.LASTONLINE, "True"));
-						if(PlayerPrefs.GetString(LocalKey.LASTONLINE, "True").ToLower() == "false"){
+						/*if(PlayerPrefs.GetString(LocalKey.LASTONLINE, "True").ToLower() == "false"){
 							UtilityFunc.AppendToLog("Uploading local data.");
 							string jsonstr = DataKey.GetPrefsString(DataKey.PATIENT);
 							if(string.IsNullOrEmpty(jsonstr))
@@ -158,7 +167,7 @@ public class UserAccountManager : MonoBehaviour
 								);
 							}
 						}
-						else
+						else*/
 							successAction.Invoke();
 					}
 					catch(Exception ex){
@@ -187,6 +196,8 @@ public class UserAccountManager : MonoBehaviour
 			if (result.Data != null && result.Data.ContainsKey(DataKey.ROLE) && result.Data.ContainsKey(DataKey.EXPIREDATE))
 			{
 				GameState.userRole = result.Data[DataKey.ROLE].Value == USERROLE.PATIENT.ToString()? USERROLE.PATIENT: USERROLE.DOCTOR;
+				Debug.Log($"UserRole:{GameState.userRole}");
+				BackgroundTask.DebugString($"UserRole:{GameState.userRole}");
 				DataKey.SetPrefsString(DataKey.ROLE, GameState.userRole.ToString());
 				DataKey.SetPrefsString(DataKey.EXPIREDATE, result.Data[DataKey.EXPIREDATE].Value);
 				if(DateTime.TryParse(result.Data[DataKey.EXPIREDATE].Value, out GameState.ExpireDate)){
@@ -223,6 +234,7 @@ public class UserAccountManager : MonoBehaviour
 		});
 							
 	}
+
 	public void SignIn(string username, string password, UnityAction successAction, UnityAction<string> failedAction)
 	{
 
@@ -236,12 +248,15 @@ public class UserAccountManager : MonoBehaviour
 		GameState.playfabID = PlayerPrefs.GetString(DataKey.GetPrefKeyName(DataKey.PLAYFABID));
 		UtilityFunc.AppendToLog($"Trying sign in as {username}");
 		//offline mode
+	if(GameSetting.MODE_OFFLINEENABLED){
 		if(PlayerPrefs.GetString(DataKey.GetPrefKeyName (PropName_NamePassHash), "") == namepassHash &&
 		!string.IsNullOrEmpty(GameState.playfabID))
 		{
+			BackgroundTask.DebugString("Try Offline signin");
 			GameState.password = password;
 			GameState.IsOnline = false;
 			string expdatestr = DataKey.GetPrefsString(DataKey.EXPIREDATE);
+			BackgroundTask.DebugString($"expdatestr: {expdatestr}");
 			if(!string.IsNullOrEmpty(expdatestr)){
 				DateTime expdate;
 				if(DateTime.TryParse(expdatestr, out expdate)){
@@ -249,16 +264,20 @@ public class UserAccountManager : MonoBehaviour
 					if(expdate >= curdate){
 						//try connect
 						UtilityFunc.AppendToLog("Trying connect to playfab.com");
+						
+						BackgroundTask.DebugString($"Trying connect to playfab.com");
 						string host = "playfab.com";  
 						System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();  
 						try  
 						{  
-							PingReply reply = p.Send(host, 10000);  
+							PingReply reply = p.Send(host, 30000);  
 							PlayerPrefs.SetString(LocalKey.LASTONLINE, reply.Status == IPStatus.Success?"True": "False");
 							Debug.Log("Saved LastOnLine key: " + (reply.Status == IPStatus.Success?"True": "False"));
 							UtilityFunc.AppendToLog("Saved LastOnLine key: " + (reply.Status == IPStatus.Success?"True": "False"));
+							BackgroundTask.DebugString("Saved LastOnLine key: " + reply.Status);
 							if (reply.Status == IPStatus.Success){
 								Debug.Log("Internet is available.");
+								BackgroundTask.DebugString("Internet is available.");
 								//connected to internet
 								PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest()
 								{
@@ -324,8 +343,7 @@ public class UserAccountManager : MonoBehaviour
 				}
 			}
 		}
-
-		
+	}
 		//online mode
 		GameState.username = GameState.playfabID = GameState.DoctorID = GameState.password = "";
 		

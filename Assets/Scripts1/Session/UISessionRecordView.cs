@@ -76,10 +76,6 @@ public class UISessionRecordView : MonoBehaviour
 
     }
 
-	void Update(){
-		if(Input.GetKeyDown(KeyCode.D))
-			UnityEngine.Debug.Log($"ScrollPos position:{_scrollRect.verticalNormalizedPosition}");
-	}
 
 	void LateUpdate(){
 		if ( Input.touchCount > 1 ) {
@@ -110,10 +106,10 @@ public class UISessionRecordView : MonoBehaviour
 	}
 	public void LoadSessionData()
 	{
-		UnityEngine.Debug.Log("Load Session Data called");
+		//UnityEngine.Debug.Log("Load Session Data called");
+		Clear();
 		if (GameState.currentPatient == null)
 		{
-			Clear();
 			return;
 		}
 		PatientDataMgr.LoadPatientData(GameState.currentPatient.name, OnLoadPatientSessionDataSuccess, ShowError);
@@ -656,7 +652,7 @@ public class UISessionRecordView : MonoBehaviour
 
 	void DrawColorCalibrationGraph(Document document, PdfWriter writer, ColorChannel channel)
 	{
-		UnityEngine.Debug.Log("DrawColorCalibrationGraph called");
+		//UnityEngine.Debug.Log("DrawColorCalibrationGraph called");
 		Dictionary<DateTime, uint> timeValuelist = UISessionRecordView.GetSessionDiagnosticsColorList(channel);
 		PDFUtil.AddSubSection(UtilityFunc.ColorChannelToName(channel) + " Slider RGB Values Over Time", document);
 		iTextSharp.text.pdf.BaseFont bfntHead = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
@@ -684,6 +680,7 @@ public class UISessionRecordView : MonoBehaviour
 		contentByte.SetColorStroke(iTextSharp.text.BaseColor.GRAY);
 		contentByte.SetLineDash(5, 2, 2);
 		contentByte.SetColorFill(iTextSharp.text.BaseColor.BLACK);
+		contentByte.SetFontAndSize(bfntHead, 12);
 
 		for (int i = 0; i <= horstepCount; i++)
 		{
@@ -695,7 +692,6 @@ public class UISessionRecordView : MonoBehaviour
 			}
 			KeyValuePair<DateTime, uint> pair = timeValuelist.ElementAt(timeValuelist.Count - 1 - horstepCount + i);
 			contentByte.BeginText();
-			contentByte.SetFontAndSize(bfntHead, 12);
 			contentByte.ShowTextAligned(Element.ALIGN_CENTER, pair.Key.ToString("MMM d yy"), Xpos + widthPerS * i, Ypos - height - rulerSize - 10, 0);
 			contentByte.EndText();
 		}
@@ -1045,5 +1041,27 @@ public class UISessionRecordView : MonoBehaviour
 			_scrollRect.verticalNormalizedPosition = Mathf.Lerp(curPos, tgtPos, (float)i / count);
 		}
     }
+
+	public void OnBtnClearPatientData(){
+		if(GameState.currentPatient == null)
+			return;
+		string text = (GameState.IsDoctor() && GameState.currentPatient.IsClinic())?$"Are you sure to reset {GameState.currentPatient.name}'s records?":
+			$"Are you sure to reset your records?";
+		PopupUI.ShowQuestionBox(text, delegate{
+			PatientDataManager.ClearPatientData(OnClearPatientSuccess, EnrollmentManager.Instance.ShowMessage);
+		});
+	}
+
+	void OnClearPatientSuccess(){
+		UISessionRecordView.Instance.ShowPatientSessionData();
+		ColorCalibration.OnPatientChanged();
+		PatientView.Instance.ViewPatientData();
+		List<byte> gamelist = SessionMgr.GetGameList();
+		gamelist.Clear();
+		UISessionMake.Instance.UpdateGameSlots();
+	}
+	
+
+	
 
 }

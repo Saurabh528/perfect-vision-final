@@ -34,9 +34,11 @@ public class CoverUncoverResultData{
 public class CoverUncoverController : DiagnosticController
 {
 	[SerializeField] TCPListener _tcp;
-	[SerializeField] GameObject _redPoint, _btnPrint, _btnHelp, _btnStart;
+	[SerializeField] GameObject _redPoint, _btnPrint, _btnHelp, _btnStart, _btnSaveVideo;
 	[SerializeField] Text _textHint, _txtStatus;
 	[SerializeField] CoverResultView _resultView;
+	[SerializeField] AudioClip[] voiceClips;
+	[SerializeField] AudioSource audioSource;
 	Process pythonProcess;
 	bool _finished = false;
 	bool hint_P;
@@ -124,8 +126,10 @@ public class CoverUncoverController : DiagnosticController
 			}
 		}
 		else if (message.StartsWith("MSG:")) {
-			if (_textHint)
+			if (_textHint){
 				_textHint.text = message.Substring(4);
+				UtilityFunc.PlayAudioClipFromList(voiceClips, _textHint.text, audioSource);
+			}
 		}
 		else if (message.StartsWith("STS:")) {
 			if (_txtStatus){
@@ -164,12 +168,18 @@ public class CoverUncoverController : DiagnosticController
 		_resultData = new CoverUncoverResultData(PatientMgr.GetPatientDataDir() + "/eye_statistics.txt");
 		_resultView.ShowResult(_resultData);
 		_btnPrint.SetActive(true);
+		_btnSaveVideo.SetActive(true);
 		//_btnHelp.SetActive(true);
 	}
 
 	public void OnBtnPrintPDF()
 	{
 		_resultView.PrintAndShowPDF(_resultData);
+	}
+
+	public void OnBtnSaveVideo(){
+		Diagnosis.SaveVideo(PatientMgr.GetPatientDataDir(), "CoverUncover");
+		_btnSaveVideo.SetActive(false);
 	}
 
 	public override void AddResults(){

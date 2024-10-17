@@ -5,8 +5,8 @@ import pandas as pd
 import os
 from collections import defaultdict
 import time
-from cv import process_video
-
+from cv import process_video, set_datadir
+from export_video import release_writer
 args = []
 
 def display_dot(img, position):
@@ -48,6 +48,7 @@ position_names = {
 
 def process_metrics(metrics_queue):
     global stop_processing
+    set_datadir(args.datadir)
     metrics_generator = process_video(args.cameraindex)
     try:
         while not stop_processing:
@@ -64,7 +65,7 @@ def process_metrics(metrics_queue):
    
 
 from argparse import ArgumentParser
-from utils import get_anonymous_directory, append_to_log, wait_for_camera, speak
+from utils import get_anonymous_directory, append_to_log, wait_for_camera
 
 parser = ArgumentParser()
 
@@ -133,7 +134,7 @@ while True:
         if not args.quiet:
             display_img = display_dot(img, positions[dot_number])
             cv2.imshow('Dots', display_img)
-        speak(args.datadir, f"Please look at the {position_names[dot_number]} dot")
+        # speak(args.datadir, f"Please look at the {position_names[dot_number]} dot")
         if args.connect:
             send_command_to_unity(socket, "DotNumber:{0}".format(dot_number))
         cv2.waitKey(5000)
@@ -152,7 +153,7 @@ while True:
 
     if len(set(covered_positions)) >= 9 or (time.time() - start_time) > 30:
         break
-
+release_writer()
 # Stop the processing thread
 stop_processing = True
 processing_thread.join()

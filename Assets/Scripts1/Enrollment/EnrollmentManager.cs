@@ -46,6 +46,8 @@ public class EnrollmentManager : MonoBehaviour
 
 	public void ShowMessage(string txt)
 	{
+		if(_msg == null)
+			return;
 		_msg.text = txt;
 		_msg.enabled = true;
 		_msgexpiretime = _msgTime;

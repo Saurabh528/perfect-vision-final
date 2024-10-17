@@ -19,16 +19,17 @@ public class DictionaryModel
 		List<string> words7 = new List<string>();
 		foreach (string str in strings)
 		{
-			if (str.Length == 3)
-				words3.Add(str);
-			else if (str.Length == 4)
-				words4.Add(str);
-			else if (str.Length == 5)
-				words5.Add(str);
-			else if (str.Length == 6)
-				words6.Add(str);
-			else if (str.Length == 7)
-				words7.Add(str);
+			string trimstr = str.TrimEnd('\r');
+			if (trimstr.Length == 3)
+				words3.Add(trimstr);
+			else if (trimstr.Length == 4)
+				words4.Add(trimstr);
+			else if (trimstr.Length == 5)
+				words5.Add(trimstr);
+			else if (trimstr.Length == 6)
+				words6.Add(trimstr);
+			else if (trimstr.Length == 7)
+				words7.Add(trimstr);
 		}
 		dictionary[3] = words3;
 		dictionary[4] = words4;

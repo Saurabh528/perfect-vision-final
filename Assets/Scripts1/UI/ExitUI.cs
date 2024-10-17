@@ -12,6 +12,10 @@ public class ExitUI : MonoBehaviour
     [SerializeField] GameObject ExitPanel, btnShutdown;
 
     void Awake(){
+        if(Instance){
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         GameObject.DontDestroyOnLoad(gameObject);
     }

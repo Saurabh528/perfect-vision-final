@@ -450,11 +450,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -551.64
+      value: -148
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 32
+      value: -33.999992
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1740,6 +1740,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 400688645}
   m_CullTransparentMesh: 0
+--- !u!114 &417406679 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2692443595169926531, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
+  m_PrefabInstance: {fileID: 2692443595409578478}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &495459177
 GameObject:
   m_ObjectHideFlags: 0
@@ -1757,7 +1768,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &495459178
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3092,6 +3103,19 @@ MonoBehaviour:
     _name: Target1
   textLevel: {fileID: 1335492659}
   textScore: {fileID: 1114673914}
+  textMaxIn: {fileID: 865742866}
+  textMaxOut: {fileID: 417406679}
+--- !u!114 &865742866 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2692443595169926531, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
+  m_PrefabInstance: {fileID: 153665887}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &871135690
 GameObject:
   m_ObjectHideFlags: 0
@@ -4147,7 +4171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1114673913
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4165,7 +4189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 16.42, y: -33.799988}
+  m_AnchoredPosition: {x: 16.419983, y: -33.799988}
   m_SizeDelta: {x: 250.32, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1114673914
@@ -4436,7 +4460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1154405386
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6181,17 +6205,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SmoothVergencesController, Assembly-CSharp
-        m_MethodName: OnBtnOptionOK
-        m_Mode: 1
+      - m_Target: {fileID: 1154405385}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 1367862163}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
@@ -6204,6 +6228,54 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1114673912}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1335492657}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 495459177}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 858703128}
+        m_TargetAssemblyTypeName: VergenceGameController, Assembly-CSharp
+        m_MethodName: OnClickOptionOK
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1332489250
 MonoBehaviour:
@@ -6260,7 +6332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1335492658
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6496,7 +6568,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1367862164
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6804,7 +6876,7 @@ RectTransform:
   m_GameObject: {fileID: 1558657851}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 190569912}
@@ -6820,8 +6892,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 163.75}
-  m_SizeDelta: {x: 1582.41, y: 765.74}
+  m_AnchoredPosition: {x: 0, y: 8}
+  m_SizeDelta: {x: 1013.78, y: 703.37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1558657853
 MonoBehaviour:
@@ -7031,7 +7103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1655090966
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8044,6 +8116,10 @@ PrefabInstance:
     - target: {fileID: 2692443595169926533, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_Name
       value: Practice Time
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692443595169926533, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926558, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: _max
@@ -10375,11 +10451,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -551.64
+      value: -155
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 149.00002
+      value: 83
       objectReference: {fileID: 0}
     - target: {fileID: 2692443595169926530, guid: fbf08469c54849f4abbe7582d07f378a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

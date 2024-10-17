@@ -109,8 +109,10 @@ public class PhoriaGameController : DiagnosticController
     }
 
     public void OnClickedTipUIButton(Text tipText){
-        if(tipText.text == TIPTEXT_60cm)
+        if(tipText.text == TIPTEXT_60cm){
             StartCoroutine(StartLeftFixating());
+            RecordWebcamVideo.StartRecord();
+        }
         else if(tipText.text == TIPTEXT_RightFixating){
             _movable = true;
             _zoomFactor = 1;
@@ -130,6 +132,7 @@ public class PhoriaGameController : DiagnosticController
             ApplyZoom();            
             _toggleLeft.enabled = _toggleRight.enabled = true;
             resultExist = true;
+            RecordWebcamVideo.ActivateSaveButton();
         }
         else if(tipText.text == TIPTEXT_LeftFixating){
             _movable = true;

@@ -11,7 +11,7 @@ public class SnakeGameController : MonoBehaviour
 {
     [SerializeField] Text textLevel, _textInstruction;
     [SerializeField] GameObject[] zoneObjects;
-    [SerializeField] GameObject _objOutput, _btnDownload, _food;
+    [SerializeField] GameObject _objOutput, _btnDownload, _food, _btnSave;
     [SerializeField] AlignmentTableRow _alignTblRowTmpl;
 	[SerializeField] RawImage _image4Plot, _imageIPDPlot;
     Process pythonProcess;
@@ -109,6 +109,7 @@ public class SnakeGameController : MonoBehaviour
 		_textInstruction.text = "";	
         ShowResult();
 		_btnDownload.SetActive(true);
+		_btnSave.SetActive(true);
 	}
 
     private void OnDestroy()
@@ -165,6 +166,11 @@ public class SnakeGameController : MonoBehaviour
 		}
         document.Close();
 		UtilityFunc.StartProcessByFile(path);
+	}
+
+	public void OnBtnSaveVideo(){
+		Diagnosis.SaveVideo(PatientMgr.GetPatientDataDir(), "Snake Game");
+		_btnSave.SetActive(false);
 	}
 
 	public void OnTCPConnected()

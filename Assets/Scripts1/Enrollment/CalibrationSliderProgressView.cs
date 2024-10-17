@@ -26,7 +26,7 @@ public class CalibrationSliderProgressView : MonoBehaviour
 	}
 	public void Draw(ColorChannel channel)
     {
-		Debug.Log("Draw(callib) called");
+		//Debug.Log("Draw(callib) called");
         Dictionary<DateTime, uint> valuelist = UISessionRecordView.GetSessionDiagnosticsColorList(channel);
 
 		_title.text = UtilityFunc.ColorChannelToName(channel) + " Slider RGB Values Over Time";

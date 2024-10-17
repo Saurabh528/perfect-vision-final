@@ -7,6 +7,7 @@ public class DeviceSettingMgr : MonoBehaviour
 {
 	public GameObject backBtn;
 	public GameObject nextBtn;
+	[SerializeField] GameObject btn_Calorimeter;
 	private void Start()
 	{
 		/* if (GameState.IsPatient())
@@ -22,6 +23,8 @@ public class DeviceSettingMgr : MonoBehaviour
 		Cursor.visible = true;
 		GameState.currentGameMode = GAMEMODE.DeviceSetting;
 		Directory.CreateDirectory(PatientMgr.GetPatientDataDir());
+		if(btn_Calorimeter)
+			btn_Calorimeter.SetActive(BackgroundTask.MODE_CALORIMETERENABLED);
 		/* string _dpiPath = Application.dataPath + "/../Python/DPI.txt";
 		if (!File.Exists(_dpiPath))
 			File.WriteAllLines(_dpiPath, new string[] { GameState.currentPatient == null ? GameConst.PATIENTNAME_ANONYMOUS : GameState.currentPatient.name, "100.0" });

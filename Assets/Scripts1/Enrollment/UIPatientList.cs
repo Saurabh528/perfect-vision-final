@@ -41,7 +41,7 @@ public class UIPatientList : MonoBehaviour
 	{
 		if (patientList == null)
 			return null;
-		UtilityFunc.DeleteAllSideTransforms(_itemtmpl.transform);
+		UtilityFunc.DeleteAllSideTransforms(_itemtmpl.transform, false);
 
 		int count = 0;
 		RectTransform rt = _itemtmpl.GetComponent<RectTransform>();
@@ -55,7 +55,7 @@ public class UIPatientList : MonoBehaviour
 			newrt.localPosition = rt.localPosition + new Vector3(0, -count * 100, 0);
 			newrt.localScale = rt.localScale;
 			count++;
-			newitem.SetPatientName(pair.Key);
+			newitem.SetPatientInfo(pair.Key, count);
 			newitem.gameObject.SetActive(true);
 			if (pair.Key == selectname)
 				selection = newitem.GetComponent<Toggle>();
@@ -118,11 +118,11 @@ public class UIPatientList : MonoBehaviour
 		Dictionary<string, PatientData> list = new Dictionary<string, PatientData>();
 		Dictionary<string, PatientData> alllist = PatientMgr.GetPatientList();
 		foreach (KeyValuePair<string, PatientData> pair in alllist){
-			if (string.IsNullOrEmpty(value) || pair.Value.name.ToLower().Contains(value.ToLower()))
+			if (string.IsNullOrEmpty(value) || pair.Key.ToLower().Contains(value.ToLower()))
 				list[pair.Key] = pair.Value;
 		}
 		FillWithPatientList(list, "");
 	}
 
-
+	
 }

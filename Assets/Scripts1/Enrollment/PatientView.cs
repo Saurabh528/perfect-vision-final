@@ -12,7 +12,7 @@ public class PatientView : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _age;
 	[SerializeField] TextMeshProUGUI _gender;
 	[SerializeField] TextMeshProUGUI _details;
-	[SerializeField] GameObject _btnDelete, _btnStart;
+	[SerializeField] GameObject _btnDelete, _btnStart, _btnClear;
 	[SerializeField] UISessionMake _sessionmakeview;
     [SerializeField] GameObject _btnSetting, _btnProAnylysis, _btnDiagnose;
 
@@ -53,7 +53,7 @@ public class PatientView : MonoBehaviour
 		if(_btnDelete)
 			_btnDelete.SetActive(false);
 		_btnStart.SetActive(false);
-        
+        _btnClear.SetActive(false);
         _btnSetting.SetActive(false);
 		_btnDiagnose.SetActive(false);
 		_btnProAnylysis.SetActive(false);
@@ -65,7 +65,8 @@ public class PatientView : MonoBehaviour
 		{
 			Clear();
 			if(_btnDelete)
-				_btnDelete.SetActive(true);
+				_btnDelete.SetActive(false);
+			_btnClear.SetActive(false);
 			return;
 		}
 		_name.text = GameState.currentPatient.name;
@@ -73,11 +74,11 @@ public class PatientView : MonoBehaviour
 		_gender.text = GameState.currentPatient.gender.ToString();
 		_details.text = GameState.currentPatient.details;
 		if(_btnDelete)
-			_btnDelete.SetActive(true);
+			_btnDelete.SetActive(GameState.IsDoctor());
 		_btnStart.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
-        
+        _btnClear.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
         _btnSetting.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
-		_btnDiagnose.SetActive(true);
+		_btnDiagnose.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
 		_btnProAnylysis.SetActive(true);
 	}
 
@@ -118,7 +119,6 @@ public class PatientView : MonoBehaviour
 		ViewPatientData();
 		PatientDataMgr.GetPatientRecord().sessionlist.Clear();
 		UISessionRecordView.Instance.LoadSessionData();
-		UISessionRecordView.Instance.ShowPatientSessionData();
 		List<byte> gamelist = SessionMgr.GetGameList();
 		gamelist.Clear();
 		if (GameState.currentPatient != null)

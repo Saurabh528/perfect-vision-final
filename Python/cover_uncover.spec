@@ -13,7 +13,7 @@ pathex = ['F:\\Work\\Unity\\PerfectVisionProject\\perfect-vision-final\\Python',
 
 # Collect all submodules and data files for pywin32
 hiddenimports = collect_submodules('win32com') + collect_submodules('win32com.shell')
-datas = collect_data_files('win32com') + [('c:\\Users\\KRAJ\\AppData\\Roaming\\Python\\Python311\\site-packages\\mediapipe\\modules', 'mediapipe\\modules')]
+datas = collect_data_files('win32com') + [(os.environ['PythonPackagesPath'] + '\\mediapipe\\modules', 'mediapipe\\modules')]
 
 a = Analysis(
     ['cover_uncover.py'],

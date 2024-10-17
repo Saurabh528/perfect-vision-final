@@ -52,11 +52,13 @@ public class DotAlignmentController : GamePlayController {
 	bool _finished = false;
 	bool _failed = false;
 	Process pythonProcess;
-	[SerializeField] GameObject _objOutput, _btnPrint, _btnHelp, /* _btnStart ,*/ _btnDownload;
+	[SerializeField] GameObject _objOutput, _btnPrint, _btnHelp, /* _btnStart ,*/ _btnDownload, _btnSaveVideo;
 	[SerializeField] SimilarityTableRow _simTblRowTmpl;
 	[SerializeField] AlignmentTableRow _alignTblRowTmpl;
 	[SerializeField] SimilarityGraph _simGraphTmpl;
 	[SerializeField] Transform _dotParent;
+	[SerializeField] AudioClip[] voiceClips;
+	[SerializeField] AudioSource audioSource;
 	int _curDotIndex = -1;
 	List<SimilarityResult> similarityResults = new List<SimilarityResult>();
 	List<IrisState> irisList = new List<IrisState>();
@@ -111,6 +113,12 @@ public class DotAlignmentController : GamePlayController {
 			child.gameObject.SetActive(false);
 		}
 		_dotParent.GetChild(_curDotIndex).gameObject.SetActive(true);
+
+		//play sound
+		if(audioSource.isPlaying)
+			audioSource.Stop();
+		audioSource.clip = voiceClips[_curDotIndex];
+		audioSource.Play();
 	}
 
 	IEnumerator Routine_Finish()
@@ -123,6 +131,7 @@ public class DotAlignmentController : GamePlayController {
 		ShowResult(_resultData);
 		//_btnStart.SetActive(true);
 		_btnDownload.SetActive(true);
+		_btnSaveVideo.SetActive(true);
 	}
 
 
@@ -512,6 +521,11 @@ public class DotAlignmentController : GamePlayController {
 
 		document.Close();
 		UtilityFunc.StartProcessByFile(path);
+	}
+
+	public void OnBtnSaveVideo(){
+		Diagnosis.SaveVideo(PatientMgr.GetPatientDataDir(), "Dot Game");
+		_btnSaveVideo.SetActive(false);
 	}
 
 	void DrawSimilarityGraph(PdfWriter writer, List<IrisState> irisList, float Xpos, float Ypos, float sizeX, float sizeY, IRISSIMCLASS isclass)

@@ -18,6 +18,7 @@ public class ScreenCali : MonoBehaviour
 
 	private void Update()
 	{
+		//BackgroundTask.DebugString($"IsOpen: {webCamRender.IsOpen()}, IsCaptuable: {webCamRender.IsCaptuable()}");
 		if(webCamRender.IsOpen()){
 			if(Input.GetKeyDown(KeyCode.P) && webCamRender.IsCaptuable()){
 				string pngFilePath = $"{PatientMgr.GetPatientDataDir()}/grab_screen{pressCount}.png";
@@ -38,9 +39,9 @@ public class ScreenCali : MonoBehaviour
 
 	public void StartDistanceCali()
     {
-		DebugUI.LogString("StartDistanceCali");
+		BackgroundTask.DebugString("StartDistanceCali");
 		int camindex = GlobalSettingUI.GetCurrentCameraIndex();
-		DebugUI.LogValue("cameraidx", camindex);
+		BackgroundTask.LogValue("cameraidx", camindex);
 		if(camindex == -1){
 			_text.text = "No Web camera is installed.";
 			return;
@@ -48,6 +49,7 @@ public class ScreenCali : MonoBehaviour
 		UnityEngine.Debug.Log($"Camera Index: {camindex}");
 		if(!webCamRender.OpenCamera()){
 			_text.text = "No Web camera is installed.";
+			BackgroundTask.DebugString("No Web camera is installed.");
 			return;
 		}
 		_text.text = "Sit at 50 cms from the screen and press p 10 times in still position once comfortable.";
@@ -57,7 +59,7 @@ public class ScreenCali : MonoBehaviour
 	void StartPythonProcess(){
 		string path =  UtilityFunc.GetFullDirFromApp("Python");
 
-		DebugUI.LogValue("path", path);
+		BackgroundTask.LogValue("path", path);
 		_text.text = "Please wait...";
 
 #if UNITY_EDITOR

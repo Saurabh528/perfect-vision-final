@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import math
+from export_video import init_writer, write_frame
 
 
 def get_unique(c):
@@ -20,7 +21,11 @@ iris_right_horzn = [469,471]
 iris_right_vert = [470,472]
 iris_left_horzn = [474,476]
 iris_left_vert = [475,477]
+datadir = ""
 
+def set_datadir(dir):
+    global datadir
+    datadir = dir
 
 def calculate_distance(x1, y1, x2, y2):
     distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
@@ -251,6 +256,7 @@ thickness = 1  # Thickness of the lines used to draw the text
 
 from utils import wait_for_camera
 def process_video(video_path):
+    global datadir
     face_detection = mp_face_detection.FaceDetection()
     face_mesh = mp_face_mesh.FaceMesh()
     if wait_for_camera(video_path):
@@ -264,11 +270,14 @@ def process_video(video_path):
     max_num_faces=1,
     refine_landmarks=True,
     min_detection_confidence=0.3) as face_mesh:
-
+        
+        if cap.isOpened():
+            init_writer(datadir, cap)
         while cap.isOpened():
             success, image = cap.read()
             if not success:
                 break
+            write_frame(image.copy())
             # Convert the image to RGB
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = face_detection.process(image_rgb)

@@ -82,10 +82,6 @@ public class PlaneGameController : GamePlayController
 			IncreaseLevel();
 	}
 
-	public override void IncreaseLevel()
-	{
-		base.IncreaseLevel();
-	}
 
 	public override void ShowLevel()
 	{

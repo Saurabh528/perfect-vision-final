@@ -59,8 +59,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Diagnostics/Wrth4dottest/DotTest.unity
     guid: 82c105c9201e417418517eb81d61ea2e
-  - enabled: 0
-    path: Assets/ActiveScenes/Unuse1.unity
+  - enabled: 1
+    path: Assets/Scenes/CalorimeterRecords.unity
     guid: 4f773c4b6751d40d9bc8d53a0c39bc69
   - enabled: 0
     path: Assets/ActiveScenes/unuse2.unity

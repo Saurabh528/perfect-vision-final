@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +17,14 @@ public class StereogramController : DiagnosticController
         Down
     };
     public enum SymbolType{
-        Circle,
+        Triangle,
+        Moon,
+        Lightning,
         Heart,
-        Rectangle,
         Star,
-        Triangle
+        Circle,
+        Rectangle,
+        X
     };
 
     //[SerializeField] Text textLevel, textScore;
@@ -29,18 +33,24 @@ public class StereogramController : DiagnosticController
     [SerializeField] StereogramSettingUI settingUI;
     [SerializeField] TextMeshProUGUI textCorrectStatus, textWrongStatus;
     [SerializeField] TweenAppear tweenArrowKeys, tweenTapSymbol;
+    [SerializeField] Sprite[] symbolIcons;
 
     PatternDirection curPatDir = PatternDirection.Left;
-    SymbolType curSymbol = SymbolType.Circle;
-    int                 depth = 1;
+    SymbolType curSymbol = SymbolType.Triangle;
+    DepthMode                 depthMode = DepthMode.Depth10;
+    int                 customEyesIn = 10;
+
     float               jumpTime = 6;
     StereoOverlapMode   overlapMode = StereoOverlapMode.EyesIn;
-    StereoTestMode      testMode = StereoTestMode.VisualJump;
+    StereoTestMode      testMode = StereoTestMode.VisualSymbol;
+    SizeMode            sizeMode = SizeMode.Normal;
+    LevelMode           levelMode = LevelMode.Level1;
     float               patternDelay;
     int                 wrongCount = 0;
     int                 distance, longDist, correct;
     int score;
-    float remainTime, totalTime;
+    float remainTime, totalTime, patternStartTime;
+    List<float> guessTimeList;
     // Start is called before the first frame update
     public void Start()
     {
@@ -60,10 +70,13 @@ public class StereogramController : DiagnosticController
             }
             
             patternDelay -= Time.deltaTime;
-            if(patternDelay <= 0){
-                distance--;
-                if(distance == -1)
-                    distance = 0;
+            if(patternDelay <= 0 && testMode != StereoTestMode.VisualSymbol){
+                if (depthMode == DepthMode.DepthIncrease){
+                    distance--;
+                    if(distance == -1)
+                        distance = 0;
+                }
+                    
                 ShowNewPattern();
             }
             imageTimePercent.fillAmount = remainTime / totalTime;
@@ -99,8 +112,10 @@ public class StereogramController : DiagnosticController
     }
 
     void OnCheckOK(){
-        distance++;
+        if (depthMode == DepthMode.DepthIncrease)
+            distance++;
         longDist = distance;
+        guessTimeList.Add(Time.time - patternStartTime);
         correct++;
         if(correct == 1){
             if(testMode == StereoTestMode.VisualSymbol)
@@ -113,9 +128,12 @@ public class StereogramController : DiagnosticController
     }
 
     void OnCheckFail(){
-        distance--;
-        if(distance == -1)
-            distance = 0;
+        if (depthMode == DepthMode.DepthIncrease){
+            distance--;
+            if(distance == -1)
+                distance = 0;
+        }
+        
         score--;
         if(score < 0)
             score = 0;
@@ -138,19 +156,52 @@ public class StereogramController : DiagnosticController
 
     public void OnBtnStart(){
         settingUI.SaveSetting();
-        depth = settingUI.GetDepth();
-        jumpTime = settingUI.GetJumpTime();
+        depthMode = settingUI.GetDepthMode();
+        if(depthMode == DepthMode.DepthCustom)
+            customEyesIn = settingUI.GetCustomEyesIn();
+        if(depthMode == DepthMode.Depth10)
+            distance = 3;
+        else if(depthMode == DepthMode.Depth20)
+            distance = 6;
+        else if(depthMode == DepthMode.Depth30)
+            distance = 9;
+        else if(depthMode == DepthMode.DepthCustom)
+            distance = customEyesIn;
+        else //DepthMode.DepthIncrease
+            distance = 0;
+        sizeMode = settingUI.GetSizeMode();
+        levelMode = settingUI.GetLevelMode();
+        //jumpTime = settingUI.GetJumpTime();
         overlapMode = settingUI.GetOverlapMode();
-        testMode = settingUI.GetTestMode();
+        //testMode = settingUI.GetTestMode();
         symbolSection.SetActive(testMode == StereoTestMode.VisualSymbol);
+        if(testMode == StereoTestMode.VisualSymbol && levelMode == LevelMode.Level1){
+            SymbolType[] types = new SymbolType[5];
+            for(int i = 0; i < 5; i++){
+                types[i] = (SymbolType)i;
+            }
+            SetSymbolButtons(types);
+        }
         totalTime = remainTime = settingUI.GetPlayTime();
-        Debug.Log($"Depth:{depth}, JumpTime: {jumpTime}, Overlap: {overlapMode}, Test: {testMode}, PlayTime: {remainTime}");
+        Debug.Log($"Depth:{depthMode}, JumpTime: {jumpTime}, Overlap: {overlapMode}, Test: {testMode}, PlayTime: {remainTime}");
         settingUI.gameObject.SetActive(false);
+        StartGamePlay();
+    }
+
+    public void OnBtnReStart(){
+        if(depthMode == DepthMode.DepthIncrease)
+            distance = 0;
+        remainTime = totalTime;
+        resultPanel.SetActive(false);
         StartGamePlay();
     }
 
     void StartGamePlay()
 	{
+        correct = wrongCount = score = 0;
+        textCorrectStatus.text = correct.ToString();
+        textWrongStatus.text = wrongCount.ToString();
+        guessTimeList = new List<float>();
         playPanel.SetActive(true);
 		ShowNewPattern();
         if(testMode == StereoTestMode.VisualSymbol)
@@ -161,35 +212,11 @@ public class StereogramController : DiagnosticController
 
     void ShowNewPattern(){
         patternDelay = jumpTime;
-        float move = 0;
-        if(overlapMode == StereoOverlapMode.EyesIn)
-            move = distance * 2;
-        else if(overlapMode == StereoOverlapMode.EyesOut)
-            move = -distance * 2;
-        else
-            move = distance * 2 * (imageCyan.transform.localPosition.x > 0? -1: 1);
-        imageCyan.transform.localPosition = markCyan.transform.localPosition = new Vector3(move, 0, 0);
-        imageRed.transform.localPosition = markRed.transform.localPosition = new Vector3(-move, 0, 0);
-        
+        float scale = sizeMode == SizeMode.Normal? 1: 0.5f;
+        imageCyan.transform.localScale = imageRed.transform.localScale = new Vector3(scale, scale, 1);
         string redpath = "", cyanpath = "";
         if(testMode == StereoTestMode.VisualSymbol){
-            SymbolType symboltype = curSymbol;
-            // Create an instance of the Random class
-            System.Random random = new System.Random();
-            while(symboltype == curSymbol){
-                int enumLength = Enum.GetNames(typeof(SymbolType)).Length;
-                
-                // Generate a random number within the range of enum values
-                int randomIndex = random.Next(enumLength);
-                
-                // Cast the random number to the PatternDirection enum type
-                symboltype = (SymbolType)randomIndex;
-            }
-            curSymbol = symboltype;
-            StereoOverlapMode mode = overlapMode;
-            if(overlapMode == StereoOverlapMode.EyesMixed)
-                mode = imageCyan.transform.localPosition.x > 0? StereoOverlapMode.EyesOut: StereoOverlapMode.EyesIn;
-            GetSymbolPatternPath(out redpath, out cyanpath, mode);
+            SelectVisualSymbolPatterns(out redpath, out cyanpath);
         }
         else{
             PatternDirection randomDirection = curPatDir;
@@ -209,6 +236,16 @@ public class StereogramController : DiagnosticController
             GetArrowPatternPath(out redpath, out cyanpath);
         }
         
+        float move = 0;
+        if(overlapMode == StereoOverlapMode.EyesIn)
+            move = distance * 2;
+        else if(overlapMode == StereoOverlapMode.EyesOut)
+            move = -distance * 2;
+        else
+            move = distance * 2 * (imageCyan.transform.localPosition.x > 0? -1: 1);
+        imageCyan.transform.localPosition = markCyan.transform.localPosition = new Vector3(move, 0, 0);
+        imageRed.transform.localPosition = markRed.transform.localPosition = new Vector3(-move, 0, 0);
+        
         // Load the sprite from the Resources folder
         Sprite sprite = Resources.Load<Sprite>(redpath);
         if (sprite == null)
@@ -226,14 +263,52 @@ public class StereogramController : DiagnosticController
             return;
         }
         imageCyan.sprite = sprite;
-
+        patternStartTime = Time.time;
         
+    }
+
+    void SelectVisualSymbolPatterns(out string redpath, out string cyanpath){
+        SymbolType symboltype = curSymbol;
+        // Create an instance of the Random class
+        System.Random random = new System.Random();
+        while(symboltype == curSymbol){
+            int enumLength = levelMode == LevelMode.Level1? 5: Enum.GetNames(typeof(SymbolType)).Length;
+            
+            // Generate a random number within the range of enum values
+            int randomIndex = random.Next(enumLength);
+            
+            // Cast the random number to the PatternDirection enum type
+            symboltype = (SymbolType)randomIndex;
+        }
+        curSymbol = symboltype;
+        if(levelMode == LevelMode.Level2){
+            SymbolType[] types = new SymbolType[5];
+            int pos = random.Next(5);
+            for(int i = 0; i < 5; i++)
+                types[i] = curSymbol;
+            for(int i = 0; i < 5; i++){
+                if(i != pos){
+                    SymbolType othertype = curSymbol;
+                    while(othertype == curSymbol || types.Contains(othertype)){
+                        int enumLength = Enum.GetNames(typeof(SymbolType)).Length;
+                        int randomIndex = random.Next(enumLength);
+                        othertype = (SymbolType)randomIndex;
+                    }
+                    types[i] = othertype;
+                }
+            }
+            SetSymbolButtons(types);
+        }
+        StereoOverlapMode mode = overlapMode;
+        if(overlapMode == StereoOverlapMode.EyesMixed)
+            mode = imageCyan.transform.localPosition.x > 0? StereoOverlapMode.EyesOut: StereoOverlapMode.EyesIn;
+        GetSymbolPatternPath(out redpath, out cyanpath, mode);
     }
 
     void GetArrowPatternPath(out string redpath, out string cyanpath){
         if(testMode == StereoTestMode.VisualJump){
-            redpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depth}_{ColorChannel.CC_Red}";
-            cyanpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depth}_{ColorChannel.CC_Cyan}";
+            redpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depthMode}_{ColorChannel.CC_Red}";
+            cyanpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depthMode}_{ColorChannel.CC_Cyan}";
         }
         else{//VisualPower
             redpath = $"StereogramPattern/Diamond_{curPatDir}_{ColorChannel.CC_Red}";
@@ -249,12 +324,14 @@ public class StereogramController : DiagnosticController
             return;
         }
         if(mode == StereoOverlapMode.EyesIn){
-            cyanpath = $"StereogramPattern/Symbols_{mode}_{ColorChannel.CC_Cyan}";
+            //cyanpath = $"StereogramPattern/Symbols_{mode}_{ColorChannel.CC_Cyan}";
+            cyanpath = $"StereogramPattern/Symbols_{mode}_CC_Blue";
             redpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_{ColorChannel.CC_Red}";
         }
         else if(mode == StereoOverlapMode.EyesOut){
             redpath = $"StereogramPattern/Symbols_{mode}_{ColorChannel.CC_Red}";
-            cyanpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_{ColorChannel.CC_Cyan}";
+            //cyanpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_{ColorChannel.CC_Cyan}";
+            cyanpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_CC_Blue";
         }
         else{
             Debug.LogError("Can't generate path in {mode} mode");
@@ -279,18 +356,31 @@ public class StereogramController : DiagnosticController
     void ShowResult(){
         playPanel.SetActive(false);
         resultPanel.SetActive(true);
-        if(testMode == StereoTestMode.VisualJump)
+       /*  if(testMode == StereoTestMode.VisualJump)
             resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Jump";
         else if(testMode == StereoTestMode.VisualPower)
             resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Power";
         else
-            resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Symbols";
-        resultPanel.transform.Find("Score").GetComponent<Text>().text = score.ToString();
+            resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Symbols"; */
+        /* resultPanel.transform.Find("Score").GetComponent<Text>().text = score.ToString();
         resultPanel.transform.Find("LongDist").GetComponent<Text>().text = longDist.ToString();
         resultPanel.transform.Find("Correct").GetComponent<Text>().text = correct.ToString();
         resultPanel.transform.Find("Errors").GetComponent<Text>().text = wrongCount.ToString();
-        resultPanel.transform.Find("Time").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(totalTime);
-
+        resultPanel.transform.Find("Time").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(totalTime); */
+        resultPanel.transform.Find("Score").GetComponent<Text>().text = score.ToString();
+        //resultPanel.transform.Find("LongDist").GetComponent<Text>().text = longDist.ToString();
+        resultPanel.transform.Find("Correct").GetComponent<Text>().text = correct.ToString();
+        resultPanel.transform.Find("Errors").GetComponent<Text>().text = wrongCount.ToString();
+        float maxTime = 0, minTime = 0, averTime = 0;
+        if(guessTimeList.Count > 0){
+            maxTime = guessTimeList.Max();
+            minTime = guessTimeList.Min();
+            averTime = guessTimeList.Average();
+        }
+        resultPanel.transform.Find("Fastest").GetComponent<Text>().text = minTime.ToString("F2") + " sec";
+        resultPanel.transform.Find("Slowest").GetComponent<Text>().text = maxTime.ToString("F2") + " sec";
+        resultPanel.transform.Find("Average").GetComponent<Text>().text = averTime.ToString("F2") + " sec";
+        resultPanel.transform.Find("TotalTime").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(totalTime);
     }
 
     public override void AddResults(){
@@ -306,5 +396,16 @@ public class StereogramController : DiagnosticController
         if(!base.ResultExist())
             return false;
         return remainTime == 0;
+    }
+
+    public void SetSymbolButtons(SymbolType[] types){
+        if(types.Length != 5){
+            Debug.LogError("Can have only 5 symbols.");
+            return;
+        }
+        for(int i = 0; i < 5; i++){
+            symbolSection.transform.GetChild(i).GetComponent<Image>().sprite = symbolIcons[(int)types[i]];
+            symbolSection.transform.GetChild(i).gameObject.name = types[i].ToString();
+        }
     }
 }

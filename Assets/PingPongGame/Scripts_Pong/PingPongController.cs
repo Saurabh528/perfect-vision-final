@@ -106,9 +106,9 @@ public class PingPongController : GamePlayController {
 		StartRound();
 	}
 
-	public override void IncreaseLevel()
+	public override void IncreaseLevel(int delta = 1)
 	{
-		base.IncreaseLevel();
+		base.IncreaseLevel(delta);
 		StoreSpeed = LevelDetails.SpeedAI[_level - 1];
 		Debug.Log("Check Level wise Speed" + StoreSpeed);
 	}

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
+using System;
 
 public class DiagnoItemStructure{
     public string Name, unit, norm, comment;
@@ -177,10 +178,8 @@ public class UIDiagnosticReportView : MonoBehaviour
 		if (!PDFUtil.CreatePDFHeader(path, out document, out writer))
 			return;
 		iTextSharp.text.pdf.BaseFont bfntHead = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-		
 		PDFUtil.AddSectionBar(textTitle.text, document);
         Dictionary<string, DiagnoseTestItem> testItems = currentRecord.GetTestItems();
-
         //int rowCountInTable = 0;
 		//PDFUtil.AddSubSection("Session HighScore", document);
 		PdfPTable table = GetNewTable(document);
@@ -300,62 +299,67 @@ public class UIDiagnosticReportView : MonoBehaviour
     }
 
     void AddTestRowToPDF(PdfPTable table, string test, string result, string unit, string norm, string comment){
-        iTextSharp.text.pdf.BaseFont bfntHead = GameResource.SerifFont;
-        iTextSharp.text.Font cellFont = new iTextSharp.text.Font(bfntHead, 12, iTextSharp.text.Font.NORMAL);
-        int alignHor = Element.ALIGN_CENTER;
-        float height = 30;
-        int alignVer = Element.ALIGN_MIDDLE;
-        BaseColor backColor = BaseColor.WHITE;
+        try{
 
-        PdfPCell cell = new PdfPCell(new Phrase(test, cellFont));
-        cell.HorizontalAlignment = alignHor;
-        cell.FixedHeight = height;
-        cell.VerticalAlignment = alignVer;
-        cell.BackgroundColor = backColor;
-        table.AddCell(cell);
+            iTextSharp.text.pdf.BaseFont bfntHead = GameResource.SerifFont;
+            iTextSharp.text.Font cellFont = new iTextSharp.text.Font(bfntHead, 12, iTextSharp.text.Font.NORMAL);
+            int alignHor = Element.ALIGN_CENTER;
+            float height = 30;
+            int alignVer = Element.ALIGN_MIDDLE;
+            BaseColor backColor = BaseColor.WHITE;
 
-        cell = new PdfPCell(new Phrase(result, cellFont));
-        if(string.IsNullOrEmpty(unit) && string.IsNullOrEmpty(norm))
-            cell.Colspan = 3;
-        else if(string.IsNullOrEmpty(unit))
-            cell.Colspan = 2;
-        cell.HorizontalAlignment = alignHor;
-        cell.FixedHeight = height;
-        cell.VerticalAlignment = alignVer;
-        cell.BackgroundColor = backColor;
-        table.AddCell(cell);
-        if(!string.IsNullOrEmpty(unit) && !string.IsNullOrEmpty(norm)){
-            cell = new PdfPCell(new Phrase(unit, cellFont));
+            PdfPCell cell = new PdfPCell(new Phrase(test, cellFont));
             cell.HorizontalAlignment = alignHor;
             cell.FixedHeight = height;
             cell.VerticalAlignment = alignVer;
             cell.BackgroundColor = backColor;
             table.AddCell(cell);
 
-            cell = new PdfPCell(new Phrase(norm, cellFont));
+            cell = new PdfPCell(new Phrase(result, cellFont));
+            if(string.IsNullOrEmpty(unit) && string.IsNullOrEmpty(norm))
+                cell.Colspan = 3;
+            else if(string.IsNullOrEmpty(unit))
+                cell.Colspan = 2;
+            cell.HorizontalAlignment = alignHor;
+            cell.FixedHeight = height;
+            cell.VerticalAlignment = alignVer;
+            cell.BackgroundColor = backColor;
+            table.AddCell(cell);
+            if(!string.IsNullOrEmpty(unit) && !string.IsNullOrEmpty(norm)){
+                cell = new PdfPCell(new Phrase(unit, cellFont));
+                cell.HorizontalAlignment = alignHor;
+                cell.FixedHeight = height;
+                cell.VerticalAlignment = alignVer;
+                cell.BackgroundColor = backColor;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Phrase(norm, cellFont));
+                cell.HorizontalAlignment = alignHor;
+                cell.FixedHeight = height;
+                cell.VerticalAlignment = alignVer;
+                cell.BackgroundColor = backColor;
+                table.AddCell(cell);
+            }
+            else if(!string.IsNullOrEmpty(unit)){
+                cell = new PdfPCell(new Phrase(unit, cellFont));
+                cell.Colspan = 2;
+                cell.HorizontalAlignment = alignHor;
+                cell.FixedHeight = height;
+                cell.VerticalAlignment = alignVer;
+                cell.BackgroundColor = backColor;
+                table.AddCell(cell);
+            }
+
+            cell = new PdfPCell(new Phrase(comment, cellFont));
             cell.HorizontalAlignment = alignHor;
             cell.FixedHeight = height;
             cell.VerticalAlignment = alignVer;
             cell.BackgroundColor = backColor;
             table.AddCell(cell);
         }
-        else if(!string.IsNullOrEmpty(unit)){
-            cell = new PdfPCell(new Phrase(unit, cellFont));
-            cell.Colspan = 2;
-            cell.HorizontalAlignment = alignHor;
-            cell.FixedHeight = height;
-            cell.VerticalAlignment = alignVer;
-            cell.BackgroundColor = backColor;
-            table.AddCell(cell);
+        catch(Exception e){
+            UtilityFunc.AppendToLog(e.ToString());
         }
-
-        cell = new PdfPCell(new Phrase(comment, cellFont));
-        cell.HorizontalAlignment = alignHor;
-        cell.FixedHeight = height;
-        cell.VerticalAlignment = alignVer;
-        cell.BackgroundColor = backColor;
-        table.AddCell(cell);
-        
     }
 
     PdfPTable GetNewTable(Document document){
