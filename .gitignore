@@ -95,3 +95,5 @@ crashlytics-build.properties
 Python/__pycache__/
 /.DS_Store
 
+Deploy/PerfectVisionBinoPlay.exe
+Deploy/PerfectVisionDiagnostic.exe
