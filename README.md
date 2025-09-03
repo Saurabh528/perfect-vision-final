@@ -59,6 +59,8 @@ then open the folder in unity or you can find useful stuff by [browsing awesome 
 - increase count HomeTherapy.unity/...RightView/ScrollView/Mask/PatientView/HightscoreView/UISessionReportView component
 - increase count HomeTherapy.unity/...RightView/ScrollView/Mask/PatientView/ReportView/UISessionReportView component
 - add row in UISessionRecordView.cs.OnBtnExportPDF
+- add game scene name in StartScene.unity/GlobalCanvas gameobject/BackgoundTask component/Rgb Allowed Scenes variable
+- add game scene in build setting
 
 ### Gamescore customizing
 - UIProgressView.ViewProgression(string gamename)

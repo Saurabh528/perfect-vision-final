@@ -31,14 +31,6 @@ public class VergenceGameController : GamePlayController
         textMaxOut.text = PlayerPrefs.GetFloat(KeyName_MaxOut, 10).ToString();
         _bio = 0;
         float dpi = 72;
-        /* string dpipath = Application.dataPath + "/../Python/DPI.txt";
-        if (File.Exists(dpipath))
-        {
-            string[] lines = File.ReadAllLines(dpipath);
-            if(lines.Length >= 2 ) {
-                dpi = float.Parse(lines[1]);
-            }
-        } */
         _cm2pix = dpi / 2.54f;
 	}
 

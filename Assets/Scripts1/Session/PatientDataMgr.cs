@@ -143,6 +143,13 @@ public class PatientRecord
 		return displacementRecords;
 	}
 
+	public void Clear()
+	{
+		sessionlist.Clear();
+		displacementRecords.Clear();
+		diagnoseRecords.Clear();
+	}
+
 }
 public abstract class PatientDataMgr
 {

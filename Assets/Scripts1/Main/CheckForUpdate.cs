@@ -8,7 +8,7 @@ using System.Net;
 public class CheckForUpdate : MonoBehaviour
 {
     [SerializeField] TweenAppear tweenNewVersion;
-    struct Version
+    public struct Version
     {
         internal static Version zero = new Version(0, 0, 0);
 
@@ -22,20 +22,34 @@ public class CheckForUpdate : MonoBehaviour
             minor = _minor;
             subMinor = _subMinor;
         }
+
+        
+
+
         internal Version(string _version)
         {
             string[] versionStrings = _version.Split('.');
-            if (versionStrings.Length != 3)
+            if (versionStrings.Length >= 3)
             {
-                major = 0;
-                minor = 0;
-                subMinor = 0;
-                return;
+                major = short.Parse(versionStrings[0]);
+                minor = short.Parse(versionStrings[1]);
+                subMinor = short.Parse(versionStrings[2]);
             }
-
-            major = short.Parse(versionStrings[0]);
-            minor = short.Parse(versionStrings[1]);
-            subMinor = short.Parse(versionStrings[2]);
+            else if (versionStrings.Length == 2)
+            {
+                major = short.Parse(versionStrings[0]);
+                minor = short.Parse(versionStrings[1]);
+                subMinor = 0;
+            }
+            else if (versionStrings.Length == 1)
+            {
+                major = short.Parse(versionStrings[0]);
+                minor = subMinor = 0;
+            }
+            else{
+                major = minor = subMinor = 0;
+            }
+            
         }
 
         internal bool IsUpdatable(Version onlineVersion)
@@ -64,6 +78,11 @@ public class CheckForUpdate : MonoBehaviour
         public override string ToString()
         {
             return $"{major}.{minor}.{subMinor}";
+        }
+
+        public bool Equals(Version other)
+        {
+            return major == other.major && minor == other.minor && subMinor == other.subMinor;
         }
     }
     
@@ -106,8 +125,13 @@ public class CheckForUpdate : MonoBehaviour
         {
             if(GameConst.MODE_DOCTORTEST)
                 Application.OpenURL("https://drive.google.com/uc?export=download&id=1QOn-EvaF9P8lPAvKSrqpG7OgSGe4j0Bs");
-            else if(GameConst.COMPANYNAME.StartsWith("BinoPlay"))
-                Application.OpenURL("https://drive.google.com/uc?export=download&id=1LnZyQ_ZGIAWNDXPlkUd2oh5TTDLmv1dh");
+            else if (GameConst.COMPANYNAME.StartsWith("BinoPlay"))
+            {
+                if(GameConst.MODE_NOCAMERA)
+					Application.OpenURL("https://drive.google.com/uc?export=download&id=1sTMS1o3taxUXA4EDzUnSWPHuSTIPG0g3");
+				else
+                    Application.OpenURL("https://drive.google.com/uc?export=download&id=1XFM1AnGVQHxvXDLrn-tf02hPR8hJmRXt");
+            }
             else
                 Application.OpenURL("https://drive.google.com/uc?export=download&id=1lCI-ZZstN6paqxr2A2LcvT1pioJ1YeNK");
         }

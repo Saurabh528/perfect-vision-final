@@ -1,0 +1,5 @@
+﻿Highest diopters indicates high ability.
+BI Break; Δ;≥10; 
+BI Recovery; Δ;≥6; 
+BO Break; Δ;≥20; 
+BO Recovery; Δ;≥16; 

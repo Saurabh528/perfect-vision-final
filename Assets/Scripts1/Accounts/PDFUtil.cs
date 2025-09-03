@@ -26,7 +26,7 @@ public abstract class PDFUtil
 		iTextSharp.text.Font fntHead = new iTextSharp.text.Font(bfntHead, 24, 1, iTextSharp.text.BaseColor.YELLOW);
 		Paragraph prgHeading = new Paragraph();
 		prgHeading.Alignment = Element.ALIGN_CENTER;
-		Chunk chkTitle = new Chunk("Perfect Vision Therapy Record", fntHead);
+		Chunk chkTitle = new Chunk("BinoPlay Therapy Record", fntHead);
 		chkTitle.SetBackground(new iTextSharp.text.BaseColor(74, 5, 82), 185, 10, 185, 30);
 		prgHeading.Add(chkTitle);
 		prgHeading.SpacingAfter = 30;

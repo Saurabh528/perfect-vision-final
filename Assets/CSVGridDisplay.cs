@@ -10,7 +10,7 @@ public class CSVGridDisplay : MonoBehaviour
 
     void Start()
     {
-        filePath = Path.Combine(Application.dataPath, "final_result.csv");
+        filePath = Path.Combine(Application.persistentDataPath, "final_result.csv");
         DisplayCsvData(filePath);
     }
 

@@ -66,5 +66,9 @@ public class EnrollmentManager : MonoBehaviour
 		}
 	}
 
+	private void OnDestroy()
+	{
+		CalorimeterData.ClearData();
+	}
 
 }

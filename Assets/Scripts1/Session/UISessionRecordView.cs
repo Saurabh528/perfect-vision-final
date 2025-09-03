@@ -441,6 +441,8 @@ public class UISessionRecordView : MonoBehaviour
 		gameColors[SessionMgr.GetGameName(6)] = new BaseColor(255, 134, 47);
 		gameColors[SessionMgr.GetGameName(7)] = new BaseColor(255, 134, 47);
 		gameColors[SessionMgr.GetGameName(8)] = new BaseColor(237, 161, 145);
+		gameColors[SessionMgr.GetGameName(9)] = new BaseColor(237, 161, 145);
+		gameColors[SessionMgr.GetGameName(10)] = new BaseColor(237, 161, 145);
 		foreach (KeyValuePair<string, StatisData> pair in highdatas)
         {
 			PdfPCell cell = new PdfPCell(new Phrase(pair.Key, cellFont));
@@ -1049,6 +1051,7 @@ public class UISessionRecordView : MonoBehaviour
 			$"Are you sure to reset your records?";
 		PopupUI.ShowQuestionBox(text, delegate{
 			PatientDataManager.ClearPatientData(OnClearPatientSuccess, EnrollmentManager.Instance.ShowMessage);
+			
 		});
 	}
 
@@ -1059,6 +1062,11 @@ public class UISessionRecordView : MonoBehaviour
 		List<byte> gamelist = SessionMgr.GetGameList();
 		gamelist.Clear();
 		UISessionMake.Instance.UpdateGameSlots();
+		String patientdir = PatientMgr.GetPatientDataDir();
+		UtilityFunc.DeleteDir(patientdir);
+		File.Delete(DPICaculator.GetDPIPath());
+		Directory.CreateDirectory(patientdir);
+		ChangeScene.LoadScene("ColorScreen");
 	}
 	
 

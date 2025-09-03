@@ -1,0 +1,5 @@
+Small seconds of arc indicates high ability.
+Rounds; ;high value;Normal if higher than 5
+Score; ;200;Normal if higher than 150
+Corrects; ;high value;Normal if close to Rounds
+Incorrects; ;low value;Normal if close to 0

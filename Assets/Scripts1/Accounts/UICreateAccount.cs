@@ -19,21 +19,27 @@ public class UICreateAccount : MonoBehaviour {
 	[SerializeField] TMP_InputField licenseKey;
 	[SerializeField] GameObject objSignUp;
 	[SerializeField] GameObject objCreateUserAccount;
-	
+
 
 	private void OnEnable()
 	{
+		LoadingCanvas.Hide();
+		
 		objSignUp.SetActive(true);
 		objCreateUserAccount.SetActive(false);
 	}
 
 	
 
-	void ShowErrorMessage (string error) {
+	void ShowErrorMessage (string error)
+	{
+		LoadingCanvas.Hide();
 		UserAccountManager.Instance.ShowMessage(error);
 	}
 
-    void OnSignWithLicenseKeySuccess () {
+    void OnSignWithLicenseKeySuccess ()
+	{
+		LoadingCanvas.Hide();
 		objSignUp.SetActive(false);
 		objCreateUserAccount.SetActive(true);
 	}
@@ -71,6 +77,7 @@ public class UICreateAccount : MonoBehaviour {
 		else
 		{
 			ShowErrorMessage("");
+			LoadingCanvas.Show();
 			UserAccountManager.Instance.SignUp(licenseKey.text, OnSignWithLicenseKeySuccess, ShowErrorMessage);
 		}
 		

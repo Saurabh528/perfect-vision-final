@@ -35,14 +35,24 @@ public enum LevelMode{
     Level2
 };
 
+public enum ZDepth{
+    Depth1,
+    Depth2,
+    Depth3
+}
 
+public enum TimeMode{
+    Timed,
+    MaxDistance
+}
 
 public class StereogramSettingUI : MonoBehaviour
 {
     
     [SerializeField] Slider sliderJumpTime, sliderCustomEyesin;
     [SerializeField] TextMeshProUGUI textJumpTime, textCustomEyesIn;
-    [SerializeField] Toggle[] togglesDepth, togglesOverlap, togglesplayTime, togglesTest, togglesSize, togglesLevel;
+    [SerializeField] Toggle[] togglesDepth, togglesOverlap, togglesplayTime, togglesTest, togglesSize, togglesLevel, togglesZDepth, togglesTimeMode;
+    [SerializeField] GameObject ZDepthGroup, TimeModeGroup, LevelGroup, TimeGroup;
 
     const string KeyName_Depth = "Stereo_Depth";
     const string KeyName_CustomEyesin = "Stereo_CustomEyesIn";
@@ -52,6 +62,8 @@ public class StereogramSettingUI : MonoBehaviour
     const string KeyName_TestMode = "Stereo_TestMode";
     const string KeyName_SizeMode = "Stereo_SizeMode";
     const string KeyName_LevelMode = "Stereo_LevelMode";
+    const string KeyName_TimeMode = "Stereo_TimeMode";
+    const string KeyName_ZDepth = "Stereo_ZDepth";
     
     // Start is called before the first frame update
     void Start()
@@ -66,7 +78,9 @@ public class StereogramSettingUI : MonoBehaviour
         SetOverlapMode((StereoOverlapMode)PlayerPrefs.GetInt(KeyName_OverlapMode, 0));
         SetSizeMode((SizeMode)PlayerPrefs.GetInt(KeyName_SizeMode, 0));
         SetLevelMode((LevelMode)PlayerPrefs.GetInt(KeyName_LevelMode, 0));
-        //SetTestMode((StereoTestMode)PlayerPrefs.GetInt(KeyName_TestMode, 0));
+        SetZDepthMode((ZDepth)PlayerPrefs.GetInt(KeyName_ZDepth, 0));
+        SetTimeMode((TimeMode)PlayerPrefs.GetInt(KeyName_TimeMode, 0));
+        SetTestMode((StereoTestMode)PlayerPrefs.GetInt(KeyName_TestMode, 0));
         SetPlayTime(PlayerPrefs.GetFloat(KeyName_PlayTime, 60));
     }
 
@@ -77,7 +91,9 @@ public class StereogramSettingUI : MonoBehaviour
         PlayerPrefs.SetInt(KeyName_OverlapMode, (int)GetOverlapMode());
         PlayerPrefs.SetInt(KeyName_SizeMode, (int)GetSizeMode());
         PlayerPrefs.SetInt(KeyName_LevelMode, (int)GetLevelMode());
-        //PlayerPrefs.SetInt(KeyName_TestMode, (int)GetTestMode());
+        PlayerPrefs.SetInt(KeyName_ZDepth, (int)GetZDepthMode());
+        PlayerPrefs.SetInt(KeyName_TimeMode, (int)GetTimeMode());
+        PlayerPrefs.SetInt(KeyName_TestMode, (int)GetTestMode());
         PlayerPrefs.SetFloat(KeyName_PlayTime, GetPlayTime());
     }
 
@@ -115,7 +131,7 @@ public class StereogramSettingUI : MonoBehaviour
         textCustomEyesIn.text = value.ToString();
     }
 
-    public DepthMode GetDepthMode(){//1, 2, 3
+    public DepthMode GetDepthMode(){
         for(int i = 0; i < togglesDepth.Length; i++){
             if(togglesDepth[i].isOn)
                 return (DepthMode)i;
@@ -129,6 +145,38 @@ public class StereogramSettingUI : MonoBehaviour
             return;
         }
         togglesDepth[i].isOn = true;
+    }
+
+    public ZDepth GetZDepthMode(){
+        for(int i = 0; i < togglesZDepth.Length; i++){
+            if(togglesZDepth[i].isOn)
+                return (ZDepth)i;
+        }
+        return ZDepth.Depth1;
+    }
+    void SetZDepthMode(ZDepth mode){
+        int i = (int )mode;
+        if(i >= togglesZDepth.Length){
+            UnityEngine.Debug.LogError("ZDepth value exceeds limit.");
+            return;
+        }
+        togglesZDepth[i].isOn = true;
+    }
+
+    public TimeMode GetTimeMode(){
+        for(int i = 0; i < togglesTimeMode.Length; i++){
+            if(togglesTimeMode[i].isOn)
+                return (TimeMode)i;
+        }
+        return TimeMode.Timed;
+    }
+    void SetTimeMode(TimeMode mode){
+        int i = (int )mode;
+        if(i >= togglesTimeMode.Length){
+            UnityEngine.Debug.LogError("TimeMode value exceeds limit.");
+            return;
+        }
+        togglesTimeMode[i].isOn = true;
     }
 
     void SetSizeMode(SizeMode mode){
@@ -210,5 +258,43 @@ public class StereogramSettingUI : MonoBehaviour
 
     void SetTestMode(StereoTestMode mode){
         togglesTest[(int)mode].isOn = true;
+    }
+
+    public void OnToggleVisualJumpTest(bool value){
+        if(!value)
+            return;
+        ZDepthGroup.SetActive(true);
+        TimeGroup.SetActive(true);
+        TimeModeGroup.SetActive(false);
+        LevelGroup.SetActive(false);
+    }
+
+    public void OnToggleVisualPowerTest(bool value){
+        if(!value)
+            return;
+        ZDepthGroup.SetActive(false);
+        TimeGroup.SetActive(GetTimeMode() == TimeMode.Timed);
+        TimeModeGroup.SetActive(true);
+        LevelGroup.SetActive(false);
+    }
+
+    public void OnToggleVisualSymbolsTest(bool value){
+        if(!value)
+            return;
+        ZDepthGroup.SetActive(false);
+        TimeGroup.SetActive(true);
+        TimeModeGroup.SetActive(false);
+        LevelGroup.SetActive(true);
+    }
+
+    public void OnToggleTimedMode(bool value){
+        if(!value)
+            return;
+        TimeGroup.SetActive(true);
+    }
+    public void OnToggleMaxDistanceMode(bool value){
+        if(!value)
+            return;
+        TimeGroup.SetActive(false);
     }
 }

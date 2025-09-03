@@ -228,9 +228,10 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: '    Two planes will be shown in the beginning of red
-            and blue color and further they will be lost in a group of multiple planes.
-            User need to find the two planes shown in the beginning.'
+          m_StringArgument: The Convergence game evaluates eye coordination by displaying
+            two horizontally moving patterns in red and blue. It estimates the break-in
+            and break-out values to assess the eyes' ability to converge and diverge
+            effectively.
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &7921138

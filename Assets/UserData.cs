@@ -98,6 +98,7 @@ public class PatientData
 	public List<byte> therapygames = new List<byte>();
 	public string PFID;
 	public DateTime ExpireDate;
+	public int theraphyTime = 2;//2 or 5
 	public PatientData(string nm, byte ag, GENDER gen, string dt, THERAPPYPLACE plc, DateTime expireDate,string licensekey)
 	{
 		name = nm;
@@ -108,13 +109,10 @@ public class PatientData
 		ExpireDate = expireDate;
 		licenseKey = licensekey;
 		PFID = GameConst.PLAYFABID_CLINIC;
+		theraphyTime = 2;
 	}
 	
 
-	public string ToJSONString()
-	{
-		return "{ID = {ID}; NM = {name}; AG = {age}; GD = {gender.ToString()}; DT = {details};}";
-	}
 
 	public bool IsHome(){
 		return place == THERAPPYPLACE.Home;
@@ -126,10 +124,12 @@ public class PatientData
 
 	public void GetDataFromDoctorData(HomePatientData hdata){
 		therapygames = hdata.therapygames;
+		theraphyTime = hdata.theraphyTime;
 	}
 
 	public void PutDataToDoctorData(HomePatientData hdata){
 		hdata.therapygames = therapygames;
+		hdata.theraphyTime = theraphyTime;
 	}
 	
 	public void ResetData(){
@@ -140,6 +140,7 @@ public class PatientData
 
 public class HomePatientData{
 	public List<byte> therapygames = new List<byte>();
+	public int theraphyTime = 2;//2 or 5
 }
 
 

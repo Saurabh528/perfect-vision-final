@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Newtonsoft.Json.Linq;
 public class UIPatientList : MonoBehaviour
 {
 	public static UIPatientList Instance;
 	[SerializeField] PatientItem _itemtmpl;
+
+	[SerializeField] TMP_InputField _textPatientName;
+	[SerializeField] TMP_Dropdown _dropdownPatientKind;
 
 
 	private void Awake()
@@ -115,14 +119,26 @@ public class UIPatientList : MonoBehaviour
 
 	public void OnSearchTextChanged(string value)
 	{
+		ApplyPatientFilter();
+	}
+
+	public void OnPatientKindChanged(int kindIndex)
+	{
+		ApplyPatientFilter();
+	}
+
+	void ApplyPatientFilter()
+	{
 		Dictionary<string, PatientData> list = new Dictionary<string, PatientData>();
 		Dictionary<string, PatientData> alllist = PatientMgr.GetPatientList();
-		foreach (KeyValuePair<string, PatientData> pair in alllist){
-			if (string.IsNullOrEmpty(value) || pair.Key.ToLower().Contains(value.ToLower()))
+		Dictionary<string, string> nameIDList = PatientMgr.GetNameIDList();
+		string searchText = _textPatientName.text;
+		foreach (KeyValuePair<string, PatientData> pair in alllist)
+		{
+			if ((string.IsNullOrEmpty(searchText) || pair.Key.ToLower().Contains(searchText.ToLower())) &&
+				(_dropdownPatientKind.value == 0 || (_dropdownPatientKind.value == 1 && nameIDList[pair.Key] == GameConst.PLAYFABID_CLINIC) || (_dropdownPatientKind.value == 2 && nameIDList[pair.Key] != GameConst.PLAYFABID_CLINIC)))
 				list[pair.Key] = pair.Value;
 		}
 		FillWithPatientList(list, "");
 	}
-
-	
 }

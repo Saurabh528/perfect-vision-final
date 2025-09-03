@@ -1,411 +1,498 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class StereogramController : DiagnosticController
 {
-    public enum PatternDirection{
-        Left,
-        Right,
-        Up,
-        Down
-    };
-    public enum SymbolType{
-        Triangle,
-        Moon,
-        Lightning,
-        Heart,
-        Star,
-        Circle,
-        Rectangle,
-        X
-    };
+    
+	[SerializeField]
+	private Image imageTimePercent;
 
-    //[SerializeField] Text textLevel, textScore;
-    [SerializeField] Image imageCyan, imageRed, markCyan, markRed, imageTimePercent;
-    [SerializeField] GameObject playPanel, resultPanel, symbolSection;
-    [SerializeField] StereogramSettingUI settingUI;
-    [SerializeField] TextMeshProUGUI textCorrectStatus, textWrongStatus;
-    [SerializeField] TweenAppear tweenArrowKeys, tweenTapSymbol;
-    [SerializeField] Sprite[] symbolIcons;
+	[SerializeField]
+	private StereogramViewer stereogramViewer;
 
-    PatternDirection curPatDir = PatternDirection.Left;
-    SymbolType curSymbol = SymbolType.Triangle;
-    DepthMode                 depthMode = DepthMode.Depth10;
-    int                 customEyesIn = 10;
+	[SerializeField]
+	private GameObject playPanel;
 
-    float               jumpTime = 6;
-    StereoOverlapMode   overlapMode = StereoOverlapMode.EyesIn;
-    StereoTestMode      testMode = StereoTestMode.VisualSymbol;
-    SizeMode            sizeMode = SizeMode.Normal;
-    LevelMode           levelMode = LevelMode.Level1;
-    float               patternDelay;
-    int                 wrongCount = 0;
-    int                 distance, longDist, correct;
-    int score;
-    float remainTime, totalTime, patternStartTime;
-    List<float> guessTimeList;
-    // Start is called before the first frame update
-    public void Start()
-    {
+	[SerializeField]
+	private GameObject resultPanel, scorePanel, timePanel;
+
+	[SerializeField]
+	private GameObject symbolSection;
+
+	[SerializeField]
+	private StereogramSettingUI settingUI;
+
+	[SerializeField]
+	private TextMeshProUGUI textCorrectStatus;
+
+	[SerializeField]
+	private TextMeshProUGUI textWrongStatus;
+
+	[SerializeField]
+	private TweenAppear tweenArrowKeys;
+
+	[SerializeField]
+	private TweenAppear tweenTapSymbol;
+
+	[SerializeField]
+	private Sprite[] symbolIcons;
+
+	private StereogramController.PatternDirection curPatDir;
+
+	private StereogramController.SymbolType curSymbol;
+
+	private DepthMode depthMode;
+
+	private int customEyesIn = 10;
+
+	private float jumpTime = 6f;
+
+	private StereoOverlapMode overlapMode;
+	ZDepth zDepth;
+	TimeMode timeMode;
+
+	private StereoTestMode testMode;
+
+	private SizeMode sizeMode;
+
+	private LevelMode levelMode;
+
+	private float patternDelay;
+
+	private int wrongCount, continuousWrongCount;
+
+	private int distance;
+
+	private int longDist;
+
+	private int correct;
+
+	private int score;
+
+	private float remainTime;
+
+	private float totalTime;
+
+	private float patternStartTime;
+
+	private StereoOverlapMode currentOverlapMode;
+
+	private List<float> guessTimeList;
+	bool isPlaying;
+
+	public enum PatternDirection
+	{
+		Left,
+		Right,
+		Up,
+		Down
 	}
 
-    public void Update(){
-        if(remainTime > 0){
-            if(testMode != StereoTestMode.VisualSymbol){
-                if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-                    CheckPatternByArrowKey(PatternDirection.Left);
-                else if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-                    CheckPatternByArrowKey(PatternDirection.Right);
-                else if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-                    CheckPatternByArrowKey(PatternDirection.Up);
-                else if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-                    CheckPatternByArrowKey(PatternDirection.Down);
-            }
-            
-            patternDelay -= Time.deltaTime;
-            if(patternDelay <= 0 && testMode != StereoTestMode.VisualSymbol){
-                if (depthMode == DepthMode.DepthIncrease){
-                    distance--;
-                    if(distance == -1)
-                        distance = 0;
-                }
-                    
-                ShowNewPattern();
-            }
-            imageTimePercent.fillAmount = remainTime / totalTime;
-            remainTime -= Time.deltaTime;
-            if(remainTime < 0){
-                remainTime = 0;
-                ShowResult();
-            }
-        }
-        
-    }
-
-    public void OnSymbolButton(Button button){
-        if(remainTime <= 0)
-            return;
-        CheckPatternBySymbol(Enum.Parse<SymbolType>(button.name));
-    }
-
-    void CheckPatternByArrowKey(PatternDirection dir){
-        if(dir == curPatDir)
-            OnCheckOK();
-        else
-            OnCheckFail();
-        ShowNewPattern();
-    }
-
-    void CheckPatternBySymbol(SymbolType type){
-        if(type == curSymbol)
-            OnCheckOK();
-        else
-            OnCheckFail();
-        ShowNewPattern();
-    }
-
-    void OnCheckOK(){
-        if (depthMode == DepthMode.DepthIncrease)
-            distance++;
-        longDist = distance;
-        guessTimeList.Add(Time.time - patternStartTime);
-        correct++;
-        if(correct == 1){
-            if(testMode == StereoTestMode.VisualSymbol)
-                tweenTapSymbol.Disappear();
-            else
-                tweenArrowKeys.Disappear();
-        }
-        textCorrectStatus.text = correct.ToString();
-        score++;
-    }
-
-    void OnCheckFail(){
-        if (depthMode == DepthMode.DepthIncrease){
-            distance--;
-            if(distance == -1)
-                distance = 0;
-        }
-        
-        score--;
-        if(score < 0)
-            score = 0;
-        wrongCount++;
-        textWrongStatus.text = wrongCount.ToString();
-        /* if(wrongCount == 3 && GameState.currentGamePlay == null)
-            GameOver(); */
-    }
-
-
-
-
-    /* public override void ShowScore() {
-        textScore.text = $"Score: {_score}";
-    }
-
-    public override void ShowLevel() {
-        textLevel.text = $"Level {_level}";
-    } */
-
-    public void OnBtnStart(){
-        settingUI.SaveSetting();
-        depthMode = settingUI.GetDepthMode();
-        if(depthMode == DepthMode.DepthCustom)
-            customEyesIn = settingUI.GetCustomEyesIn();
-        if(depthMode == DepthMode.Depth10)
-            distance = 3;
-        else if(depthMode == DepthMode.Depth20)
-            distance = 6;
-        else if(depthMode == DepthMode.Depth30)
-            distance = 9;
-        else if(depthMode == DepthMode.DepthCustom)
-            distance = customEyesIn;
-        else //DepthMode.DepthIncrease
-            distance = 0;
-        sizeMode = settingUI.GetSizeMode();
-        levelMode = settingUI.GetLevelMode();
-        //jumpTime = settingUI.GetJumpTime();
-        overlapMode = settingUI.GetOverlapMode();
-        //testMode = settingUI.GetTestMode();
-        symbolSection.SetActive(testMode == StereoTestMode.VisualSymbol);
-        if(testMode == StereoTestMode.VisualSymbol && levelMode == LevelMode.Level1){
-            SymbolType[] types = new SymbolType[5];
-            for(int i = 0; i < 5; i++){
-                types[i] = (SymbolType)i;
-            }
-            SetSymbolButtons(types);
-        }
-        totalTime = remainTime = settingUI.GetPlayTime();
-        Debug.Log($"Depth:{depthMode}, JumpTime: {jumpTime}, Overlap: {overlapMode}, Test: {testMode}, PlayTime: {remainTime}");
-        settingUI.gameObject.SetActive(false);
-        StartGamePlay();
-    }
-
-    public void OnBtnReStart(){
-        if(depthMode == DepthMode.DepthIncrease)
-            distance = 0;
-        remainTime = totalTime;
-        resultPanel.SetActive(false);
-        StartGamePlay();
-    }
-
-    void StartGamePlay()
+	public enum SymbolType
 	{
-        correct = wrongCount = score = 0;
-        textCorrectStatus.text = correct.ToString();
-        textWrongStatus.text = wrongCount.ToString();
-        guessTimeList = new List<float>();
-        playPanel.SetActive(true);
-		ShowNewPattern();
-        if(testMode == StereoTestMode.VisualSymbol)
-            tweenTapSymbol.Appear();
-        else
-            tweenArrowKeys.Appear();
+		Triangle,
+		Moon,
+		Lightning,
+		Heart,
+		Star,
+		Circle,
+		Rectangle,
+		X
+	}
+	public void Start()
+	{
 	}
 
-    void ShowNewPattern(){
-        patternDelay = jumpTime;
-        float scale = sizeMode == SizeMode.Normal? 1: 0.5f;
-        imageCyan.transform.localScale = imageRed.transform.localScale = new Vector3(scale, scale, 1);
-        string redpath = "", cyanpath = "";
-        if(testMode == StereoTestMode.VisualSymbol){
-            SelectVisualSymbolPatterns(out redpath, out cyanpath);
-        }
-        else{
-            PatternDirection randomDirection = curPatDir;
-            // Create an instance of the Random class
-            System.Random random = new System.Random();
-            while(randomDirection == curPatDir){
-                // Get the number of values in the PatternDirection enum
-                int enumLength = Enum.GetNames(typeof(PatternDirection)).Length;
-                
-                // Generate a random number within the range of enum values
-                int randomIndex = random.Next(enumLength);
-                
-                // Cast the random number to the PatternDirection enum type
-                randomDirection = (PatternDirection)randomIndex;
-            }
-            curPatDir = randomDirection;
-            GetArrowPatternPath(out redpath, out cyanpath);
-        }
-        
-        float move = 0;
-        if(overlapMode == StereoOverlapMode.EyesIn)
-            move = distance * 2;
-        else if(overlapMode == StereoOverlapMode.EyesOut)
-            move = -distance * 2;
-        else
-            move = distance * 2 * (imageCyan.transform.localPosition.x > 0? -1: 1);
-        imageCyan.transform.localPosition = markCyan.transform.localPosition = new Vector3(move, 0, 0);
-        imageRed.transform.localPosition = markRed.transform.localPosition = new Vector3(-move, 0, 0);
-        
-        // Load the sprite from the Resources folder
-        Sprite sprite = Resources.Load<Sprite>(redpath);
-        if (sprite == null)
-        {
-            Debug.LogError("Sprite not found in Resources folder: redpath");
-            return;
-        }
-        // Set the sprite to the Image component
-        imageRed.sprite = sprite;
-
-        sprite = Resources.Load<Sprite>(cyanpath);
-        if (sprite == null)
-        {
-            Debug.LogError("Sprite not found in Resources folder: cyanpath");
-            return;
-        }
-        imageCyan.sprite = sprite;
-        patternStartTime = Time.time;
-        
-    }
-
-    void SelectVisualSymbolPatterns(out string redpath, out string cyanpath){
-        SymbolType symboltype = curSymbol;
-        // Create an instance of the Random class
-        System.Random random = new System.Random();
-        while(symboltype == curSymbol){
-            int enumLength = levelMode == LevelMode.Level1? 5: Enum.GetNames(typeof(SymbolType)).Length;
-            
-            // Generate a random number within the range of enum values
-            int randomIndex = random.Next(enumLength);
-            
-            // Cast the random number to the PatternDirection enum type
-            symboltype = (SymbolType)randomIndex;
-        }
-        curSymbol = symboltype;
-        if(levelMode == LevelMode.Level2){
-            SymbolType[] types = new SymbolType[5];
-            int pos = random.Next(5);
-            for(int i = 0; i < 5; i++)
-                types[i] = curSymbol;
-            for(int i = 0; i < 5; i++){
-                if(i != pos){
-                    SymbolType othertype = curSymbol;
-                    while(othertype == curSymbol || types.Contains(othertype)){
-                        int enumLength = Enum.GetNames(typeof(SymbolType)).Length;
-                        int randomIndex = random.Next(enumLength);
-                        othertype = (SymbolType)randomIndex;
-                    }
-                    types[i] = othertype;
-                }
-            }
-            SetSymbolButtons(types);
-        }
-        StereoOverlapMode mode = overlapMode;
-        if(overlapMode == StereoOverlapMode.EyesMixed)
-            mode = imageCyan.transform.localPosition.x > 0? StereoOverlapMode.EyesOut: StereoOverlapMode.EyesIn;
-        GetSymbolPatternPath(out redpath, out cyanpath, mode);
-    }
-
-    void GetArrowPatternPath(out string redpath, out string cyanpath){
-        if(testMode == StereoTestMode.VisualJump){
-            redpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depthMode}_{ColorChannel.CC_Red}";
-            cyanpath = $"StereogramPattern/Hexagon_{curPatDir}_Depth{depthMode}_{ColorChannel.CC_Cyan}";
-        }
-        else{//VisualPower
-            redpath = $"StereogramPattern/Diamond_{curPatDir}_{ColorChannel.CC_Red}";
-            cyanpath = $"StereogramPattern/Diamond_{curPatDir}_{ColorChannel.CC_Cyan}";
-        }
-    }
-
-    void GetSymbolPatternPath(out string redpath, out string cyanpath, StereoOverlapMode mode){
-        if(testMode != StereoTestMode.VisualSymbol){
-            Debug.LogError("Can't generate path in {testMode} mode");
-            redpath = "";
-            cyanpath = "";
-            return;
-        }
-        if(mode == StereoOverlapMode.EyesIn){
-            //cyanpath = $"StereogramPattern/Symbols_{mode}_{ColorChannel.CC_Cyan}";
-            cyanpath = $"StereogramPattern/Symbols_{mode}_CC_Blue";
-            redpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_{ColorChannel.CC_Red}";
-        }
-        else if(mode == StereoOverlapMode.EyesOut){
-            redpath = $"StereogramPattern/Symbols_{mode}_{ColorChannel.CC_Red}";
-            //cyanpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_{ColorChannel.CC_Cyan}";
-            cyanpath = $"StereogramPattern/Symbols_{curSymbol}_{mode}_CC_Blue";
-        }
-        else{
-            Debug.LogError("Can't generate path in {mode} mode");
-            redpath = "";
-            cyanpath = "";
-            return;
-        }
-        
-    }
-
-    /* public override void OnScoreChange(int levelstartscore, int score)
+	public void Update()
 	{
-		base.OnScoreChange(levelstartscore, score);
-		if (score >= levelstartscore + 3)
+		if(!isPlaying)
+			return;
+		if ((testMode == StereoTestMode.VisualPower && timeMode == TimeMode.MaxDistance) || this.remainTime > 0f)
 		{
-			IncreaseLevel();
+			if (this.testMode != StereoTestMode.VisualSymbol)
+			{
+				if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow) || UnityEngine.Input.GetKeyDown(KeyCode.A))
+				{
+					this.CheckPatternByArrowKey(StereogramController.PatternDirection.Left);
+				}
+				else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow) || UnityEngine.Input.GetKeyDown(KeyCode.D))
+				{
+					this.CheckPatternByArrowKey(StereogramController.PatternDirection.Right);
+				}
+				else if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow) || UnityEngine.Input.GetKeyDown(KeyCode.W))
+				{
+					this.CheckPatternByArrowKey(StereogramController.PatternDirection.Up);
+				}
+				else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow) || UnityEngine.Input.GetKeyDown(KeyCode.S))
+				{
+					this.CheckPatternByArrowKey(StereogramController.PatternDirection.Down);
+				}
+			}
+			/* this.patternDelay -= Time.deltaTime;
+			if (this.patternDelay <= 0f && this.testMode != StereoTestMode.VisualSymbol)
+			{
+				if (this.depthMode == DepthMode.DepthIncrease)
+				{
+					this.distance--;
+					if (this.distance == -1)
+					{
+						this.distance = 0;
+					}
+				}
+				this.ShowNewPattern();
+			} */
+			this.imageTimePercent.fillAmount = this.remainTime / this.totalTime;
+			this.remainTime -= Time.deltaTime;
+			if (testMode != StereoTestMode.VisualPower || timeMode == TimeMode.Timed){
+				if((testMode != StereoTestMode.VisualPower || timeMode == TimeMode.Timed) && this.remainTime < 0f)
+				{
+					this.remainTime = 0f;
+					this.ShowResult();
+				}
+			}
 		}
-	} */
+	}
 
+	public void OnSymbolButton(Button button)
+	{
+		if (this.remainTime <= 0f)
+		{
+			return;
+		}
+		this.CheckPatternBySymbol(Enum.Parse<StereogramController.SymbolType>(button.name));
+	}
 
+	private void CheckPatternByArrowKey(StereogramController.PatternDirection dir)
+	{
+		if (dir == this.curPatDir)
+		{
+			this.OnCheckOK();
+		}
+		else
+		{
+			this.OnCheckFail();
+		}
+		this.ShowNewPattern();
+	}
 
-    void ShowResult(){
-        playPanel.SetActive(false);
-        resultPanel.SetActive(true);
-       /*  if(testMode == StereoTestMode.VisualJump)
-            resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Jump";
-        else if(testMode == StereoTestMode.VisualPower)
-            resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Power";
-        else
-            resultPanel.transform.Find("Title").GetComponent<Text>().text = "Visual Symbols"; */
-        /* resultPanel.transform.Find("Score").GetComponent<Text>().text = score.ToString();
-        resultPanel.transform.Find("LongDist").GetComponent<Text>().text = longDist.ToString();
-        resultPanel.transform.Find("Correct").GetComponent<Text>().text = correct.ToString();
-        resultPanel.transform.Find("Errors").GetComponent<Text>().text = wrongCount.ToString();
-        resultPanel.transform.Find("Time").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(totalTime); */
-        resultPanel.transform.Find("Score").GetComponent<Text>().text = score.ToString();
-        //resultPanel.transform.Find("LongDist").GetComponent<Text>().text = longDist.ToString();
-        resultPanel.transform.Find("Correct").GetComponent<Text>().text = correct.ToString();
-        resultPanel.transform.Find("Errors").GetComponent<Text>().text = wrongCount.ToString();
-        float maxTime = 0, minTime = 0, averTime = 0;
-        if(guessTimeList.Count > 0){
-            maxTime = guessTimeList.Max();
-            minTime = guessTimeList.Min();
-            averTime = guessTimeList.Average();
-        }
-        resultPanel.transform.Find("Fastest").GetComponent<Text>().text = minTime.ToString("F2") + " sec";
-        resultPanel.transform.Find("Slowest").GetComponent<Text>().text = maxTime.ToString("F2") + " sec";
-        resultPanel.transform.Find("Average").GetComponent<Text>().text = averTime.ToString("F2") + " sec";
-        resultPanel.transform.Find("TotalTime").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(totalTime);
-    }
+	private void CheckPatternBySymbol(StereogramController.SymbolType type)
+	{
+		if (type == this.curSymbol)
+		{
+			this.OnCheckOK();
+		}
+		else
+		{
+			this.OnCheckFail();
+		}
+		this.ShowNewPattern();
+	}
 
-    public override void AddResults(){
-        PatientRecord pr = PatientDataMgr.GetPatientRecord();
-        DiagnoseTestItem dti = new DiagnoseTestItem();
-        dti.AddValue(resultPanel.transform.Find("LongDist").GetComponent<Text>().text);
-        dti.AddValue(resultPanel.transform.Find("Correct").GetComponent<Text>().text);
-        dti.AddValue(resultPanel.transform.Find("Errors").GetComponent<Text>().text);
-        pr.AddDiagnosRecord("Stereography", dti);
-    }
+	private void OnCheckOK()
+	{
+		continuousWrongCount = 0;
+		if (this.depthMode == DepthMode.DepthIncrease)
+		{
+			this.distance++;
+		}
+		this.longDist = this.distance;
+		this.guessTimeList.Add(Time.time - this.patternStartTime);
+		this.correct++;
+		if (this.correct == 1)
+		{
+			if (this.testMode == StereoTestMode.VisualSymbol)
+				this.tweenTapSymbol.Disappear();
+			else
+				this.tweenArrowKeys.Disappear();
+		}
+		this.textCorrectStatus.text = this.correct.ToString();
+		this.score++;
+	}
 
-    public override bool ResultExist(){
-        if(!base.ResultExist())
-            return false;
-        return remainTime == 0;
-    }
+	private void OnCheckFail()
+	{
+		if (this.depthMode == DepthMode.DepthIncrease)
+		{
+			this.distance--;
+			if (this.distance == -1)
+			{
+				this.distance = 0;
+			}
+		}
+		this.score--;
+		if (this.score < 0)
+		{
+			this.score = 0;
+		}
+		this.wrongCount++;
+		continuousWrongCount++;
+		if(testMode == StereoTestMode.VisualPower && timeMode == TimeMode.MaxDistance && continuousWrongCount == 3)
+			ShowResult();
+		this.textWrongStatus.text = this.wrongCount.ToString();
+	}
 
-    public void SetSymbolButtons(SymbolType[] types){
-        if(types.Length != 5){
-            Debug.LogError("Can have only 5 symbols.");
-            return;
-        }
-        for(int i = 0; i < 5; i++){
-            symbolSection.transform.GetChild(i).GetComponent<Image>().sprite = symbolIcons[(int)types[i]];
-            symbolSection.transform.GetChild(i).gameObject.name = types[i].ToString();
-        }
-    }
+	public void OnBtnStart()
+	{
+		this.settingUI.SaveSetting();
+        scorePanel.SetActive(true);
+		testMode = settingUI.GetTestMode();
+		this.depthMode = this.settingUI.GetDepthMode();
+		if (this.depthMode == DepthMode.DepthCustom)
+		{
+			this.customEyesIn = this.settingUI.GetCustomEyesIn();
+		}
+		if (this.depthMode == DepthMode.Depth10)
+		{
+			this.distance = 3;
+		}
+		else if (this.depthMode == DepthMode.Depth20)
+		{
+			this.distance = 6;
+		}
+		else if (this.depthMode == DepthMode.Depth30)
+		{
+			this.distance = 9;
+		}
+		else if (this.depthMode == DepthMode.DepthCustom)
+		{
+			this.distance = this.customEyesIn;
+		}
+		else
+		{
+			this.distance = 0;
+		}
+		this.sizeMode = this.settingUI.GetSizeMode();
+		this.levelMode = this.settingUI.GetLevelMode();
+		this.overlapMode = this.settingUI.GetOverlapMode();
+		if(testMode != StereoTestMode.VisualSymbol)
+			overlapMode = StereoOverlapMode.EyesIn;
+		this.currentOverlapMode = ((this.overlapMode == StereoOverlapMode.EyesOut) ? StereoOverlapMode.EyesOut : StereoOverlapMode.EyesIn);
+		this.symbolSection.SetActive(this.testMode == StereoTestMode.VisualSymbol);
+		zDepth = settingUI.GetZDepthMode();
+		timeMode = settingUI.GetTimeMode();
+		timePanel.SetActive (testMode != StereoTestMode.VisualPower || timeMode == TimeMode.Timed);
+		if (this.testMode == StereoTestMode.VisualSymbol && this.levelMode == LevelMode.Level1)
+		{
+			StereogramController.SymbolType[] array = new StereogramController.SymbolType[5];
+			for (int i = 0; i < 5; i++)
+			{
+				array[i] = (StereogramController.SymbolType)i;
+			}
+			this.SetSymbolButtons(array);
+		}
+		this.totalTime = (this.remainTime = this.settingUI.GetPlayTime());
+		UnityEngine.Debug.Log(string.Format("Depth:{0}, JumpTime: {1}, Overlap: {2}, Test: {3}, PlayTime: {4}", new object[]
+		{
+			this.depthMode,
+			this.jumpTime,
+			this.overlapMode,
+			this.testMode,
+			this.remainTime
+		}));
+		this.settingUI.gameObject.SetActive(false);
+		this.StartGamePlay();
+	}
+
+	public void OnBtnReStart()
+	{
+		if (this.depthMode == DepthMode.DepthIncrease)
+		{
+			this.distance = 0;
+		}
+		this.remainTime = this.totalTime;
+		this.resultPanel.SetActive(false);
+		this.StartGamePlay();
+	}
+
+	private void StartGamePlay()
+	{
+		isPlaying = true;
+		this.correct = (this.wrongCount = (this.score = 0));
+		this.textCorrectStatus.text = this.correct.ToString();
+		this.textWrongStatus.text = this.wrongCount.ToString();
+		this.guessTimeList = new List<float>();
+		this.playPanel.SetActive(true);
+		this.ShowNewPattern();
+		if (this.testMode == StereoTestMode.VisualSymbol)
+			this.tweenTapSymbol.Appear();
+		else
+			this.tweenArrowKeys.Appear();
+	}
+
+	private void ShowNewPattern()
+	{
+		this.patternDelay = this.jumpTime;
+		float num = (this.sizeMode == SizeMode.Normal) ? 1f : 0.5f;
+		this.stereogramViewer.transform.parent.localScale = new Vector3(num, num, 1f);
+		string path = "";
+		string path2 = "";
+		if (this.testMode == StereoTestMode.VisualSymbol)
+		{
+			this.SelectVisualSymbolPatterns(out path, out path2);
+		}
+		else
+		{
+			StereogramController.PatternDirection patternDirection = this.curPatDir;
+			System.Random random = new System.Random();
+			int maxValue = Enum.GetNames(typeof(StereogramController.PatternDirection)).Length;
+			patternDirection = (StereogramController.PatternDirection)random.Next(maxValue);
+			/*while (patternDirection == this.curPatDir)
+			{
+				int maxValue = Enum.GetNames(typeof(StereogramController.PatternDirection)).Length;
+				patternDirection = (StereogramController.PatternDirection)random.Next(maxValue);
+			} */
+			this.curPatDir = patternDirection;
+			this.GetArrowPatternPath(out path, out path2);
+		}
+		Texture2D texture2D = Resources.Load<Texture2D>(path);
+		if (texture2D == null)
+		{
+			UnityEngine.Debug.LogError("Sprite not found in Resources folder: redpath");
+			return;
+		}
+		Texture2D texture2D2 = Resources.Load<Texture2D>(path2);
+		if (texture2D2 == null)
+		{
+			UnityEngine.Debug.LogError("Sprite not found in Resources folder: cyanpath");
+			return;
+		}
+		this.patternStartTime = Time.time;
+		this.stereogramViewer.MergePatterns(texture2D, texture2D2, (this.currentOverlapMode == StereoOverlapMode.EyesIn) ? (this.distance * 8) : (-this.distance * 8));
+	}
+
+	private void SelectVisualSymbolPatterns(out string redpath, out string cyanpath)
+	{
+		StereogramController.SymbolType symbolType = this.curSymbol;
+		System.Random random = new System.Random();
+		while (symbolType == this.curSymbol)
+		{
+			int maxValue = (this.levelMode == LevelMode.Level1) ? 5 : Enum.GetNames(typeof(StereogramController.SymbolType)).Length;
+			symbolType = (StereogramController.SymbolType)random.Next(maxValue);
+		}
+		this.curSymbol = symbolType;
+		if (this.levelMode == LevelMode.Level2)
+		{
+			StereogramController.SymbolType[] array = new StereogramController.SymbolType[5];
+			int num = random.Next(5);
+			for (int i = 0; i < 5; i++)
+			{
+				array[i] = this.curSymbol;
+			}
+			for (int j = 0; j < 5; j++)
+			{
+				if (j != num)
+				{
+					StereogramController.SymbolType symbolType2 = this.curSymbol;
+					while (symbolType2 == this.curSymbol || array.Contains(symbolType2))
+					{
+						int maxValue2 = Enum.GetNames(typeof(StereogramController.SymbolType)).Length;
+						symbolType2 = (StereogramController.SymbolType)random.Next(maxValue2);
+					}
+					array[j] = symbolType2;
+				}
+			}
+			this.SetSymbolButtons(array);
+		}
+		if (this.overlapMode == StereoOverlapMode.EyesMixed)
+		{
+			this.currentOverlapMode = ((this.currentOverlapMode == StereoOverlapMode.EyesIn) ? StereoOverlapMode.EyesOut : StereoOverlapMode.EyesIn);
+		}
+		this.GetSymbolPatternPath(out redpath, out cyanpath, this.currentOverlapMode);
+	}
+
+	private void GetArrowPatternPath(out string redpath, out string cyanpath)
+	{
+		if (this.testMode == StereoTestMode.VisualJump)
+		{
+			redpath = string.Format("StereogramPattern/Jump_{0}_{1}_EyesIn_{2}", zDepth, curPatDir, ColorChannel.CC_Red);
+			cyanpath = string.Format("StereogramPattern/Jump_{0}_{1}_EyesIn_CC_Blue", zDepth, curPatDir);
+		}
+		else{
+			redpath = string.Format("StereogramPattern/Power_{0}_EyesIn_{1}", curPatDir, ColorChannel.CC_Red);
+			cyanpath = string.Format("StereogramPattern/Power_{0}_EyesIn_CC_Blue", curPatDir);
+		}
+		
+	}
+
+	private void GetSymbolPatternPath(out string redpath, out string cyanpath, StereoOverlapMode mode)
+	{
+		if (this.testMode != StereoTestMode.VisualSymbol)
+		{
+			UnityEngine.Debug.LogError("Can't generate path in {testMode} mode");
+			redpath = "";
+			cyanpath = "";
+			return;
+		}
+		if (mode == StereoOverlapMode.EyesIn)
+		{
+			cyanpath = string.Format("StereogramPattern/Symbols_{0}_CC_Blue", mode);
+			redpath = string.Format("StereogramPattern/Symbols_{0}_{1}_{2}", this.curSymbol, mode, ColorChannel.CC_Red);
+			return;
+		}
+		if (mode == StereoOverlapMode.EyesOut)
+		{
+			redpath = string.Format("StereogramPattern/Symbols_{0}_{1}", mode, ColorChannel.CC_Red);
+			cyanpath = string.Format("StereogramPattern/Symbols_{0}_{1}_CC_Blue", this.curSymbol, mode);
+			return;
+		}
+		UnityEngine.Debug.LogError("Can't generate path in {mode} mode");
+		redpath = "";
+		cyanpath = "";
+	}
+
+	private void ShowResult()
+	{
+		isPlaying = false;
+		this.playPanel.SetActive(false);
+		this.resultPanel.SetActive(true);
+		this.resultPanel.transform.Find("Score").GetComponent<Text>().text = this.score.ToString();
+		this.resultPanel.transform.Find("Correct").GetComponent<Text>().text = this.correct.ToString();
+		this.resultPanel.transform.Find("Errors").GetComponent<Text>().text = this.wrongCount.ToString();
+		float num = 0f;
+		float num2 = 0f;
+		float num3 = 0f;
+		if (this.guessTimeList.Count > 0)
+		{
+			num = this.guessTimeList.Max();
+			num2 = this.guessTimeList.Min();
+			num3 = this.guessTimeList.Average();
+		}
+		this.resultPanel.transform.Find("Fastest").GetComponent<Text>().text = num2.ToString("F2") + " sec";
+		this.resultPanel.transform.Find("Slowest").GetComponent<Text>().text = num.ToString("F2") + " sec";
+		this.resultPanel.transform.Find("Average").GetComponent<Text>().text = num3.ToString("F2") + " sec";
+		this.resultPanel.transform.Find("TotalTime").GetComponent<Text>().text = UtilityFunc.ConvertSec2MMSS(this.totalTime - this.remainTime);
+	}
+
+	public override void AddResults()
+	{
+		PatientRecord patientRecord = PatientDataMgr.GetPatientRecord();
+		DiagnoseTestItem diagnoseTestItem = new DiagnoseTestItem();
+		diagnoseTestItem.AddValue(this.resultPanel.transform.Find("Correct").GetComponent<Text>().text);
+		diagnoseTestItem.AddValue(this.resultPanel.transform.Find("Errors").GetComponent<Text>().text);
+		patientRecord.AddDiagnosRecord("Stereography", diagnoseTestItem);
+	}
+
+	public override bool ResultExist()
+	{
+		return base.ResultExist() && this.remainTime == 0f;
+	}
+
+	public void SetSymbolButtons(StereogramController.SymbolType[] types)
+	{
+		if (types.Length != 5)
+		{
+			UnityEngine.Debug.LogError("Can have only 5 symbols.");
+			return;
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			this.symbolSection.transform.GetChild(i).GetComponent<Image>().sprite = this.symbolIcons[(int)types[i]];
+			this.symbolSection.transform.GetChild(i).gameObject.name = types[i].ToString();
+		}
+	}
+
 }

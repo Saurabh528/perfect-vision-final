@@ -34,6 +34,7 @@ public class UserAccountManager : MonoBehaviour
     public static UnityEvent<string, StatisticValue> OnStatisticRetrieved = new UnityEvent<string, StatisticValue>();
 
     public static UserAccountInfo userAccountInfo;
+
     public float _msgTime = 3;
     float _msgexpiretime;
 
@@ -240,7 +241,6 @@ public class UserAccountManager : MonoBehaviour
 
 
 		Debug.Log("Using name and password: " + username);
-		
 		string namepassHash = GetNamePassHash(username, password);
 		
 		

@@ -20,7 +20,6 @@ public class UISessionMake : MonoBehaviour
 	[SerializeField] TMP_InputField _inputGameName;
 	[SerializeField] ListBox _matchedList;
 	[SerializeField] Toggle _toggle2Min, _toggle5Min;
-    const string PREFNAME_THERAPY_2MIN = "2MinTherapy";
 	int _timeMin;
 	//private int count;
 	//private int countLimit;
@@ -30,9 +29,24 @@ public class UISessionMake : MonoBehaviour
 	}
 	private void Start()
 	{
-		
+
 		//t:UpdateGameSlots();
-		if(PlayerPrefs.GetInt(PREFNAME_THERAPY_2MIN, 1) == 1)
+		if (GameState.currentPatient != null)
+			OnTimeChanged(GameState.currentPatient.theraphyTime);
+		if (GameState.userRole == USERROLE.PATIENT){
+			if(PatientMgr.GetPatientList().Count == 0)
+				PatientDataManager.LoadPatientData(OnLoadPatientDataSuccess, ShowErrorMsg);
+			else
+				OnLoadPatientDataSuccess(PatientMgr.GetPatientList());
+		}
+		
+	}
+
+	public void ShowTimeSetting()
+	{
+		if (GameState.currentPatient == null)
+			return;
+		if (GameState.currentPatient.theraphyTime == 2)
 		{
 			_timeMin = 2;
 			_toggle2Min.isOn = true;
@@ -42,13 +56,6 @@ public class UISessionMake : MonoBehaviour
 			_timeMin = 5;
 			_toggle5Min.isOn = true;
 		}
-		if(GameState.userRole == USERROLE.PATIENT){
-			if(PatientMgr.GetPatientList().Count == 0)
-				PatientDataManager.LoadPatientData(OnLoadPatientDataSuccess, ShowErrorMsg);
-			else
-				OnLoadPatientDataSuccess(PatientMgr.GetPatientList());
-		}
-		
 	}
 
 	void OnLoadPatientDataSuccess(Dictionary<string, PatientData> plist){
@@ -487,13 +494,23 @@ public class UISessionMake : MonoBehaviour
 
 	public void OnTimeToggleChange(bool value)
 	{
-		PlayerPrefs.SetInt(PREFNAME_THERAPY_2MIN, value ? 1 : 0);
-		OnTimeChanged(value? 2: 5);
+		_timeMin = value? 2: 5;
+		ShowDesiredSessionTime();
+		if (GameState.currentPatient == null)
+			return;
+		GameState.currentPatient.theraphyTime = value ? 2 : 5;
+		if (GameState.currentPatient.IsHome())
+			GameState.currentPatient.PutDataToDoctorData(PatientMgr.GetHomePatientDataList()[GameState.currentPatient.name]);
+		PatientDataManager.UpdatePatient(GameState.currentPatient);
 	}
 
-	void OnTimeChanged(int timeMin)
+	public void OnTimeChanged(int timeMin)
 	{
 		_timeMin = timeMin;
+		if (timeMin == 2)
+			_toggle2Min.isOn = true;
+		else
+			_toggle5Min.isOn = true;
 		ShowDesiredSessionTime();
 	}
 

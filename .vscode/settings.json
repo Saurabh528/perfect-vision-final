@@ -58,5 +58,6 @@
     },
     "dotnet.defaultSolution": "perfect-vision-final.sln",
     "editor.inlineSuggest.showToolbar": "always",
-    "input-assist.languages": null
+    "input-assist.languages": null,
+    "dotnet.preferCSharpExtension": true
 }

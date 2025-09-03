@@ -44,7 +44,7 @@ public class DisplacementController : MonoBehaviour
 
 	public void OnBtnStart()
 	{
-		int camindex = GlobalSettingUI.GetCurrentCameraIndex();
+		/*int camindex = GlobalSettingUI.GetCurrentCameraIndex();
 		if(camindex == -1){
 			_textHint.text = "No Web camera is instaled.";
 			return;
@@ -75,7 +75,7 @@ public class DisplacementController : MonoBehaviour
 			_textHint.text = "Please wait...";
 		}
 		else
-			_textHint.text = "Checking failed. Try again.";
+			_textHint.text = "Checking failed. Try again.";*/
 	}
 
 	// Update is called once per frame

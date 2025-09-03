@@ -45,7 +45,7 @@ Python/dist/
 
 #deploy
 Deploy/PerfectVision-cache/
-Deploy/PerfectVisionSetup.exe
+Deploy/PerfectVision*.exe
 
 # Gradle cache directory
 .gradle/
@@ -97,3 +97,4 @@ Python/__pycache__/
 
 Deploy/PerfectVisionBinoPlay.exe
 Deploy/PerfectVisionDiagnostic.exe
+Deploy/PerfectVision-SetupFiles/PerfectVision-i3.msi

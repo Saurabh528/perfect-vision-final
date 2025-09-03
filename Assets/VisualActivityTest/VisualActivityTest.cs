@@ -35,8 +35,10 @@ public class VisualActivityTest : DiagnosticController
     [SerializeField] GameObject Obj_SymbolTypeBtns, Img_MatchBelowLine, Img_RingTuto, Img_CoverLeft, Img_CoverRight, Img_KeepDist,
         Panel_Test, Panel_Result, Obj_Spritebuttons, Obj_RingTestGuide;
     [SerializeField] Image RandomImg;
+    [SerializeField] RectTransform rtRandomImg;
     [SerializeField] Sprite[] SpritePatterns;
     [SerializeField] Sprite SpriteRing;
+    [SerializeField] float sizeMM = 10;
     const int MAX_TRYCOUNT = 45;
     int TryCount;
     int WrongCount, RightCycleCount, RightCount;
@@ -49,6 +51,10 @@ public class VisualActivityTest : DiagnosticController
          CountText.gameObject.SetActive(false);
          ScoreText.gameObject.SetActive(false);
          Panel_Test.SetActive(false);
+        Debug.Log($"Screen DPI: {ScreenDPI.GetPPI()}");
+
+        int desiredPixelSize = DPICaculator.ConvertScreenMMToPixel(RandomImg.canvas, sizeMM, rtRandomImg.localScale.x);
+		rtRandomImg.sizeDelta = new Vector2 (desiredPixelSize, desiredPixelSize);
     }
 
     // Update is called once per frame

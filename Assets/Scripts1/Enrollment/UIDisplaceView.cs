@@ -29,7 +29,7 @@ public class UIDisplaceView : MonoBehaviour
 			gameObject.SetActive(false);
             return;
         }
-		string path = Application.dataPath + "/../Python/" + GameState.currentPatient.name + ".csv";
+		string path = PatientMgr.GetPatientDataDir() + "/displacement.csv";
         if (!File.Exists(path))
         {
 			EnrollmentManager.Instance.ShowMessage("Displacement record does not exist.");

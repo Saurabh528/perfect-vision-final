@@ -233,7 +233,7 @@ public abstract class UtilityFunc
 
 	public static string GetCalorimeterDataDir()
 	{
-		return Application.persistentDataPath + "/CalorimeterRecords";
+		return PatientMgr.GetPatientDataDir() + "/CalorimeterRecords";
 	}
 
 	public static void PlayAudioClipFromList(AudioClip[] clips, string text, AudioSource source){
@@ -247,6 +247,32 @@ public abstract class UtilityFunc
 				source.Play();
 				return;
 			}
+		}
+	}
+
+	public static void DeleteDir(String targetDirectory)
+	{
+		try
+		{
+			DirectoryInfo dir = new DirectoryInfo(targetDirectory);
+
+			// Delete all files
+			foreach (FileInfo file in dir.GetFiles())
+			{
+				file.Delete();
+			}
+
+			// Delete all subdirectories
+			foreach (DirectoryInfo subDir in dir.GetDirectories())
+			{
+				subDir.Delete(true); // true ensures recursive deletion
+			}
+
+			Console.WriteLine("All files and subdirectories removed successfully.");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error: {ex.Message}");
 		}
 	}
 }

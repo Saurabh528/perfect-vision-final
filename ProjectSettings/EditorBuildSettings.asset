@@ -62,27 +62,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CalorimeterRecords.unity
     guid: 4f773c4b6751d40d9bc8d53a0c39bc69
-  - enabled: 0
-    path: Assets/ActiveScenes/unuse2.unity
-    guid: d52355164cebc4b6e8ba1e50f8fa3a5c
-  - enabled: 0
-    path: Assets/CircleGames/CircleGameStages.unity
-    guid: bf86062fc11e14220bc15e082b0f0f57
   - enabled: 1
     path: Assets/CircleGameStages/CircleAdjust.unity
     guid: bd53da5def0f246109bb343f52edacb2
   - enabled: 1
     path: Assets/Scenes/Enrollment.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 0
-    path: Assets/Scenes/Login.unity
-    guid: 517a34799379346568c0d9d6751451b3
-  - enabled: 0
-    path: Assets/Scenes/DPICheck.unity
-    guid: 2151e52551330834a8b47cc85fdc05c8
-  - enabled: 0
-    path: Assets/Scenes/Displacement.unity
-    guid: 26af19650448dff4da1669eb8fb37119
   - enabled: 1
     path: Assets/Scenes/SmoothVergence.unity
     guid: c312a08619e953a47897ea27ffc21a50
@@ -98,18 +83,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HomeTherapy.unity
     guid: 7451f2fe13affb64ba58d0bafe594507
-  - enabled: 0
-    path: Assets/Scenes/Diag_ForTest.unity
-    guid: b4409eb6be6f86942ac2b8d0f98fe168
   - enabled: 1
     path: Assets/VisualActivityTest/VisualActivityTest.unity
     guid: 540e9439dae05f34c9613d0b6c703f26
   - enabled: 1
     path: Assets/FlapNFly/Scenes/FlapNFly.unity
     guid: fef23bcac8c23c847b5cfb575dadc8bc
-  - enabled: 0
-    path: Assets/CSV/CSVFiles.unity
-    guid: f15654a8b57ca4f54a0b1221e0a09ade
   - enabled: 1
     path: Assets/Scenes/CardCalli.unity
     guid: 83a1a5679f76f83438bf1b8cc7acea74
@@ -126,6 +105,21 @@ EditorBuildSettings:
     path: Assets/Vergence/VergenceGame.unity
     guid: bec15c1b2fa25ee4ea9a59de694a0b3d
   - enabled: 1
-    path: Assets/Games/Stereogram/Scene/Stereogram.unity
+    path: Assets/Games/Stereogram/Scene/FusionalRanges.unity
     guid: 9bf7ffecd9703664782597531e00b27f
+  - enabled: 1
+    path: Assets/Diagnostics/StereoDepth/StereoDepth.unity
+    guid: f0ff9d210dd73e04db69dd77b3876a75
+  - enabled: 1
+    path: Assets/Diagnostics/Fusional Ranges/Stereogram.unity
+    guid: 3f039f52417f4a242a889603292d09d0
+  - enabled: 1
+    path: Assets/Scenes/DPICheck.unity
+    guid: 2151e52551330834a8b47cc85fdc05c8
+  - enabled: 1
+    path: Assets/Games/Stereogram/Scene/FusionalRangesBIGame.unity
+    guid: 71656fa4c59331e4ebb82da6e17dbf6b
+  - enabled: 1
+    path: Assets/Games/Stereogram/Scene/FusionalRangesBOGame.unity
+    guid: a5bfab186efb9e44da67ee44fd64de3c
   m_configObjects: {}

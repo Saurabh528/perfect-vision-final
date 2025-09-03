@@ -37,7 +37,7 @@ public class SmoothVergencesController : MonoBehaviour
         _BO = 10;
         _bio = 0;
         float dpi = 100;
-        string dpipath = Application.dataPath + "/../Python/DPI.txt";
+        string dpipath = DPICaculator.GetDPIPath();
         if (File.Exists(dpipath))
         {
             string[] lines = File.ReadAllLines(dpipath);

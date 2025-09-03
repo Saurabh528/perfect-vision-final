@@ -5,7 +5,6 @@ using PlayFab;
 using PlayFab.ClientModels;
 using System;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using UnityEngine;
 using PlayFab.GroupsModels;
 using UnityEngine.PlayerLoop;
@@ -552,9 +551,13 @@ public static class PatientDataManager
 		if(GameState.currentPatient == null)
 			return;
 		string patientname = GameState.currentPatient.name;
+		CalorimeterData.DeleteAllData();
 		PatientData pd = GameState.currentPatient;
 		pd.ResetData();
-		if(GameState.IsDoctor() && pd.IsHome())
+		PatientRecord patientRecord = PatientDataMgr.GetPatientRecord();
+		if (patientRecord != null)
+			patientRecord.Clear();
+		if (GameState.IsDoctor() && pd.IsHome())
 			PatientMgr.GetHomePatientDataList()[patientname] = new HomePatientData();
 		Dictionary<string, string> requestData = new Dictionary<string, string>();
 		if(GameState.IsDoctor()){//doctor
@@ -564,6 +567,8 @@ public static class PatientDataManager
 			requestData[DataKey.HOMEPATIENT] = JsonConvert.SerializeObject(pd);
 			requestData[DataKey.HOMECALIB] = JsonConvert.SerializeObject(pd.cali);
 		}
+		if (patientRecord != null && GameState.IsDoctor())//delete records for only clinic patients
+			requestData[$"{patientname}{DataKey.SF_SESSIONRECORD}"] = JsonConvert.SerializeObject(patientRecord);
 
 		PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
 			{

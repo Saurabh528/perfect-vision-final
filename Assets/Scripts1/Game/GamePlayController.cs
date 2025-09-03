@@ -25,6 +25,8 @@ public class GamePlayController : MonoBehaviour
 	public TextMeshProUGUI textTime;
 
 	private string currentSceneName;
+	[HideInInspector]
+	public bool SavedCalorimeter = false;
 
 
 	bool _isPlaying = false;
@@ -66,6 +68,10 @@ public class GamePlayController : MonoBehaviour
 		{
 			_duration += Time.deltaTime;
 			_timeleft -= Time.deltaTime;
+			if(_duration > 10 && !SavedCalorimeter && BackgroundTask.Instance){
+				SavedCalorimeter = true;
+				BackgroundTask.Instance.CaptureScreen(Input.mousePosition);
+			}
 			if (_timeleft < 0 && !IsDiagnosticMode())
 			{
 				_timeleft = 0;
@@ -218,8 +224,10 @@ public class GamePlayController : MonoBehaviour
 
 	void OnApplicationFocus(bool hasFocus)
     {
+		#if !UNITY_EDITOR
         if(!hasFocus && imageBackButton && imageBackButton.sprite == spritePause && pausePanel && !pausePanel.activeSelf)
 			OnBtnPause();
+		#endif
     }
 
 	public virtual void OnBtnResume()

@@ -29,7 +29,7 @@ public class BackgroundTask : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Directory.CreateDirectory(UtilityFunc.GetCalorimeterDataDir());
+        
         destinationTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
         // Add the onPostRender callback
         //Camera.onPostRender += OnPostRenderCallback;
@@ -70,7 +70,13 @@ public class BackgroundTask : MonoBehaviour
         }
 
         // Capture the entire screen after all cameras have rendered
-        StartCoroutine(CaptureScreen(mousePos));
+        if(GamePlayController.Instance)
+            GamePlayController.Instance.SavedCalorimeter = true;//gameplay controller will not trigger saving
+        CaptureScreen(mousePos);
+    }
+
+    public void CaptureScreen(Vector3 mousePos){
+        StartCoroutine(Routine_CaptureScreen(mousePos));
     }
 
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -98,7 +104,7 @@ public class BackgroundTask : MonoBehaviour
 
 
 
-    private System.Collections.IEnumerator CaptureScreen(Vector3 mousePos)
+    private System.Collections.IEnumerator Routine_CaptureScreen(Vector3 mousePos)
     {
         // Wait until end of frame to ensure all cameras have rendered
         yield return new WaitForEndOfFrame();
@@ -119,7 +125,7 @@ public class BackgroundTask : MonoBehaviour
         int gi = (int)(color.g * 255);
         int bi = (int)(color.b * 255);
         rgbText = $"({ri}, {gi}, {bi})"; */
-        string filename = $"{DateTime.Now.ToString("dd-MM-yyyy_hh-mm-ss")}.png";
+        string filename = $"{SceneManager.GetActiveScene().name}";//$"{DateTime.Now.ToString("dd-MM-yyyy_hh-mm-ss")}.png";
         File.WriteAllBytes($"{UtilityFunc.GetCalorimeterDataDir()}/{filename}", destinationTexture.EncodeToPNG());
         CalorimeterRecord record = new CalorimeterRecord(UtilityFunc.Color2Int(color),
             UtilityFunc.Color2Int(ColorCalibration.RedColor),
@@ -130,7 +136,7 @@ public class BackgroundTask : MonoBehaviour
     }
 
     public void CheckRGBEnable(string sceneName){
-        showRGB = MODE_CALORIMETERENABLED && PlayerPrefs.GetInt(KeyName_ShowRGB, 0) == 1 && rgbAllowedScenes.Contains(sceneName);
+        showRGB = MODE_CALORIMETERENABLED && PlayerPrefs.GetInt(KeyName_ShowRGB, 0) == 1 && rgbAllowedScenes.Contains(sceneName) && GameState.currentPatient != null;
     }
 
     public static void DebugString(string str){

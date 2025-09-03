@@ -95,7 +95,7 @@ public class Slider1 : MonoBehaviour
 	public void OnBackSliderChange(float value)
 	{
 		Color newColor = ColorCalibration.GetBackGroundColor(value);
-		glassBack.material.color = newColor;
+		//glassBack.material.color = newColor;
 		PlayerPrefs.SetFloat(DataKey.GetPrefKeyName (ColorCalibration.PrefName_Background), value);
 		if (GameState.currentPatient != null)
 			GameState.currentPatient.cali.bg = value;
@@ -143,9 +143,11 @@ public class Slider1 : MonoBehaviour
 
 	public void OnBtnComplete()
 	{
-        if (GameState.currentPatient != null)
+        if (GameState.currentPatient != null){
 			PatientDataManager.UpdatePatient(GameState.currentPatient, null, null);
-		ChangeScene.LoadScene("ScreenDistance");
+			CalorimeterData.DeleteAllData();//Clear data when changed calibration
+		}
+		ChangeScene.LoadScene(GameConst.MODE_NOCAMERA? "DPICheck" : "ScreenDistance");
 	}
 
 	public void OnSliderTransparent(Boolean value)

@@ -24,6 +24,19 @@ public abstract class GameConst
 	public const float PRISMTHRES_VER = 0.5f;
 	public const string GAMENAME_VERGENCE = "Vergence";
 	public static bool MODE_DOCTORTEST = false;
+	public static bool MODE_NOCAMERA = true;
+	public static CheckForUpdate.Version Version{
+		get{
+			if(!_version.Equals(CheckForUpdate.Version.zero))
+				return _version;
+			else{
+				string versionText = Resources.Load<TextAsset>("Version").text.Trim();
+				_version = new CheckForUpdate.Version(versionText);
+				return _version;
+			}
+		}
+	}
+	static CheckForUpdate.Version _version;
 }
 
 public abstract class GameVersion{
@@ -238,14 +251,14 @@ public abstract class PatientMgr
 public abstract class SessionMgr
 {
 	static List<byte> gamelist = new List<byte>();
-	static string[] gamenames = new string[] { "Balloon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly", "Vergence"};
-	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly", "VergenceGame"};
+	static string[] gamenames = new string[] { "Balloon Burst", "Ping Pong", "Shape Change", "Color Switch", "Juggling", "Plane Game", "Crane Game", "FlapNFly", "Vergence", "Base In", "Base Out"};
+	static string[] gameScenenames = new string[] { "BallonBurst", "PingPong", "ShapeChange", "ColorSwitch", "Juggling", "Plane", "Crane2D", "FlapNFly", "VergenceGame", "FusionalRangesBIGame", "FusionalRangesBOGame"};
 	static SessionRecord sessionRecord;
 	public static int _timeSecond = 120;
 	public static bool AddGame(byte gameid, out string error)
 	{
 		error = "";
-		if (gamelist.Count >= 6)
+		if (gamelist.Count >= GameConst.MAX_THERAPHYGAMECOUNT)
 		{
 			error = "Can not place 6+ games.";
 			return false;
@@ -309,6 +322,9 @@ public abstract class SessionMgr
 		if(GameState.currentPatient.IsHome())
 			GameState.currentPatient.PutDataToDoctorData(PatientMgr.GetHomePatientDataList()[GameState.currentPatient.name]);
 		PatientDataManager.UpdatePatient(GameState.currentPatient);
+		//Clear calorimeter record
+		if (gamelist.Count == GameConst.MAX_THERAPHYGAMECOUNT)
+			CalorimeterData.DeleteAllData();
 	}
 
 	public static void StartSession(int timeSecond)

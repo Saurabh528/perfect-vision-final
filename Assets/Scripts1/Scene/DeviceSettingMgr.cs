@@ -25,7 +25,8 @@ public class DeviceSettingMgr : MonoBehaviour
 		Directory.CreateDirectory(PatientMgr.GetPatientDataDir());
 		if(btn_Calorimeter)
 			btn_Calorimeter.SetActive(BackgroundTask.MODE_CALORIMETERENABLED);
-		/* string _dpiPath = Application.dataPath + "/../Python/DPI.txt";
+
+		/* string _dpiPath = DPICaculator.GetDPIPath();
 		if (!File.Exists(_dpiPath))
 			File.WriteAllLines(_dpiPath, new string[] { GameState.currentPatient == null ? GameConst.PATIENTNAME_ANONYMOUS : GameState.currentPatient.name, "100.0" });
 		else

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1472,7 +1472,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2049944894}
   m_HandleRect: {fileID: 2049944896}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2361,7 +2361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec687115699b3f042b724e7746e2267c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: Alignment
+  nextSceneName: Phoria
   questionset: {fileID: 11400000, guid: 4eefb931b9b9cd24ba9e6f5f9c9f9b28, type: 2}
   Question: {fileID: 598073755}
   diagnosis: {fileID: 146000811}

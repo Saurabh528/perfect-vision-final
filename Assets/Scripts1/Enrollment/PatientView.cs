@@ -80,6 +80,8 @@ public class PatientView : MonoBehaviour
         _btnSetting.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
 		_btnDiagnose.SetActive(GameState.IsPatient() || GameState.currentPatient.IsClinic());
 		_btnProAnylysis.SetActive(true);
+
+		UISessionMake.Instance.OnTimeChanged(GameState.currentPatient.theraphyTime);
 	}
 
 	public void OnClickPatient(PatientItem item)

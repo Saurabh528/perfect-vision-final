@@ -18,6 +18,7 @@ public class UISignIn : MonoBehaviour {
 	
 	private void Start()
 	{
+		LoadingCanvas.Hide();
 #if UNITY_EDITOR
 		levelstarted = true;
 		username.text = "Akuete";
@@ -29,10 +30,12 @@ public class UISignIn : MonoBehaviour {
 
 
     void ShowErrorMsg (string error) {
+		LoadingCanvas.Hide();
 		UserAccountManager.Instance.ShowMessage(error);
     }
 
     void OnSignInSuccess () {
+		LoadingCanvas.Hide();
 		GameState.username = username.text;
 		if(GameState.IsDoctor())
 		{
@@ -62,6 +65,7 @@ public class UISignIn : MonoBehaviour {
 			ShowErrorMsg("Password is too short.");
 		else
 		{
+			LoadingCanvas.Show();
 			UserAccountManager.Instance.ShowMessage("");
 			UserAccountManager.Instance.SignIn(username.text, password.text, OnSignInSuccess, ShowErrorMsg);
 		}

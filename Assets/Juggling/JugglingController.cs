@@ -162,7 +162,9 @@ public class JugglingController : GamePlayController
 			}
 
 			optionButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = option;
+			optionButtons[i].onClick.RemoveAllListeners();
 			optionButtons[i].onClick.AddListener(() => SelectOption(option));
+			optionButtons[i].interactable = true;
 
 		}
 	}
@@ -207,10 +209,18 @@ public class JugglingController : GamePlayController
 			}
 		}
 
+		if(selectedIndex == -1){
+			Debug.Log("selectedIndex = -1");
+		}
+
 		// Change the button color based on the correctness
 		if (isCorrect)
 		{
 			optionButtons[selectedIndex].GetComponent<Image>().color = Color.blue;
+			for (int i = 0; i < optionButtons.Length; i++)
+			{
+				optionButtons[i].interactable = false;
+			}
 			PlayCorrectSound();
 		}
 		else

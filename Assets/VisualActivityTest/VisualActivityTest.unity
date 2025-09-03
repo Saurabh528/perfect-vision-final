@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3982,7 +3982,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a60b4236098beca43bd571057f73213f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextScene: {fileID: 102900000, guid: 82c105c9201e417418517eb81d61ea2e, type: 3}
   nextSceneName: DotTest
   NextBtnText: {fileID: 1607744544}
   GuideText: {fileID: 138105735}
@@ -3999,6 +3998,7 @@ MonoBehaviour:
   Obj_Spritebuttons: {fileID: 785322656}
   Obj_RingTestGuide: {fileID: 953710621}
   RandomImg: {fileID: 909469702}
+  rtRandomImg: {fileID: 909469701}
   SpritePatterns:
   - {fileID: -47540539, guid: a5f2181d99b356946823d9ce3ece9a29, type: 3}
   - {fileID: -365915758, guid: a5f2181d99b356946823d9ce3ece9a29, type: 3}
@@ -4010,6 +4010,7 @@ MonoBehaviour:
   - {fileID: -1754267335, guid: a5f2181d99b356946823d9ce3ece9a29, type: 3}
   - {fileID: 1276149252, guid: a5f2181d99b356946823d9ce3ece9a29, type: 3}
   SpriteRing: {fileID: 878302074, guid: a5f2181d99b356946823d9ce3ece9a29, type: 3}
+  sizeMM: 20
 --- !u!4 &1728240838
 Transform:
   m_ObjectHideFlags: 0
